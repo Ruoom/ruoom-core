@@ -1,0 +1,168 @@
+{% extends "administration/settings.html" %}
+{% load static %}
+{% load i18n %}
+{% block settingscontent %}
+    <div class="pt-0">
+        <div class="container-fluid">
+            <div class="platform-settings">
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Card -->
+                        <div class="card">
+                            <div class="card-body mw-1600">
+                                <h2 class="mb">{% trans "Business Contact information" %}
+                                <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                    data-toggle="tooltip" data-placement="top"
+                                    data-content="{% trans "Business contact information will be displayed to customers on checkout pages and automated emails if it is filled out on this page." %}">
+                                    {% trans "i" %}
+                                </button>
+                                </h2>
+                                <form action="{% url 'administration:settings-contact' %}" id="businessSettingForm" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="setting_update" name="setting_update"
+                                                           value="business_settings">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="business_name">{% trans "Business Name" %}</label>
+                                                <br>
+                                                <input type="text" name="business_name" value="{{ business_name|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="business_website">{% trans "Business Website" %}</label>
+                                                <br>
+                                                <input type="text" name="business_website" value="{{ business_website|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="contact_email">{% trans "Business Support Email" %}</label>
+                                                <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                                    data-toggle="tooltip" data-placement="top"
+                                                    data-content="{% trans "This is an email address where your customers can reach out to you for help or general information." %}">
+                                                    {% trans "i" %}
+                                                </button>
+                                                <br>
+                                                <input type="email" name="contact_email" value="{{ contact_email|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="contact_phone">{% trans "Business Phone Number" %}</label>
+                                                <br>
+                                                <input type="text" name="contact_phone" value="{{ contact_phone|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="business_address">{% trans "Business Address" %}</label>
+                                                <br>
+                                                <input type="text" name="business_address" value="{{ business_address|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="business_reg_id">{% trans "Business Registration Number" %}
+                                                    <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                                        data-toggle="tooltip" data-placement="top"
+                                                        data-content="{% trans "Some juristictions might require businesses to present this number to customers online." %}">
+                                                        {% trans "i" %}
+                                                    </button>
+                                                </label>
+                                                <input type="text" name="business_reg_id" value="{{ business_reg_id|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="business_owner">{% trans "Business Representative Name" %}
+                                                    <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                                        data-toggle="tooltip" data-placement="top"
+                                                        data-content="{% trans "Some juristictions might require businesses to present the representative's name to customers online." %}">
+                                                        {% trans "i" %}
+                                                    </button>
+                                                </label>
+                                                <input type="text" name="business_owner" value="{{ business_owner|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox table-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                            name="show_contact" id="show_contact" {% if obj.show_contact %} checked {% endif %}>
+                                        <label class="custom-control-label" for="show_contact">{% trans "Show contact information on customer pages?" %}</label>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary mt-4" id="save_business_information">{% trans "Save Contact Information" %}
+                                    </button>
+                                </form>
+                                <hr class="my-5">
+                                <h2>{% trans "Send-From Email Information" %}
+                                <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                    data-toggle="tooltip" data-placement="top"
+                                    data-content="{% trans "This is an email address from which automated emails will be sent. You must configure access to this email so Ruoom can send these emails." %}">
+                                    {% trans "i" %}
+                                </button>
+                                </h2>
+                                <!--Subtext: Need help? See our guide (link)-->
+                                <form action="{% url 'administration:settings-contact' %}" id="colorSettingForm" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="setting_update" name="setting_update"
+                                                           value="email_settings">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="email">{% trans "Email Address" %}</label>
+                                                <input type="email" name="email_address" value="{{ email_address|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="application_password">{% trans "Application Password" %}</label>
+                                                <input type="password" name="application_password" value="{{ application_password|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-sm-0">
+                                                <label for="host_address">{% trans "Host Address" %}</label>
+                                                <input type="text" name="host_address" value="{{ host_address|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label for="host_port">{% trans "Host Port" %}</label>
+                                                <input type="text" name="host_port" value="{{ host_port|default_if_none:'' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 mt-4 pt-sm-3">
+                                            <div class="custom-control custom-checkbox table-checkbox mb-2">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    name="host_tls" id="host_tls" {% if host_tls %}checked{% endif %}>
+                                                <label class="custom-control-label" for="host_tls">{% trans "Host Using TLS?" %}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">   
+                                        <a href="{% url 'administration:helpEmail' %}" target="_blank">{% trans "Need help? See our help center" %}</a>
+                                    </div>  
+                                    
+                                    <button type="submit" class="btn btn-primary mt-4" id="save_email_information">{% trans "Save Email Settings" %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- / .row -->
+            </div> <!-- / .main-content -->
+        </div>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            $('.messages').fadeOut('fast');
+        }, 3000);
+
+        $("#contact-tab").addClass('active');
+    </script>
+{% endblock %}

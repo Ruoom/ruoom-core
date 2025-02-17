@@ -1,0 +1,432 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% load custom_tags %}
+
+{% block subtitle %}{% trans "Permissions" %}{% endblock %}
+{% block sub_head %}
+    <script src="{% static 'administration/js/admin.js' %}"></script>
+    <script type="application/javascript">
+      let csrftoken = '{% csrf_token %}'
+      let csrf_token = '{{ csrf_token }}'
+      let showCreateUserForm = {% if showCreateUserForm %} true {% else %} false {% endif %}
+      let showEditUserForm = {% if showEditUserForm %} true {% else %} false {% endif %}
+    </script>
+    <style>
+        ul.errorlist li{
+            color: red;
+        }
+
+
+
+.msg-checkbox {
+    /* display: block; */
+    width: 3%;
+    display:inline;
+    width: 3%;
+    white-space: nowrap; 
+    height: calc(0.1em + 1rem + 1px); 
+}
+
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="pt-4">
+        <div class="container-fluid">
+            <div class="card mb-0 schedule-card">
+                <div class="card-header border-0 pt-3 mt-1">
+                    <div class="row">
+                        <div class="col-6">
+                            <h1 class="header-title mt-2">{% trans "User Permissions" %}</h1>
+                        </div>
+                        <div class="col-6 text-right">
+                            <!--New Staff User Button -->
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalUserForm">
+                                <span class="fe fe-plus"></span> {% trans "New Staff Member" %}
+                            </button>
+                        </div>
+                    </div>
+                </div> <!-- end card-header -->
+
+                <div class="card-body">
+
+                    <!-- Layouts Table -->
+                    <div id="userTable" class="bg-white">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead id="userTableHead">
+                                  <tr class="text-center">
+                                      <th scope="col" class="text-left">{% trans "User" %}</th>
+                                      <th scope="col">{% trans "Superuser" %}</th>
+                                      <th scope="col">{% trans "Service Provider?" %}</th>
+                                      <th scope="col">{% trans "Active" %}</th>
+                                      <th scope="col">{% trans "Actions" %}</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="body-align-middle text-center" id="userTableBody">
+                                {% for staff in staffs %}
+                                    <tr id="table_row_{{ staff.id }}">
+                                        <td class="text-left">
+                                            {% if not staff.profile|load_profile_image %}
+                                                <img src="{% static 'img/no_user.png' %}" class="rounded-circle" alt="logo">
+                                            {% elif 'Wall-E.jpg' in staff.profile.profile_image.url %}
+                                                <img src="{% static 'img/no_user.png' %}" class="rounded-circle" alt="logo">
+                                            {% elif 's3.amazonaws.com' in request.user.profile.profile_image.url %}
+                                                <img src="{{staff.profile.profile_image.url}}" class="rounded-circle" alt="logo">
+                                            {% else %}
+                                                <img src="{% get_media_prefix %}{{staff.profile|load_profile_image}}" class="rounded-circle" alt="logo">
+                                            {% endif %}
+                                          {{ staff.first_last }}
+                                        </td>
+                                        <td>
+                                            {% if staff.is_superuser %}
+                                                {% trans "Yes" %}
+                                            {% else %}
+                                                {% trans "No" %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if staff.is_teacher %}
+                                                {% trans "Yes" %}
+                                            {% else %}
+                                                {% trans "No" %}
+                                            {% endif %}
+                                        </td>
+                                        <!--<td>
+                                            {% trans "All" %}
+                                        </td>-->
+                                        <td>
+                                            {% if staff.staff_is_active %}
+                                                {% trans "Yes" %}
+                                            {% else %}
+                                                {% trans "No" %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn badge-soft-light btn-sm mr-2 editUserButton" title="Edit" data-id={{ staff.id }}>
+                                                 <span class="fe fe-edit"></span>
+                                            </div>
+                                            <!--<div class="btn btn-sm badge-soft-danger deleteUserButton" data-id={{ staff.id }}>
+                                                <span class="fe fe-trash-2"></span>
+                                            </div>-->
+                                            <div class="btn btn-sm badge-soft-light mr-2 resetPasswordButton" data-toggle="modal" data-target="#reset_password_modal" title="Reset Password" reset-username={{ staff.email }} reset-id={{ staff.id }}>
+                                                <span class="fe fe-lock"></span>
+                                            </div>
+                                            <div class="btn btn-sm badge-soft-danger deleteUserButton" data-toggle="modal" data-target="#delete_confirmation_modal" data-id={{ staff.id }}>
+                                                <span class="fe fe-trash-2"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div> <!-- end card-body -->
+            </div>
+        </div>
+    </div>
+
+    <!-- New Staff Member Modal -->
+    <div class="modal fade" id="modalUserForm" tabindex="-1" role="dialog" aria-labelledby="modalUserFormLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalUserFormLabel">{% trans "Create a New Account" %}</h3>
+                    <h4 style="color:red;" id="p_id">Invalid Email</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="create_Form" method="post" >
+                {% csrf_token %}
+                  <div class="modal-body">
+                    {% if user_form.errors %}
+                        {% for field in user_form %}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ field.label }}: {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                      <div class="row">
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{user_form.first_name.auto_id}}">{% trans "First Name" %}</label>
+                                  {{user_form.first_name}}
+                              </div>
+                          </div>
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{user_form.last_name.auto_id}}">{% trans "Last Name" %}</label>
+                                  {{user_form.last_name}}
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                          <label for="{{user_form.email.auto_id}}">{% trans "Email Address" %}</label>
+                          {{user_form.email}}
+                      </div>
+
+                      <!--<div class="row">
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{user_form.password.auto_id}}">{% trans "Enter Password" %}</label>
+                                  {{user_form.password}}
+                              </div>
+                          </div>
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{user_form.password_2.auto_id}}">{% trans "Verify Password" %}</label>
+                                  {{user_form.password_2}}
+                              </div>
+                          </div>
+                      </div>-->
+
+                      <div>
+                        <div class="form-group mb-3 d-inline-block">
+                                {{user_form.is_teacher}}
+                                <label for="{{user_form.is_teacher.auto_id}}">{% trans "Is a Service Provider?" %}</label>
+                            </div>
+                            <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans "Who is your customer coming to see? A Service Provider is a staff member that appears on your schedule as responsible for a service, class, or event." %}">{% trans "i" %}</button>
+                        </div>
+
+                      <div class="form-group">
+                          {{user_form.is_superuser}}
+                          <label for="{{user_form.is_superuser.auto_id}}">{% trans "Superuser Status" %}</label>
+                          <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans "Designates that this user has all permissions without explicitly assigning them." %}">{% trans "i" %}</button>
+                      </div>
+
+                    <div class="form-group">
+                        {{user_form.message_consent}}
+                        <label for="{{user_form.message_consent.auto_id}}">{% trans "Agree to receive messages related to reservations" %}</label>
+                        <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans "Consent to receive messages related to your registrations for this business." %}">{% trans "i" %}</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{user_form.permissions.auto_id}}">{% trans "Permissions (access) :" %}</label>
+                        {{user_form.permissions | title}}
+                    </div>
+
+                    <div class="form-group">
+                        {{user_form.staff_is_active}}
+                        <label for="{{user_form.staff_is_active.auto_id}}">{% trans "Active" %}</label>
+                        <button type="button" class="btn-link info-icon info-icon-sm ml-3" data-toggle="tooltip" data-placement="top" data-content="{% trans "Activate staff members to grant access to Ruoom." %}">{% trans "i" %}</button>
+                    </div>
+
+                  </div>
+
+                  <div class="modal-footer pt-0">
+                      <button class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+                      <button type="submit" id="new_user" class="btn btn-primary" name="new_user">{% trans "Submit" %}</button>
+                  </div>
+              </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUserEditModal" tabindex="-1" role="dialog"
+         aria-labelledby="modalUserEditFormLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalUserEditModallabel">{% trans "Edit User Details" %}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times</span>
+                    </button>
+                </div>
+                <form id="userEditForm" method="POST" action="{% url 'administration:admin' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_user">
+                    <input type="hidden" id="user_id" name="user_id"/>
+                    <div id="msg">{{edit_user_form.errors}}</div>
+                    <div class="modal-body" id="userEditModalBody">
+                      <div class="row">
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{edit_user_form.first_name.auto_id}}">{% trans "First Name" %}</label>
+                                  {{edit_user_form.first_name}}
+                              </div>
+                          </div>
+                          <div class="col-6">
+                              <div class="form-group">
+                                  <label for="{{edit_user_form.last_name.auto_id}}">{% trans "Last Name" %}</label>
+                                  {{edit_user_form.last_name}}
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                          <label for="{{edit_user_form.email.auto_id}}">{% trans "Email Address" %}</label>
+                          {{edit_user_form.email}}
+                      </div>
+
+                      <div>
+                          <div class="form-group mb-3 d-inline-block">
+                              {{edit_user_form.is_teacher}}
+                              <label for="{{edit_user_form.is_teacher.auto_id}}">{% trans "Is a Service Provider?" %}</label>
+                          </div>
+                          <button type="button" class="btn-link btn-moreinfo info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" title="" data-content="{% trans "Who is your customer coming to see? A Service Provider is a staff member that appears on your schedule as responsible for a service, class, or event." %}">{% trans "i" %}</button>
+                      </div>
+
+                      <div class="form-group">
+                          {{edit_user_form.is_superuser}}
+                          <label for="{{edit_user_form.is_superuser.auto_id}}">{% trans "Superuser Status" %}</label>
+                          <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans "Designates that this user has all permissions without explicitly assigning them." %}">{% trans "i" %}</button>
+                      </div>
+ 
+                        <div class="form-group">
+                            {{edit_user_form.message_consent}}
+                            <label for="{{edit_user_form.message_consent.auto_id}}">{% trans "Agree to receive messages related to reservations" %}</label>
+                            <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans "Consent to receive messages related to your registrations for this business." %}">{% trans "i" %}</button>
+                        </div>
+
+
+                      <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  {% trans "Locations" %}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu">
+                                    {% for value, display in user_form.locations.field.choices %}
+                                        {% if value %}
+                                            <label class="dropdown-item">
+                                                <input class="mr-2" type="checkbox" name="locations" value="{{value}}">{% trans display %}
+                                            </label>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                          <label for="{{edit_user_form.permissions.auto_id}}">{% trans "Permissions (access) :" %}</label>
+                          {{edit_user_form.permissions | title}}
+                      </div>
+
+                        <div class="form-group">
+                            {{edit_user_form.staff_is_active}}
+                            <label for="{{edit_user_form.staff_is_active.auto_id}}">{% trans "Active" %}</label>
+                            <button type="button" class="btn-link info-icon info-icon-sm ml-3" data-toggle="tooltip" data-placement="top" data-content="{% trans "Activate staff members to grant access to Ruoom." %}">{% trans "i" %}</button>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer pt-0">
+                        <button class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+                        <button class="btn btn-primary" type="submit" name="update_user">{% trans "Submit" %}</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Modal -->
+<div class="modal fade" id="delete_confirmation_modal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">{% trans "Remove User" %}</h3>
+                <button type="button" class="close" data-dismiss="modal" id="rental_delete">{% trans "×" %}</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">{% trans "Do you really want to remove " %}<span id="remove-username"></span>{% trans " from your staff? The user will be converted into a customer profile." %}</p>
+            </div>
+            <div class="modal-footer pt-0 pb-5 justify-content-center">
+                <form method="POST" action="{% url 'administration:admin' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="staff_id" name="staff_id">
+                    <input type="hidden" id="delete_user" name="delete_user">
+                    <button type="button" class="btn mr-3" data-dismiss="modal">{% trans "No" %}</button>
+                    <button type="submit" class="btn btn-danger">{% trans "Yes" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Reset Password Modal -->
+<div class="modal fade" id="reset_password_modal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">{% trans "Reset Password" %}</h3>
+                <button type="button" class="close" data-dismiss="modal" id="rental_delete">{% trans "×" %}</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">{% trans "Do you want to reset password for" %} <span id="reset-username"></span>?</p>
+                <p class="text-center text-muted">{% trans "Customer will receive an automated password reset email" %}</p>
+            </div>
+            <div class="modal-footer pt-0 pb-5 justify-content-center">
+                <form method="POST" action="{% url 'password_reset' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="reset-id" name="reset-id">
+                    <input type="hidden" id="id_email" name="email">
+                    <button type="button" class="btn mr-3" data-dismiss="modal">{% trans "No" %}</button>
+                    <button type="submit" class="btn btn-primary" name="reset_password">{% trans "Yes" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <button class="btn btn-primary" style="position: fixed; bottom: 30; right: 30;" data-toggle="modal" data-target="#product-tour">
+        {% trans "How Do I Use This Page?" %}
+    </button>
+</div>
+
+<div class="modal fade" id="product-tour" tabindex="-1" role="dialog" aria-labelledby="modal-product-tour"
+        aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="product-tour-label">{% trans "How Do I Use This Page?" %}</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="text-center m-4">  
+                <iframe src="https://app.tango.us/app/embed/aa941f7d-0c0e-47b9-a984-919188e5c5cc" style="min-height:640px" sandbox="allow-scripts allow-top-navigation-by-user-activation allow-popups allow-same-origin" security="restricted" title="Adding a New Staff Member" width="100%" height="100%" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+
+            <div class="text-center m-4">  
+                <iframe src="https://app.tango.us/app/embed/34bf5599-7ee0-4aa5-ac18-9ad948f84a08" style="min-height:640px" sandbox="allow-scripts allow-top-navigation-by-user-activation allow-popups allow-same-origin" security="restricted" title="How to Make a Staff Member a Service Provider" width="100%" height="100%" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+            
+            <div class="text-center m-4">  
+                <iframe src="https://app.tango.us/app/embed/3fc6809c-e693-4804-b07a-4b6b16f7c36e" style="min-height:640px" sandbox="allow-scripts allow-top-navigation-by-user-activation allow-popups allow-same-origin" security="restricted" title="How to Make a Staff Member a Superuser" width="100%" height="100%" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen"></iframe>
+            </div>
+
+            <div class="modal-footer justify-content-right">
+                <button type="button" class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+      if (!tour.ended() && is_msa_signed != false){
+          tour.start()
+      };
+      $("#id_is_superuser").click(() => {
+            if ($("#id_is_superuser").is(":checked") == true){
+                $("#Id_Permissions>li>label>input").each((index, item) => {
+                    if (item.checked == false){
+                        item.click();
+                    };
+                });
+            };
+      });
+  })
+</script>
+{% endblock %}

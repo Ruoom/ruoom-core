@@ -1,0 +1,248 @@
+.header-body select.border-0 {
+    cursor: pointer;
+}
+
+.header-body select.border-0:focus {
+    outline-color: transparent;
+}
+
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.fc-license-message {
+    display: none;
+}
+
+#class-carousel .chart {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    width: auto;
+}
+
+.notes {
+    padding: 0;
+}
+
+.notes-alert {
+    cursor: pointer;
+}
+
+.notes-alert h4 {
+  font-weight: 400;
+}
+
+.notes-alert.new h4 {
+  font-weight: 500;
+}
+
+.notes-alert button.close {
+  display: none;
+}
+
+.notes-alert:hover button.close {
+  display: block;
+  padding-right: 12px;
+}
+
+.notes-alert:hover {
+    background-color: #f9fbfd;
+}
+
+.notes-alert a:hover {
+    color: #000;
+}
+
+.home-page .notes-alert {
+    padding: 12px 0 5px 0;
+    border-radius: 0;
+    margin: 0 !important;
+    border-bottom: 1px solid #edf2f9;
+}
+
+.home-page .notes-alert:last-child {
+  border-bottom: 0;
+}
+
+.notes-alert small {
+    color: #95aac9;
+    display: block;
+    position: relative;
+    text-align: right;
+    margin-top: 3px;
+    font-size: 11px;
+}
+
+.alert-dismissible .close {
+    top: -11px;
+    right: -12px;
+}
+
+.notes-alert p {
+    margin-bottom: 0px;
+    font-weight: 300;
+}
+
+.day-calander .fc-timeline-event {
+    border-color: #00d97e !important;
+    background-color: #ccf7e5 !important;
+    border-radius: 5px !important;
+}
+
+.day-calander .fc-title {
+    color: #00d97e;
+}
+
+.for-large .modal-dialog {
+    transform: translate(0, 0%) !important;
+    top: 0;
+}
+
+.modal-footer .btn-white:hover, .btn-white:hover {
+    color: #fff;
+    background: linear-gradient(to right, #00c6bf, #00aecc);
+}
+
+.modal-footer .btn-white {
+    color: #000;
+}
+
+.new-notification {
+    position: relative;
+}
+
+.new-notification .noti-icon {
+    position: absolute;
+    color: #95aac9;
+    right: -2px;
+    bottom: 10px;
+    font-size: 25px;
+}
+
+.new-notification .new {
+    color: #e63757 !important;
+    right: -2px;
+    bottom: 10px;
+    font-size: 25px;
+    position: absolute;
+}
+
+.header-body .class-legends {
+  text-transform: none;
+  font-family: 'VisbyRoundCF-Regular';
+  color: #000;
+}
+
+.header-body .class-legends span.rounded-circle {
+  padding: 4px;
+  margin-left: 0;
+}
+
+.card h6.card-title {
+  color: #B4B4B4;
+  font-weight: 600;
+}
+
+.card span.h2 {
+  font-family: 'VisbyRoundCF-Regular';
+  font-weight: 400;
+  color: #000000;
+}
+
+.card span.percentage {
+  font-family: 'VisbyRoundCF-Regular';
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.calendar .time-sch-title {
+  display: inline-block;
+  float: left;
+  text-align: left;
+  font-size: 22px;
+  font-family: 'VisbyRoundCF-Regular';
+  color: #000;
+}
+
+.calendar .time-sch-time-container {
+  display: flex;
+}
+
+.time-sch-section-container {
+    overflow: revert;
+}
+
+.calendar div.time-sch-table-wrapper period-day {
+  margin-top: 2rem;
+}
+
+.calendar .time-sch-wrapper .time-sch-section,
+.calendar .time-sch-wrapper .time-sch-date-header {
+  border: 0;
+}
+
+.calendar .time-sch-wrapper .time-sch-section {
+  text-align: left;
+  color: #000;
+}
+
+.calendar .time-sch-wrapper .time-sch-date-header {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6A6A6A;
+  font-weight: 600;
+  padding: 6px 2px;
+}
+
+.calendar .time-sch-times:first-child .time-sch-date-header {
+  font-size: 0.9375rem;
+  color: #48496F;
+  padding: 1rem;
+}
+
+.tbody .time-sch-wrapper .time-sch-section {
+  text-align: left;
+  color: #000;
+}
+
+.card-header {
+  border: 0;
+  min-height: auto;
+  padding-top: .75rem;
+}
+
+.card-header.simple {
+  padding-top: 1.25rem;
+}
+
+.card-body.notes {
+  padding: .5rem 1.5rem 1.5rem;
+}
+
+.card-body.notes center {
+  border: 0.5px solid #cecece;
+  border-radius: 3px;
+  padding: .5rem;
+}
+
+.table thead th {
+  background-color: #fff;
+  color: #1D1D4D;
+  font-size: 0.75rem;
+}
+
+#tasks-section .table-sm th {
+  border-top: 0;
+}
+
+@media (min-width: 1100px) {
+
+    #staff-timeline {
+        display: block !important;
+    }
+}

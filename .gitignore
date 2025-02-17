@@ -1,0 +1,11 @@
+*.pyc
+*.swp
+.env
+.git
+.github
+env/*
+.vscode/
+.idea/
+media
+.git
+__pycache__/

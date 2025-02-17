@@ -1,0 +1,253 @@
+/* Required page css */
+
+#sidebarUser {display: none !important;}
+
+#sidebarSmall {display: none !important;}
+
+#topnav {display: none !important;}
+
+select { -webkit-appearance: none;-moz-appearance: nonappearance: none;}
+.select2-selection__arrow {display: block !important; border-color: #d2ddec !important;}
+.select2-container--default .select2-selection--single .select2-selection__arrow {top: 6px !important; padding-right: 20px !important; height: 10px !important;}
+
+.select2-container--default .select2-selection--single {border-color: #d2ddec !important;}
+.select2-container--open .select2-selection--single {border-color: #2C7BE5 !important;}
+.select2-container--default .select2-selection--single .select2-selection__arrow b {border-color: #d2ddec transparent transparent transparent !important; border: 0 !important; font-family: Feather!important; position: relative; color: #6E84A3;}
+.select2-container--default .select2-selection--single .select2-selection__arrow b:before {content: "\e92e";}
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b { border-color:transparent transparent #d2ddec transparent  !important; }
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b:before {content: "\e931" !important; }
+
+/* Required page css */
+
+/****   checklist \css  *********/
+
+.card-root-checklist2{ width: 100%; }
+
+.card-root-checklist2 .checklist-title h3 {
+  display: flex;
+  align-items: center;
+}
+
+.card-root-checklist2 .col-33 { width: 33.3%; float: left; border-right: 1px solid #e3ebf6; padding-left: 30px; padding-right: 30px;  }
+
+.card-root-checklist2 .col-33:first-child {
+  padding-left: 12px;
+  padding-right: 0px;
+}
+
+.card-root-checklist2 .col-33:last-child { border-right: 1px solid transparent; }
+.card-root-checklist2 .date-tags-icon-div { padding: 15px 0 10px 0; }
+
+.card-root-checklist2 .instructor-text{ padding: 0; margin: 0; }
+
+.card-root-checklist2 .user-img-group { padding: 0; float: left; min-height: 40px; width: 100%; }
+.card-root-checklist2 .user-img-group .img-user{ padding: 0; width: 40px; float: left; }
+.card-root-checklist2 .user-img-group .img-user .user-img { padding: 0; width: 100%; object-fit: cover; border-radius: 100%; }
+.card-root-checklist2 .user-img-group .text-content { padding: 0 0 0 12px; float: left; min-height: 40px; display: flex; align-items: center; color: #2c7be5; }
+.card-root-checklist2 .user-img-group .user-link:hover .text-content{ color: #1657af; }
+
+.card-root-checklist2 .notes-checklist2{ padding: 0; margin: 0; }
+.card-root-checklist2 .notes-checklist2 textarea.form-control { resize: none; min-height: 140px; }
+
+.nav-custom-checkout-main .list-group-chekin { padding-right: 0px; }
+.nav-custom-checkout-main .sorting-group { float: left; width: 100%; display: flex; align-items: center; }
+
+.nav-custom-checkout-main .sorting-group label {
+  margin: 0;
+  width: 80px;
+}
+
+.nav-custom-checkout-main .sorting-group .right-input-dropdown {
+  width: calc(100% - 80px);
+}
+
+.nav-custom-checkout-main .group-minus-plus-div {
+  border-bottom: 1px solid #e3ebf6;
+  padding-bottom: 1.5rem !important;
+}
+
+.nav-custom-checkout-main .list-group-chekin .list-group-item:first-child{ border-top: none; }
+
+.rooms-root-div{ padding: 0; margin: 0; width: 100%;  }
+.rooms-root-div .header-rooms-div { padding: 0; margin: 0; border-bottom: 1px solid #e3ebf6; width: 100%; display: flex; flex-direction: column; }
+.rooms-root-div .header-rooms-div h3 {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  padding-right: 40px;
+  float: left;
+}
+
+.rooms-root-div .header-rooms-div h2 span,
+.checklist-title h2 span {
+  color: #12263F;
+  font-weight: 600;
+  padding-left: 15px;
+}
+
+.rooms-root-div .header-color-row { padding: 0; margin: 0 0 15px 0; width: 100%; }
+.rooms-root-div .header-color-row .color-box-col{ padding: 0 30px 0 0; margin: 0;     float: left; }
+.rooms-root-div .header-color-row .color-box-col .leftbox-color { float: left; display: inline-block; width: 40px; padding: 0; margin: 0; }
+.rooms-root-div .header-color-row .color-box-col .leftbox-color .color-label { height: 20px; width: 40px; border: 1px solid #2c7be5; background-color: #d5e5fa; display: inline-block; border-radius: 4px; }
+.rooms-root-div .header-color-row .color-box-col .leftbox-color .color-label.available-label { border: 1px solid #2c7be5; background-color: #d5e5fa; }
+.rooms-root-div .header-color-row .color-box-col .leftbox-color .color-label.checkedin-label { border: 1px solid #62e7af; background-color: #ccf7e5; }
+.rooms-root-div .header-color-row .color-box-col .leftbox-color .color-label.instructor-label { border: 1px solid #f6c343; background-color: #fdf3d9; }
+
+.rooms-root-div .header-color-row .color-box-col .rightbox-color {
+    float: left;
+    display: inline-block; 
+    padding: 0 0 0 10px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.rooms-root-div .body-rooms-div{ padding: 0; margin: 20px auto 0 auto;  }
+.rooms-root-div .body-rooms-div .centerbox-room-div{ padding: 0; margin: 0;  }
+.rooms-root-div .body-rooms-div .centerbox-room-div .body-color-row { text-align: left;  width: 500px; margin: 0 auto 20px auto ; overflow-x: auto; }
+.rooms-root-div .body-rooms-div .centerbox-room-div .color-box-col { padding: 0 10px 0 10px; display: inline-block; margin-top: 30px; min-width: 90px; }
+.rooms-root-div .body-rooms-div .centerbox-room-div .box-inner-color { display: flex; height: 100px; width: 70px; border: 1px solid #2c7be5; background-color: #d5e5fa; border-radius: 4px; align-items: center; justify-content: center; color: #95aac9; }
+.rooms-root-div .body-rooms-div .centerbox-room-div .color-box-available .box-inner-color { border: 1px solid #2c7be5; background-color: #d5e5fa; }
+.rooms-root-div .body-rooms-div .centerbox-room-div .color-box-checkedin .box-inner-color { border: 1px solid #62e7af; background-color: #ccf7e5; }
+.rooms-root-div .body-rooms-div .centerbox-room-div .color-box-instructor .box-inner-color { border: 1px solid #f6c343; background-color: #fdf3d9; }
+
+.nav-custom-checkout-main .tab-nav-content .list-group .right-input-dropdown {
+  padding-left: 15px;
+  float: right;
+  width: 110px;
+}
+
+.nav-custom-checkout-main .tab-nav-content .list-group .right-input-dropdown .select2-container .select2-selection--single { height: 30px !important; padding: .3rem .75rem; font-size: 13px; color: #95aac9; }
+.nav-custom-checkout-main .tab-nav-content .list-group .right-input-dropdown .select2-container--default .select2-selection--single .select2-selection__arrow b { top: 1px; color: #95aac9; }
+
+.nav-custom-checkout-main .tab-nav-content .list-group .card-title.name a {
+  line-height: 30px;
+}
+
+.nav-main.nav-custom-checkout-main .btn-txt-danger{ color: #12263f; opacity: 0.4; }
+li.list-group-item.px-0.cancelled-box .card-title.name a{ opacity: 0.4; }
+
+ul.list-group .col-auto .btn.btn-sm {
+  min-width: 85px;
+}
+
+ul.list-group.waitlist .col-auto .btn.btn-sm {
+  min-width: 100px;
+}
+
+.form-control.textarea-notes{ resize: none; min-height: 140px; }
+.main-checklist-old { margin: 15px 0 0 0; float: left; }
+
+.rooms-root-div .body-rooms-div .centerbox-room-div::-webkit-scrollbar { background-color:#fff; width:8px; height: 8px; }
+.rooms-root-div .body-rooms-div .centerbox-room-div::-webkit-scrollbar-track {  background-color:#fafafa }
+.rooms-root-div .body-rooms-div .centerbox-room-div::-webkit-scrollbar-thumb { background-color:#b5b5b54d; border-radius:16px; border:1px solid #fff; }
+.rooms-root-div .body-rooms-div .centerbox-room-div::-webkit-scrollbar-button {display:none}
+
+.date-tags-icon-div { padding: 15px 0 0 0; margin: 0 0 2px 0; display: inline-block; float: left; width: 100%; }
+.date-tags-icon-div p { padding: 0 0 0 0; margin: 0; display: inline-block; float: left; color: #12263f; }
+
+.date-tags-icon-div .p-tags:last-child{
+  padding-left: 2.5rem;
+}
+
+.date-tags-icon-div span.fe { color: #95aac9; }
+
+.card-title-price .title-one {width: 80%;}
+.card-title-price .prices {justify-content: flex-end; width: 20%; text-align: right; color: #2C7BE5;}
+
+
+.padr-12 {padding-right: 12px;}
+
+.nav-main .nav-tabs .nav-link.active .badge-secondary { background-color: #2c7be5;}
+
+.btn-gray {padding: 3px 13px;background-color: #F2F2F2 !important;border-color: #F2F2F2 !important;color: #6e84a3 !important;}
+.btn-gray:hover {background-color: #6e84a3 !important; border-color: #6e84a3 !important; color: #F2F2F2 !important;}
+
+.profile-instructor .card-title a {font-size: 18px !important; color: #2c7be5;}
+
+
+
+/* scollbar on chekclist page */
+/* width */
+ .list-group-chekin::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 100%;}
+
+/* Track */
+.list-group-chekin::-webkit-scrollbar-track {
+  background: #f1f1f1;}
+
+/* Handle */
+.list-group-chekin::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 100px;}
+
+/* Handle on hover */
+.list-group-chekin::-webkit-scrollbar-thumb:hover {
+  background: #555;}
+
+/* scollbar on chekclist page  end*/
+
+
+.list-group-chekin .avatar {width: 1rem; height: auto;}
+.list-group-chekin .avatar .fe {color: #95aac9; font-size: 18px;}
+
+.checkout-messages {display: flex; align-items: center; justify-content: center; min-height: 200px;}
+.list-group-chekin .card-title.name a {line-height: 20px;}
+.list-group-lg.list-group-chekin .list-group-item {padding-bottom: 16px; padding-top: 16px;}
+.list-group-chekin { max-height: 550px; min-height: 320px; overflow-y: auto; padding-right: 12px; overflow-x: hidden;}
+
+.progress-bar-green {background-color: #0EDA7F;}
+.title-wait-list h4 span {color: #12263F; font-size: 18px; padding-left: 5px;}
+
+
+.checkin-page .table-card {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+.list-group-lg.list-group-chekin .list-group-item {min-width: 410px;}
+.list-group-lg.list-group-chekin.list-group-chekin1 .list-group-item {min-width: auto;}
+
+
+.card-root-checklist2 .col-33:first-child {padding-left: 3px;padding-right: 3px;margin: 0 0 0 0;}
+.card-root-checklist2 .col-33 {width: 100%;flex: 0 0 100%;max-width: 100%;border-right: none;margin: 40px 0 0 0;padding: 0 3px;}
+
+.nav-custom-checkout-main .list-group-chekin {overflow-x: scroll;}
+.nav-custom-checkout-main .mb-4.group-minus-plus-div {margin-right: -10px;margin-left: -10px;padding: 0 0px;}
+.list-group-lg.list-group-chekin .list-group-item {min-width: 410px;}
+
+
+.card-root-checklist2 .col-33 { width: 100%; flex: 0 0 100%; max-width: 100%; border-right: none; margin: 40px 0 0 0; padding: 0 3px; }
+.card-root-checklist2 .col-33:first-child { padding-left: 3px; padding-right: 3px; margin: 0 0 0 0; }
+
+.nav-custom-checkout-main .mb-4.group-minus-plus-div { margin-right: -10px; margin-left: -10px; padding: 0 0px; }
+
+
+.rooms-root-div .body-rooms-div .centerbox-room-div .color-box-col { padding: 0 5px 0 0; }
+.nav-custom-checkout-main .list-group-chekin .right-input-dropdown { width: 125px; }
+.nav-custom-checkout-main .list-group-chekin { overflow-x: scroll; }
+.list-group-lg.list-group-chekin .list-group-item { min-width: 410px; }
+.nav-custom-checkout-main .list-group-chekin::-webkit-scrollbar { background-color:#fff; width:8px; height: 4px; }
+.nav-custom-checkout-main .list-group-chekin::-webkit-scrollbar-track {  background-color:#fafafa }
+.nav-custom-checkout-main .list-group-chekin::-webkit-scrollbar-thumb { background-color:#b5b5b54d; border-radius:16px; border:1px solid #fff; }
+.nav-custom-checkout-main .list-group-chekin::-webkit-scrollbar-button {display:none}
+
+.nav-custom-checkout-main .list-group-chekin .right-input-dropdown { width: 105px !important; }
+
+}
+
+
+@media only screen
+  and (min-device-width: 768px)
+  and (max-device-width: 1024px)
+  and (-webkit-min-device-pixel-ratio: 1) {
+
+    .card-root-checklist2 .col-33 { width: 100%; flex: 0 0 100%; max-width: 100%; border-right: none; margin: 40px 0 0 0; padding: 0 3px; }
+    .card-root-checklist2 .col-33:first-child { padding-left: 3px; padding-right: 3px; margin: 0 0 0 0; }
+
+    .nav-custom-checkout-main .mb-4.group-minus-plus-div { margin-right: -10px; margin-left: -10px; padding: 0 0px; }
+
+    .rooms-root-div .body-rooms-div .centerbox-room-div .color-box-col { padding: 0 5px 0 0; }
+    .nav-custom-checkout-main .list-group-chekin .right-input-dropdown { width: 125px ; }
+}

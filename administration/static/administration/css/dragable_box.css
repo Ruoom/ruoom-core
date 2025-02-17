@@ -1,0 +1,159 @@
+/* VARIABLEs */
+/* VARIABLEs */
+main {
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.draggable-box {
+  position: relative;
+  float: left;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center;
+  width: 145px;
+  height: 190px;
+  background: #eee;
+  margin: .5rem;
+  z-index: 1;
+}
+
+.draggable-box .remove-draggable-box {
+  position: absolute;
+  top: 0;
+  right: .25rem;
+  opacity: 0;
+  -webkit-transition: all .25s ease-in-out;
+  transition: all .25s ease-in-out;
+}
+
+.draggable-box .remove-draggable-box:hover {
+  cursor: pointer;
+}
+
+.draggable-box .rotate-draggable-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  opacity: 0;
+  -webkit-transition: all .25s ease-in-out;
+  transition: all .25s ease-in-out;
+}
+
+.draggable-box .rotate-draggable-box:hover {
+  cursor: pointer;
+}
+
+.draggable-box.rotated {
+  -webkit-transform: rotate(90deg);
+  /* Chrome, Safari 3.1+ */
+  /* Firefox 3.5-15 */
+  /* IE 9 */
+  /* Opera 10.50-12.00 */
+  transform: rotate(90deg);
+  /* Firefox 16+, IE 10+, Opera 12.10+ */
+}
+
+.draggable-box:hover .remove-draggable-box,
+.draggable-box:hover .rotate-draggable-box {
+  opacity: 1;
+}
+
+.draggable-box.dynamic-draggable-box {
+  position: relative;
+  z-index: 1;
+}
+
+.draggable-box.dynamic-draggable-box.instructor {
+  background: #87ceeb;
+}
+
+.draggable-box.dynamic-draggable-box.obstruction {
+  background-color: #eba487;
+  /*background-color: #ffc125;*/
+}
+
+.droppable-box {
+  width: 150px;
+  height: 200px;
+  background: rgba(255, 255, 0, 0.5);
+}
+
+.droppable-box.ui-state-highlight {
+  background: yellow;
+}
+
+.drop-area {
+  min-height: 100vh;
+  border: 20px solid black;
+  padding: 20px;
+}
+
+.drop-area.ui-state-highlight {
+  background: yellow;
+}
+
+.drop-area .dynamic-draggable-box {
+  margin-top: .5rem;
+}
+
+.sizing-wrapper {
+  /*position: fixed;
+  right: 0;
+  top: 10%;
+  width: 35%;
+  background: #eee;
+  height: 90%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;*/
+}
+
+.sizing-wrapper img.door-icon {
+  width: 44px;
+}
+
+.sizing-wrapper .input-group-text {
+  width: 42px;
+  justify-content: center;
+}
+
+.sizing-wrapper .setsize-inputs {
+  width: 120px;
+}
+
+.sizing-wrapper .dynamic-draggable-box-wrapper {
+  width: 100px !important;
+  height: 100px !important;
+  overflow: hidden;
+}
+
+.sizing-wrapper .dynamic-draggable-box-wrapper .remove-draggable-box,
+.sizing-wrapper .dynamic-draggable-box-wrapper .rotate-draggable-box {
+  display: none;
+}
+
+.sizing-wrapper .dynamic-draggable-box-wrapper .dynamic-draggable-box {
+  position: relative;
+  z-index: 1;
+  margin-top: 0 !important;
+}
+
+/*# sourceMappingURL=style.css.map */

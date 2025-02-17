@@ -1,0 +1,74 @@
+{% extends "application.html" %}
+{% load static %}
+{% load language_verbose %}
+{% load i18n %}
+
+{% load custom_tags %}
+
+{% block title %}
+  {{business_name}} |
+  {% block subtitle %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+  <nav class="navbar navbar-expand navbar-light navbar-top">
+    <div class="container-fluid">
+
+      <!-- Brand -->
+      <a class="navbar-brand">
+        <h1 class="header-title" id="already_registred_message">{% trans "Account" %}</h1>
+      </a>
+
+      <!-- Collapse -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown mr-3">
+              <a href="#" id="language" class="dropdown-toggle nav-link pt-2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="fe fe-globe"></span>
+                  {{request.LANGUAGE_CODE|language_verbose}}
+              </a>
+
+              <div class="dropdown-menu border" aria-labelledby="language">
+                {% for language_code, language_name in languages.items %}
+                  {% if language_code != request.user.profile.language %}
+                    <form method="post" id="language_select_form" class="mb-0" enctype="multipart/form-data" action="{% url 'administration:language-select' %}" >
+                      {% csrf_token %}
+                      <input name="language" value="{{language_code}}" hidden="true">
+                      <button class="dropdown-item d-md-block" name="language_select_form" type="submit">{{language_name}}</button>
+                    </form>
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+            </li>
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <div class="avatar-name d-inline-block text-center {% if LANGUAGE_CODE != "ko" %} inside-circle{% endif %}">{{request.user.profile.localized_initials}}</div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right border" aria-labelledby="navbarDropdown">
+
+                  <a href="{% url 'customer:customer-account-settings'%}" class="dropdown-item">
+                      <span class="fe fe-user mr-2"></span>{% trans "My Account" %}
+                    </a>
+
+                    {% if request.user.is_authenticated %}
+                      <a href="/registration/signout/" class="dropdown-item">
+                        <span class="fe fe-log-out mr-2"></span> {% trans "Sign Out" %}
+                      </a>
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+
+        <!-- Divider -->
+        <div class="mt-auto"></div>
+  </nav>
+
+
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
+{% endblock %}

@@ -1,0 +1,69 @@
+.tour-backdrop {
+  background-color: transparent;
+}
+
+li.tour-highlight-element a {
+  color: inherit !important;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tour-highlight-animation {
+  background-color: transparent !important;
+  opacity: 1 !important;
+}
+
+.popover.tour-tour {
+  width: 244px;
+  max-width: 244px;
+  padding: 15px;
+  left: 2px !important;
+}
+
+.popover.tour-tour#step-8 {
+  left: -2px !important;
+}
+
+.popover.tour-tour > .arrow {
+  left: calc(50% - 16px);
+}
+
+.popover.tour-tour .progress {
+  display: none;
+}
+
+.popover-header {
+  font-size: 1.125rem;
+}
+
+.popover.tour-tour .popover-header span {
+  color: #95aac9;
+  font-size: 13px;
+}
+
+.popover.tour-tour .popover-body {
+  color: inherit;
+  font-size: 14px;
+  margin: 15px 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.popover.tour-tour .popover-navigation {
+  padding: 9px 4px;
+  margin: 0 -4px;
+}
+
+.popover.tour-tour .popover-navigation button[data-role="next"] {
+  color: #1E86C8;
+}
+
+.popover.tour-tour .popover-navigation button[data-role="next"].disabled {
+  color: #6e84a3;
+}
+
+.tour-tour.bs-popover-auto[x-placement^=right]>.arrow::after,
+.tour-tour.bs-popover-right>.arrow::after,
+.bs-popover-left>.arrow::after,
+.bs-popover-left>.arrow::before,
+.tour-backdrop {
+  display: none;
+}

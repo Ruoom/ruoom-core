@@ -1,0 +1,70 @@
+{% extends "customer-navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% block subtitle %}{% trans "Customer" %}{% endblock %}
+{% block sub_head %}
+{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/customer.css'%}" >
+<style type="text/css">
+    {% if background_color %}
+      body{
+        background-color: {{background_color}} !important;
+      }
+    {% endif %}
+    {% if text_color %}
+      .btn-primary{
+        color: {{ text_color }} !important;
+      }
+      .btn-link{
+        color: {{ text_color }} !important; 
+      }
+    {% endif %}
+    {% if button_color %}
+      .btn-primary{
+        background-color: {{ button_color }} !important;
+      }
+    {% endif %}
+    {% if button_text_color %}
+      .btn-primary{
+        color: {{ button_text_color }} !important;
+      }
+    {% endif %}
+    
+</style>
+<div class="main-content store-page">
+    <!-- START: HEADER -->
+    <div class="header">
+        <div class="container-fluid">
+            <div class="bg-white p-4 mt-4 rounded-sm tabs-header">
+                <div class="row align-items-end">
+                    <div class="col">
+                        <h1 class="header-title">
+                            {% trans "Welcome" %} {{request.user.profile.localized_name}}
+                        </h1>
+                    </div>
+                    <div class="col-auto"></div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col">
+                        <ul class="nav nav-tabs nav-overflow header-tabs">
+                            <li class="nav-item">
+                                <a href="{% url 'customer:customer-account-settings'%}" class="nav-link {{ customer_account_settings }}">
+                                    {% trans "Account Settings" %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- END: HEADER -->
+
+    {% block content_account_tabs %}
+    {% endblock %}
+
+<script src="{% static 'js/iframeResizer.contentWindow.min.js' %}"></script>
+<script src="{% static 'js/customer.js' %}"></script>
+{% endblock %}

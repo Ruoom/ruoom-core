@@ -1,0 +1,514 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% load custom_tags %}
+{% block subtitle %}{% trans "RoomO" %}{% endblock %}
+
+{% block sub_head %}
+
+<script xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"></script>
+<script src="{% static 'administration/js/configuration.js' %}"></script>
+<script src="{% static 'administration/js/config-dev-custom.js' %}"></script>
+<link rel="stylesheet" href="{% static 'administration/css/config-dev-custom.css' %}" id="stylesheetLight">
+
+{% endblock %}
+
+{% block content %}
+<!------------------------------------------------------------------------------------------------------------------------>
+    <!-- Edit Location Modal -->
+
+    <div class="modal fade" id="edit-location" tabindex="-1" role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-600" role="document">
+          <div class="modal-content">
+      
+            <div class="modal-header">
+              <h3 class="modal-title" id="edit-notesLabel">{% trans "Edit Location" %}</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+       
+            <form id="editlocationform" method="post" action="{% url 'administration:configuration' %}" class="editlocationform"> 
+              {% csrf_token %}
+              <input type="hidden" name="update_shift">
+              <input type="hidden" id="shift_id" name="edit_form_id">
+              <div class="modal-body pb-0" id="LocModalBody">
+                  <div id="msg"></div>
+                    {% csrf_token %}
+                    {{ loc_form.as_p }}     
+              </div>
+              <div class="modal-footer text-right">
+                  <button type="button" class="btn btn-link" data-dismiss="modal">{% trans "Cancel" %}</button>
+                  <button type="submit" class="btn btn-primary " id="submit_edit_location"  name="edit_location">{% trans "Edit Location" %}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    <!------------------------------------------------------------------------------------------------------------------------>
+
+<!------------------------------------------------------------------------------------------------------------------------>
+<!-- Add Location Modal -->
+
+        <div class="modal fade" id="add-location" tabindex="-1" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-600" role="document">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                  <h3 class="modal-title" id="new-notesLabel">{% trans "Add Location" %}</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">{% trans "×" %}</span>
+                  </button>
+              </div>
+
+              <form method="post" class="mb-0">
+                {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">{% trans "Name" %}</label>
+                        {{loc_form.name}}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">{% trans "Street Address" %}</label>
+                        {{loc_form.street_address}}
+                    </div>
+
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{% trans "City" %}</label>
+                            {{loc_form.city}}
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{% trans "State" %}</label>
+                            {{loc_form.state}}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{% trans "Zip Code" %}</label>
+                            {{loc_form.ZIPcode}}
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{% trans "Time Zone" %}</label>
+                            {{loc_form.time_zone_string}}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="border-bottom pb-2">
+                      <h3 class="mt-4 d-inline-block">{% trans "Business Settings" %}</h3>
+                      <button type="button" class="btn-link btn-moreinfo info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" title="" data-content="{% trans "Specify your business settings per location." %}">{% trans "i" %}</button>
+                    </div>
+
+                    <div class="form-group mt-4">
+                      <label class="mb-0" for="#">{% trans "Days of Operation" %}</label>
+                      <div class="btn-group-toggle">
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Sunday" id="Sunday" value="true" checked>
+                            <label class="custom-control-label" for="Sunday">{% trans "Su" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Monday" id="Monday" value="true" checked>
+                            <label class="custom-control-label" for="Monday">{% trans "M" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Tuesday" id="Tuesday" value="true" checked>
+                            <label class="custom-control-label" for="Tuesday">{% trans "T" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Wednesday" id="Wednesday" value="true" checked>
+                            <label class="custom-control-label" for="Wednesday">{% trans "W" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Thursday" id="Thursday" value="true" checked>
+                            <label class="custom-control-label" for="Thursday">{% trans "Th" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block mr-20">
+                            <input type="checkbox" class="custom-control-input" name="Friday" id="Friday" value="true" checked>
+                            <label class="custom-control-label" for="Friday">{% trans "F" %}</label>
+                        </div>
+                        <div class="custom-control custom-checkbox table-checkbox d-inline-block">
+                            <input type="checkbox" class="custom-control-input" name="Saturday" id="Saturday" value="true" checked>
+                            <label class="custom-control-label" for="Saturday">{% trans "S" %}</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-7">
+                          <div class="row form-group">
+                            <label class="w-100 pl-3" for="businessHours">{% trans "Business hours" %}</label>
+                              <div class="col-5">
+                                <select class="form-control" name="business_hours_from">
+                                  <option value="5am">{% trans "5 AM" %}</option>
+                                  <option value="6am">{% trans "6 AM" %}</option>
+                                  <option value="7am">{% trans "7 AM" %}</option>
+                                  <option value="8am">{% trans "8 AM" %}</option>
+                                  <option value="9am" selected>{% trans "9 AM" %}</option>
+                                  <option value="10am">{% trans "10 AM" %}</option>
+                                  <option value="11am">{% trans "11 AM" %}</option>
+                                  <option value="12am">{% trans "12 AM" %}</option>
+                                  <option value="1pm">{% trans "1 PM" %}</option>
+                                  <option value="2pm">{% trans "2 PM" %}</option>
+                                  <option value="3pm">{% trans "3 PM" %}</option>
+                                  <option value="4pm">{% trans "4 PM" %}</option>
+                                  <option value="5pm">{% trans "5 PM" %}</option>
+                                  <option value="6pm">{% trans "6 PM" %}</option>
+                                  <option value="7pm">{% trans "7 PM" %}</option>
+                                  <option value="8pm">{% trans "8 PM" %}</option>
+                                  <option value="9pm">{% trans "9 PM" %}</option>
+                                  <option value="10pm">{% trans "10 PM" %}</option>
+                                </select>
+                              </div>
+
+                              <div class="col-1 text-center pl-0 pr-0">
+                                <span class="d-block line-h-40">{% trans "to" %}</span>
+                              </div>
+
+                              <div class="col-5">
+                                  <select class="form-control" name="business_hours_to">
+                                    <option value="6am">{% trans "6 AM" %}</option>
+                                    <option value="7am">{% trans "7 AM" %}</option>
+                                    <option value="8am">{% trans "8 AM" %}</option>
+                                    <option value="9am">{% trans "9 AM" %}</option>
+                                    <option value="10am">{% trans "10 AM" %}</option>
+                                    <option value="11am">{% trans "11 AM" %}</option>
+                                    <option value="12am">{% trans "12 AM" %}</option>
+                                    <option value="1pm">{% trans "1 PM" %}</option>
+                                    <option value="2pm">{% trans "2 PM" %}</option>
+                                    <option value="3pm">{% trans "3 PM" %}</option>
+                                    <option value="4pm">{% trans "4 PM" %}</option>
+                                    <option value="5pm">{% trans "5 PM" %}</option>
+                                    <option value="6pm" selected>{% trans "6 PM" %}</option>
+                                    <option value="7pm">{% trans "7 PM" %}</option>
+                                    <option value="8pm">{% trans "8 PM" %}</option>
+                                    <option value="9pm">{% trans "9 PM" %}</option>
+                                    <option value="10pm">{% trans "10 PM" %}</option>
+                                  </select>
+                              </div>
+                          </div>
+                        </div>
+
+                        <input type="hidden" name="currency" value="{{currency}}">
+                    </div>
+                  </div> <!-- end form group -->
+
+                  <div class="modal-footer text-right">
+                      <button type="button" class="btn btn-link" data-dismiss="modal">{% trans "Cancel" %}</button>
+                      <button type="submit" class="btn btn-primary" name="new_location">{% trans "Add Location" %}</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+<!------------------------------------------------------------------------------------------------------------------------>
+<!-- ADD ROOM SEGMENT STARTS -->
+
+        <div class="modal fade" id="add-room" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+
+                <div class="modal-header">
+                    <h3 class="modal-title" id="new-notesLabel">{% trans "Add Room" %}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">{% trans "×" %}</span>
+                    </button>
+                </div>
+
+                <form method="post" class="mb-0">
+
+                  <!-- Modal body -->
+                  <div class="modal-body pb-0">
+                      {% csrf_token %}
+
+                       <!-- Name -->
+                       <div class="form-group">
+                          <label for="exampleInputEmail1">{% trans "Name" %}</label>
+                           {{room_form.name}}
+                       </div>
+
+                       <!-- Location -->
+                       <div class="form-group">
+                          <label for="exampleInputEmail1">{% trans "Location" %}</label>
+                           <select name="location" class="form-control" required="" id="id_location">
+                              <option value="" selected="">---------</option>
+                               {% for location in locations %}
+                                    <option value="{{location.id}}">{{location.name}}</option>
+                               {% endfor %}
+                            </select>
+                       </div>
+
+                       <div class="row">
+                            <div class="col">
+                                <label >{% trans "Room Dimensions (optional)" %}</label>
+                            </div>
+                        </div>
+                       <div class="row">
+                          <div class="col-6">
+                            <!-- Length -->
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">{% trans "Length" %}</label>
+                                 {{room_form.length}}
+                             </div>
+                          </div>
+
+                          <div class="col-6">
+                              <!-- Width -->
+                              <div class="form-group">
+                                  <label for="exampleInputEmail1">{% trans "Width" %}</label>
+                                   {{room_form.width}}
+                              </div>
+                          </div>
+                       </div> <!-- end row -->
+                  </div>
+
+                  <!-- Modal Footer -->
+                  <div class="modal-footer">
+                      <button class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+                      <button class="btn btn-primary" name="new_room">{% trans "Submit" %}</button>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+        </div>
+
+<!------------------------------------------------------------------------------------------------------------------------>
+                                <!-- ADD ROOM SEGMENT ENDS -->
+
+
+<!------------------------------------------------------------------------------------------------------------------------>
+        <!-- Edit ROOM SEGMENT STARTS -->
+
+
+        <div class="modal fade"id="edit-room" tabindex="-1" role="dialog" >
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+          
+                <div class="modal-header">
+                    <h3 class="modal-title" id="room-edit-notesLabel">{% trans "Edit Room" %}</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+           
+                <form id="EditRoomform" method="post" action="{% url 'administration:configuration' %}" class="mb-0"> 
+                  {% csrf_token %}
+                  <input type="hidden" name="update_room">
+                  <input type="hidden" id="edit_room_id" name="edit_room_id" />
+                  <div class="modal-body pb-0" id="RoomModalBody">
+                      <div id="msg"></div>
+                    {% csrf_token %}
+                    {{room_form.as_p}}
+                  
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+                    <button class="btn btn-primary" name="edit_room">{% trans "Submit" %}</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+
+<!------------------------------------------------------------------------------------------------------------------------>
+                                <!-- Edit ROOM SEGMENT ENDS -->
+                        
+
+        <div class="main-content ruoom-planner-page">
+
+            <!-- HEADER -->
+            <div class="header mb-0">
+              <div class="container-fluid">
+                <div class="header-body border-bottom-0">
+                  <h1 class="header-title d-inline-block">{% trans "RoomO" %}</h1>
+                  <p class="mt-2 d-inline-block ml-2 mb-0">{% trans "(Configure your space)" %}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARDS -->
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-12 col-md-4">
+                        <!-- Card -->
+                        <div class="card mb-lg-0">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <div class="location-selection config-div">
+                                            <label>{% trans "Choose Location" %}</label>
+                                            <div class="mb-4">
+                                                <select class="form-control select2-div select-location" id="drop-location" data-toggle="select" data-options='{"minimum-results-for-search": -1}'>
+                                                    <option value=""  data-avatar-src="{% static 'administration/images/placeholder.png' %}">{% trans "Select Location" %}</option>
+                                                    {% for location in locations %}
+                                                    <option value="location-{{location.id}}"   data-avatar-src="{% static 'administration/images/placeholder.png' %}">{{location.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#add-location"><span class="fe fe-plus mr-2"></span>{% trans "Add Location" %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% for location in locations %}
+                        <div class="card card-config option1" id="location-{{location.id}}" style="display: none;">
+                            <!-- Body-->
+
+                            <div id="titlebar"></div>
+                            
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="card-header-title">
+                                            {{location.name}}
+                                        </h4>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="small btn-circle bg-white" id="edit-loc" title="Edit Location" data-toggle="modal" data-target="#edit-location"  data-id={{ location.id }}>
+                                            <span class="fa fa-edit"></span>
+                                        </button>
+                                    </div>
+                                </div> <!-- / .row -->
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <!-- content -->
+                                    <div class="col">
+                                        <p id="loc_id" hidden>{{location.id}}</p>
+                                        <h6 class="card-title text-uppercase text-muted mb-2">{% trans "Address" %}</h6>
+                                        <p class="mb-1">{{location.street_address|default_if_none:""}}</p>
+                                        <p class="mb-0">{{location.city|default_if_none:""}}</p>
+                                        <p class="mb-0">{{location.time_zone_string}}
+                                        {% for waiver in location.waivers.all %}<br><a href="{{waiver.waiver_file.url}}" download>Waiver</a>{% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Footer -->
+                            <div class="card-footer">
+                                <input class="btn btn-upload-waiver w-100" type="button" value="Upload Waiver" data-toggle="modal" data-target="#modalUploadWaiver-{{location.id}}">
+                            </div>
+                        </div>
+                        <!-- Upload wavier modal -->
+                        <div class="modal fade" id="modalUploadWaiver-{{location.id}}" tabindex="-1" role="dialog" aria-labelledby="Upload Waiver" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3 class="modal-title">{% trans "Upload Waiver" %}</h3>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="upload_waiver_form" action="{% url 'administration:location_upload_waiver' %}" class="dropzone" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input name="location_id" value="{{location.id}}" type="hidden">
+                                            <div class="fallback">
+                                                <input name="file" type="file" multiple />
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer pt-2">
+                                        <button class="btn btn-primary waiver_button" data-dismiss="modal" onclick="$(#upload_waiver_form).submit()">{% trans "Upload" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <!-- Card -->
+                        <div class="card mb-lg-0 {% if not locations %}disabled{% endif %}">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <div class="location-selection config-div">
+                                            <label>{% trans "Choose Room" %}</label>
+                                            <div class="select-config mb-4">
+                                                <select class="form-control select-2 select-room" data-toggle="select">
+                                                    <option value="">{% trans "Select Room" %}</option>
+                                                    {% for room in rooms %}
+                                                    <option value="room-{{room.id}}">{{room.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#add-room"><span class="fe fe-plus mr-2"></span>{% trans "Add Room" %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- / .row -->
+                            </div>
+                        </div>
+                        {% for room in rooms %}
+                        <div class="card card-config option2" id="room-{{room.id}}" style="display: none;">
+
+                            <!-- Edit Room -->
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="card-header-title">
+                                            {{room.name}}
+                                        </h4>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="small btn-circle bg-white" title="Edit Room" data-toggle="modal" data-target="#edit-room" data-id={{ room.id }} >
+                                            <span class="fa fa-edit"></span>
+                                        </button>
+                                    </div>
+                                </div> <!-- / .row -->
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        {% if room.length and room.width %}
+                                            <h6 class="card-title text-uppercase text-muted mb-2">
+                                                {% trans "Dimensions" %}
+                                            </h6>
+                                            {% if default_location == "kr" %}
+                                            <p class="mb-0">{% feet_to_meters room.length %} m x {% feet_to_meters room.width %} m</p>
+                                            {% else %}
+                                            <p class="mb-0">{% feet_to_meters room.length %} Ft x {% feet_to_meters room.width %} Ft</p>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <!-- / .row -->
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input value="{% url 'administration:ajax_for_selected_room_on_modal' %}" type="hidden" id="ajax_for_selected_room_on_modal">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+
+ 
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+
+    <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
+    <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}

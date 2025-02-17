@@ -1,0 +1,511 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="description" content="Layout 1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,500,600,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+    
+    <style>
+
+@media only screen and (max-device-width: 640px) {
+
+.table600full { width:100%!important;}
+.wrapper { width:100%!important;}
+.img-fluid {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto 0 auto !important;
+    height: auto !important;
+}
+table[class=table600con] .img-fluid {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto 0 auto !important;
+    height: auto !important;
+}
+.grid_block {
+    min-width: 100% !important;
+}
+.head-col1 {
+    min-width: 100% !important;
+}
+.head-col2 {
+    min-width: 100% !important;
+}
+.head-col3 {
+    min-width: 100% !important;
+}
+div[class=wrapper] {
+    width: 100% !important;
+}
+div[class=wrapperout],
+td[class=grid_block] table {
+    width: 100% !important;
+}
+table[class=table600none] {
+    height: 0 !important;
+    width: 0 !important;
+    display: none !important;
+}
+table[class=table600full] {
+    width: 100% !important;
+}
+table[class=table600con],
+table[class=table600] {
+    width: 100% !important;
+}
+td[class=fw_full],
+td[class=fw_half],
+td[class=grid_block] {
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+}
+td[class=spacer] {
+    width: 10px !important;
+}
+.x_spacer {
+    width: 10px !important;
+}
+table[class=line] {
+    height: 0 !important;
+    width: 0 !important;
+    display: none !important;
+}
+td[class=grid_block] {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0 !important;
+}
+td[class=grid_block_nopad] {
+    width: 100% !important;
+    padding: 0 !important;
+    display: block !important;
+    text-align: center !important;
+}
+td[class=grid_block] table {
+    margin: auto !important;
+}
+
+
+td[class=text-name] span{
+    font-size: 18px;
+    line-height: 26px;
+}
+
+td[class=text-title] span{
+    font-size: 22px;
+    line-height: 28px;
+}
+
+td[class=text-title-2] span{
+    font-size: 20px;
+    line-height: 26px;
+}
+td[class=btn-confirm] a {
+    font-size: 16px !important;
+    line-height: 26px;
+    white-space: nowrap;
+    padding: 8px 5px !important;
+    width: 100%;
+}
+
+td[class=icon-footer]{
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+td[class="text-footer"]{
+    width: 100%;
+    display: block;
+    margin-bottom: 15px;
+}
+td[class="text-footer"] a {
+    margin-right: 5px;
+}
+
+
+}
+        .ReadMsgBody {
+            width: 100%;
+            margin: 0 auto 0 auto;
+        }
+        
+        body {
+            width: 100%;
+            margin: 0 auto 0 auto;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+            table-layout: fixed;
+        }
+        
+        table table {
+            table-layout: auto;
+        }
+        
+        table {
+            font-family: 'Work Sans', Arial, Helvetica, sans-serif;
+        }
+        
+        td,
+        tr,
+        table {
+            border-spacing: 0px !important;
+        }
+        
+        .grid_block {
+            min-width: 480px;
+        }
+        
+        .head-col1 {
+            min-width: 120px;
+        }
+        
+        .head-col2 {
+            min-width: 120px;
+        }
+        
+        .head-col3 {
+            min-width: 240px;
+        }
+        
+        td[class=spacer x_spacer] {
+            width: 60px;
+        }
+        
+        .x_spacer {
+            width: 60px;
+        }
+        
+     
+        .ExternalClass {
+            width: 100%;
+        }
+        
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        
+        span.yshortcuts {
+            color: #000;
+            background-color: none;
+            border: none;
+        }
+        
+        span.yshortcuts:hover,
+        span.yshortcuts:active,
+        span.yshortcuts:focus {
+            color: #000;
+            background-color: none;
+            border: none;
+        }
+        
+        body[class=body] {
+            min-width: 0 !important;
+        }
+        
+        .valign-top {
+            vertical-align: top !important;
+        }
+        
+        .valign-bottom {
+            vertical-align: bottom !important;
+        }
+        
+        .valign-middle {
+            vertical-align: middle !important;
+        }
+        
+        .text-left {
+            text-align: left;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+    </style>
+
+</head>
+
+<body class="body" style="-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin:0 auto 0 auto;padding: 0;font-size: 11pt;color: #001731; mso-line-height-rule: exactly;line-height: 1.5em;width: 100%; ">
+    
+    <table style="padding: 0;margin: 0;border-collapse: collapse;margin:0;" class="bg" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#fafafa" align="center">
+        <tbody>
+            <tr>
+                <td style="border-collapse: collapse;" width="100%" align="center" class="valign-top" valign="top">
+
+                    <table class="table600con" style='border-collapse: collapse;' width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                                <td colspan="8" style='height: 30px; background-color: #ffffff; line-height: 0px;'></td>
+                            </tr>
+                        </tbody>
+                    </table>        
+                    
+                    <!--  header main section  -->
+                    <table style="padding: 0;margin: 0;border-collapse: collapse;" class="table600full" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                                <td class="full_width" style="background: #ffffff; border-collapse: collapse; " width="100%">
+                                    <div class="wrapper" style='width: 600px;margin:0 auto 0 auto;'>
+                                        <table class="table600con" style='border-collapse: collapse;' width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
+                                            <tbody>
+                                        
+                                                <tr>
+                                                    <td colspan="3" style='height: 40px;'></td>
+                                                </tr>
+
+                                                <!-- logo -->
+                                                {% if customer_logo %}
+                                                <tr>
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:40px;' width="40px">&nbsp;</td>
+                                                    <td class="head-col1 " style='border-collapse: collapse;width:480px;text-align: left;' width="480px;">
+                                                        <a href="#"><img src="{{customer_logo}}" alt="logo" style="width: 260px;" /></a>
+                                                    </td>
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:40px;' width="40px">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" style='height: 35px;'></td>
+                                                </tr>
+                                                {% endif %}
+                                                <!-- date time -->
+
+                                                <tr>
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:40px;' width="40px">&nbsp;</td>
+                                                    <td class="valign-top text-left" style="color: #6E84A3; letter-spacing: -0.3px; font-size:16px; font-weight: 500;line-height: 28px;">
+                                                        <span><span style="color: #000000" >{% trans "Date" %} :</span> {% trans "12 January 2020" %}<span style="color:#222; font-size:16px; font-weight: 600;"></span></span>
+                                                    </td>
+                                                    
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:40px;' width="40px">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:60px;' width="60px">&nbsp;</td>
+                                                    <td class="valign-top text-left" style="color: #6E84A3; letter-spacing: -0.3px; font-size:16px; font-weight: 500;line-height: 28px;">
+                                                        <span><span style="color: #000000" >{% trans "Time :" %}</span>{% trans " 12:00 pm" %}<span style="color:#222; font-size:16px; font-weight: 600;"></span></span>
+                                                    </td>
+                                                    
+                                                    <td class="spacer x_spacer" style='border-collapse: collapse; width:40px;' width="40px">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" style='height: 35px;'></td>
+                                                </tr>
+
+                                                <!-- border -->
+                                                <tr>
+                                                    <td colspan="5" valign="top" bgcolor="#007CB5" style='background-color: #EDF2F9;'>
+                                                        <table class="table600con" style='border-collapse: collapse;' width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#EDF2F9">
+                                                            <tr>
+                                                                <td colspan="3" style='height: 1px;'></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--  End of header main section  -->
+
+                    <!-- application main section  -->
+                    <table style="padding: 0;margin: 0;border-collapse: collapse; " class="table600full" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#  ">
+                        <tbody>
+                        <tr>
+                            <td class="full_width  valign-top" style="background: #ed5c37; border-collapse: collapse; " width="100%">
+                                <div class="wrapper" style="width: 600px;">
+                                    <table class="table600con" style="border-collapse: collapse;" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#fafafa">
+                                        <tbody>
+                                            <tr>
+                                                <td class="spacer x_spacer" style="border-collapse: collapse; width:40px;" width="40px">&nbsp;</td>
+                                                <td class="grid_block  valign-top">
+
+                                                    <table class="valign-top">
+                                                        <tr>
+                                                            <td style="height: 40px;"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="head-col1 " style="border-collapse: collapse;width:480px;text-align: center;" width="480px;">
+                                                                <a href="#"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/shift-calendar.png" alt="calendar" style="width: 260px;"></a>
+                                                            </td>
+                                                        </tr>
+                                                      
+                                                        
+                                                        <tr>
+                                                            <td style="height: 15px;"></td>
+                                                        </tr>
+                                                        
+                                                        <!--- start section  -->
+
+                                                        <tr>
+                                                            <td class="valign-top text-left text-title" style="font-size: 32px; color: #12263F; letter-spacing: -0.3px; text-align: center; line-height: 44px; font-weight: bold;">
+                                                                <span style="font-weight:600;">{% trans "Giving Shift" %}</span>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        <tr>
+                                                            <td style="height: 22px;"></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="valign-top text-left text-title-2 " style="
+                                                            font-size: 22px; color: #12263F; letter-spacing: -0.18px; text-align: center; font-weight: 500; line-height: 32px; padding: 0 20px;">
+                                                                <span>
+                                                                    <span style="font-weight: 500;color:#2C7BE5;letter-spacing: -0.18px;font-size: 22px;text-align: center;">{% trans "Hi Peter," %}</span></br>  
+                                                                    {% trans "Has given you the following shift:" %}</br>
+                                                                    <span style="font-weight: 600;color:#12263F;letter-spacing: -0.18px;font-size: 22px;text-align: center;">{% trans "13 March 2020" %} <span style="color:#666666;font-weight: 500;">{% trans "at" %}</span> {% trans "11:00 am " %}<span style="color:#666666;font-weight: 500;">{% trans "at" %}</span> {% trans "USA, Florida" %}</span>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style="height:30px;"></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style="height: 1px; background-color: #E1E1E1; border: none; line-height: 0px; padding: 0;"></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td style="height:30px;"></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="valign-top text-left text-title-2 " style="
+                                                            font-size: 22px; color: #12263F; letter-spacing: -0.18px; text-align: center; font-weight: 400; line-height: 32px; padding: 0 20px;">
+                                                                <span>
+                                                                    {% trans "To make changes to the shift," %} </br>
+                                                                    {% trans "please visit" %} <a href="#" style="text-decoration:none;"><span style="font-weight: 500;color:#2C7BE5;letter-spacing: -0.18px;font-size: 22px;text-align: center;">ruoom.com</span></a>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        <tr>
+                                                            <td style="height:30px;"></td>
+                                                        </tr>
+                                                        
+                                                        <!--- repeat section  -->
+                                                     
+                                                        </table>
+
+                                                    </td>
+                                                    <td class="spacer x_spacer " style="border-collapse: collapse; width:40px; "  width="40px ">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" valign="top" bgcolor="#007CB5" style='background-color: #EDF2F9;'>
+                                                        <table class="table600con" style='border-collapse: collapse;' width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#EDF2F9">
+                                                            <tr>
+                                                                <td colspan="3" style='height: 1px;'></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>					
+                    <!-- End of application main section  -->
+
+         
+
+                    <!-- footer main section  -->
+                    <table style="padding: 0;margin: 0;border-collapse: collapse;" valign="top" class="table600full" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
+                        <tbody>
+                            <tr>
+                                <td class="full_width " style="background: #ffffff; border-collapse: collapse; " width="100%" align="center">
+                                    <div class="wrapper" style="width: 600px;margin: auto;">
+                                        <table class="table600con" style="border-collapse: collapse; text-align: center" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" align="center">
+                                            <tbody>
+                                                <tr>
+                                                        <td class="spacer" style="border-collapse: collapse;width:40px;" width="40px">&nbsp;</td>
+                                                    <td class="grid_block img-01">
+        
+                                                        <table class="valign-top" style="border-collapse: collapse;text-align: center" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                                            <tr>
+                                                                <td style="height: 30px;"></td>
+                                                            </tr>
+                                                    
+                                                            <tr>
+                                                                <td class="valign-top text-left" style="font-size: 18px; color: rgba(18,38,63,0.60); letter-spacing: -0.3px; text-align: center; line-height: 30px; text-align: center;">
+                                                                    <span>{% trans "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s," %}</span>
+                                                                </td>
+                                                            </tr>
+                                                            
+                                                            <tr>
+                                                                <td style="height:30px;"></td>
+                                                            </tr>
+                                                            
+        
+                                                        </table>
+        
+                                                    </td>
+                                                    <td class="spacer" style="border-collapse: collapse;width:40px;" width="40px">&nbsp;</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <table class="table600con" style="border-collapse: collapse; text-align: center" width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#f2f2f2" align="center">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="spacer" style="border-collapse: collapse;width:40px;" width="40px">&nbsp;</td>
+                                                    <td class="grid_block img-01">
+                                                        <table class="valign-top" style="border-collapse: collapse;text-align: left;" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+                                                          
+                                                            <tr>
+                                                                <td style="height:20px;"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="font-size: 18px; color: #747474; letter-spacing: -0.24px; line-height: 26px; text-align: center; " class="text-footer">{% trans "Get in touch" %}</td>
+                                                                <td align="right"  class="icon-footer">
+                                                                    <a href="#" style="color:#fff; font-size:10px; margin:0 15px 0 0; display:inline-block; height: 35px; width: 35px;"><span class="img-social"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/icon-google.png" class="social-img" style="width: 100%;" alt="social-img"></span></a>
+                                                                    <a href="#" style="color:#fff; font-size:10px; margin:0 15px 0 0; display:inline-block; height: 35px; width: 35px;"><span class="img-social"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/icon-facebook.png" class="social-img" style="width: 100%;" alt="social-img"></span></a>
+                                                                    <a href="#"  style="color:#fff; font-size:10px; margin:0 15px 0 0; display:inline-block; height: 35px; width: 35px;"><span class="img-social"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/icon-linkdin.png" class="social-img" style="width: 100%;" alt="social-img"></span></a>
+                                                                    <a href="#"  style="color:#fff; font-size:10px; margin:0 15px 0 0; display:inline-block; height: 35px; width: 35px;"><span class="img-social"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/icon-twitter.png" class="social-img" style="width: 100%;" alt="social-img"></span></a>
+                                                                    <a href="#"  style="color:#fff; font-size:10px; margin:0 15px 0 0; display:inline-block; height: 35px; width: 35px;"><span class="img-social"><img src="http://13.127.108.199/dev/HTML/ruoom-mail-template/images/icon-instagram.png" class="social-img" style="width: 100%;" alt="social-img"></span></a>
+                                                                </td>		
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="height:20px;"></td>
+                                                            </tr> 
+                                                        </table>
+        
+                                                    </td>
+                                                    <td class="spacer" style="border-collapse: collapse; width:40px;" width="40px">&nbsp;</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- end of quote main section  -->
+            </td>	
+        </tr>
+  </tbody>
+</table>
+</body>
+</html>

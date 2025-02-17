@@ -1,0 +1,8 @@
+.alert-dismissible .close{
+    top: -11px;
+    right: -12px;
+}
+
+.modal-content{
+    border: 0;
+}

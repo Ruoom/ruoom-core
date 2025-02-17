@@ -1,0 +1,346 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block subtitle %}{% trans "Customers" %}{% endblock %}
+
+{% block sub_head %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
+    <script src="{% static 'administration/js/customer.js' %}"></script>
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'administration/css/errors.css' %}">
+    {% include "administration/custom_phone_input_field.html" %}
+
+{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+    <div class="container-fluid pb-4">
+
+        <div class="header-body border-0">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="header-title">{% if customer_name %}      {{ customer_name }}  {% else %}
+                        {% trans "Customers" %}  {% endif %}</h1>
+                </div>
+
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary new_customer" id="new-customer" data-toggle="modal"
+                            data-target="#modalCustomerForm">
+                        <span class="fe fe-plus"></span> {% trans "New Customer" %}
+                    </button>
+                </div>
+            </div> <!-- / .row -->
+        </div>
+        {% if customer_name %}
+        {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-4 mb-xl-0">
+                        <div class="col-xl-4">
+                            <input id="searchcustomer" type="text" class="form-control mb-4" placeholder="{% trans "Search" %}">
+                        </div>
+                        <div class="col-xl-8 text-right">
+                            <div>
+                                <div id="import" class="file btn mb-3">
+                                    <span class="fe fe-upload mr-2"></span>
+                                    {% trans "Import Customer Data" %}
+                                    <form style="margin-bottom: 0px" enctype="multipart/form-data" method="POST" name="csv_form">
+                                        {% csrf_token %}
+                                        {% for field in csv_form %}
+                                            {% if field.name == "file" %}
+                                                {{field}}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <input style="width: 0px" type="submit" name="new_csv">
+                                    </form>
+                                </div>
+                                <div id="export" class="file btn mb-3 ml-3">
+                                    <span class="fe fe-download mr-2"></span>
+                                    {% trans "Export Customer Data" %}
+                                    <form style="margin-bottom: 0px" method="POST" name="csv_download">
+                                        {% csrf_token %}
+                                        <input type="submit" name="download_csv">
+                                    </form>
+                                </div>
+                            </div>
+
+                            <ul class="messages list-unstyled mt-4 mb-4">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <li class="{{message.tags}}">
+                                            {% if "safe" in message.tags %}
+                                                {{ message|safe }}
+                                            {% else %}
+                                                {{ message }}
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>
+                                        <a href="{% url 'administration:download_media' 'sample.csv' %}">{% trans "Click here to download sample csv" %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0" id="customer_table">
+                            <thead>
+                            <tr>
+                                {% if LANGUAGE_CODE == "ko" %}
+                                <th scope="col" class="text-left">{% trans "LAST NAME" %}</th>
+                                {% endif %}
+
+                                <th scope="col" class="text-left">{% trans "FIRST NAME" %}</th>
+
+                                {% if LANGUAGE_CODE != "ko" %}
+                                <th scope="col" class="text-left">{% trans "LAST NAME" %}</th>
+                                {% endif %}                                
+                                
+                                <th scope="col" class="text-left">{% trans "EMAIL" %}</th>
+                                <th scope="col" class="text-left">{% trans "RECURRING SERVICE PASS" %}</th>
+                                <th scope="col" class="text-left">{% trans "EDIT" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for customer in customers %}
+                                <tr id="{{customer.username}}">
+                                    
+                                    {% if LANGUAGE_CODE == "ko" %}
+                                    <td>{{ customer.last_name }}</td>
+                                    {% endif %}
+
+                                    <td>{{ customer.first_name }}</td>
+
+                                    {% if LANGUAGE_CODE != "ko" %}
+                                    <td>{{ customer.last_name }}</td>
+                                    {% endif %}
+
+                                    <td>{{ customer.email }}</td>
+
+                                    <td>{{ customer.has_recurring_membership }}</td>
+
+                                    <form class="form-inline my-2 my-lg-0" method="get"
+                                          action="{% url 'customer:customer-account-settings' %}">
+
+                                        <input type="hidden" id="custId" name="customer" value="{{ customer.id }}">
+                                        <input type="hidden" id="custId" name="customerBusinessNumber"
+                                               value="{{ customer.business_id }}">
+                                        <input type="hidden" id="custId" name="customerEmail"
+                                               value="{{ customer.email }}">
+                                        <input type="hidden" id="custId" name="customerName"
+                                               value="{{ customer.localized_name }}">
+                                        <td>
+                                            <button type="submit" class="btn btn-link p-0 text-left rounded-0">{% trans "View Details" %}</button>
+                                        </td>
+
+                                    </form>
+                                </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- end card-body -->
+            </div><!-- end card -->
+        </div>
+    {% endif %}
+
+        {# this is the 5 tabs option#}
+        <!--Customer Info Card-->
+        <div id="customercard" class="container-fluid" style="display:none;">
+
+            <!--Personal info display card  -->
+            <div class="card">
+                <div class="card-body">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item active">
+                                    <a class="nav-link "
+                                       href="{% url 'customer:customer-account-settings' %}">{% trans "Account Settings" %} </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center data-row-show display-show" id="update-show-01">
+                        <div class="col">
+                            <!-- Heading -->
+                            <div class="card-title-price ">
+                                        <span class="h2 mb-0 title-one">
+                                            {% trans "Personal info" %}
+                                        </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Name" %}</label>
+                                                <p id="name"></p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Gender" %}</label>
+                                                <p id="gender"></p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Date of birth" %}</label>
+                                                <p id="dob"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Account info display card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center data-row-show display-show" id="update-show-03">
+                        <div class="col">
+                            <div class="card-title-price">
+                                        <span class="h2 mb-0 title-one">
+                                        {% trans "Account / Password" %}
+                                        </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Email" %}</label>
+                                                <p id="email"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Contact Info display card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center data-row-show display-show" id="update-show-02">
+                        <div class="col">
+                            <!-- Heading -->
+                            <div class="card-title-price">
+                                        <span class="h2 mb-0 title-one">
+                                        {% trans "Contact info" %}
+                                        </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Address" %}</label>
+                                                <p id="streetAddress"></p>
+                                                <p id="city"></p>
+                                                <p id="state"></p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Phone number" %}</label>
+                                                <p id="phone"></p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label class="mb-1">{% trans "Emergency Contact Name" %}</label>
+                                                <p id="emergencyContactName"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            {% block content_account_tabs %}
+            {% endblock %}
+        </div>
+
+
+    </div> <!-- end container-fluid -->
+    <div class="container-fluid">
+        {#        <div class="container">#}
+        {#        <hr>#}
+        {##}
+        {#            {% block content_account_tabs %}#}
+        {#            {% endblock %}#}
+        {##}
+        {#        </div>#}
+    </div>
+    <!-- New Class Modal -->
+    <div class="modal fade" id="modalCustomerForm" tabindex="-1" role="dialog" aria-labelledby="modalCustomerFormLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalCustomerFormLabel">{% trans "Create a New Customer Account" %}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post">
+                    <div class="modal-body pb-0">
+                        {% csrf_token %}
+                        {{ customer_form.as_p }}
+                        <input name="phone_with_code" value="" hidden>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-link" data-dismiss="modal">{% trans "Close" %}</button>
+                        <button class="btn btn-primary" name="new_customer">{% trans "Submit" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var open_customer_modal = '{{open_customer_modal}}'
+        if (open_customer_modal === 'true') {
+            $(".new_customer").click();
+        };
+        $("#import>form>input[name=file]").on("change", function(e){
+            $("input[name=new_csv]").click();
+        });
+        $("#export").on("click", function(e){
+            $(this).on("click", function(){});
+            $("input[name=download_csv]").click();
+        });
+    </script>
+    <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            if (!tour.ended() && is_msa_signed != false){
+                tour.start()
+            };
+        })
+    </script>
+{% endblock %}

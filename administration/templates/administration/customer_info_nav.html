@@ -1,0 +1,27 @@
+{% load i18n %}
+{% if admin_customer_modify == 'true' %}
+    {% include "administration/customers.html" %}
+
+{% endif %}
+
+<div class="card customer-navigation">
+    <div class="card-body position-relative">
+        <ul class="nav nav-tabs nav-overflow header-tabs">
+            <li class="{% if settings %}nav-item active {% else %} nav-item {% endif %}">
+                <a class="nav-link "
+                    href="{% url 'customer:customer-account-settings' %}?customer={{ customer }}&customerName={{ customer_name }}&customerBusinessNumber={{ customer_business_number }}">
+                    {% trans "Account Settings" %} 
+                </a>
+            </li>
+        </ul>
+
+        <div class="position-absolute">
+            <form class="mb-0" method="get" action="{% url 'administration:customers' %}">
+                <button type="submit" class="btn btn-defalut my-2 my-sm-0">
+                    <span class="fe fe-search"></span>
+                    {% trans "Search Customer" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

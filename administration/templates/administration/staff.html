@@ -1,0 +1,296 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+
+{% load custom_tags %}
+
+{% block subtitle %}{% trans "Staff" %}{% endblock %}
+
+{% block sub_head %}
+    <script src="{% static 'administration/js/admin.js' %}"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script type="application/javascript">
+      let csrftoken = '{% csrf_token %}'
+      let showCreateUserForm = {% if showCreateUserForm %} true {% else %} false {% endif %}
+      let showEditUserForm = {% if showEditUserForm %} true {% else %} false {% endif %}
+    </script>
+    <style>
+        ul.errorlist li{
+            color: red;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<style>
+
+  #new_staff_member{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+}
+  </style>
+
+<!-- MODALS
+    ================================================== -->
+<!-- Modal: Kanban task -->
+<div class="modal conflict-modal fade" id="assignto" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content bg-white">
+      <div class="modal-body modal-csutom">
+        <!-- Header -->
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col">
+              <!-- Title -->
+              <h4 class="card-header-title ">
+                {% trans "Assign To" %}
+              </h4>
+            </div>
+            <div class="col-auto">
+              <!-- Close -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">{% trans "×" %}</span>
+              </button>
+            </div>
+          </div> <!-- / .row -->
+        </div>
+        <!-- Divider -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT
+      ================================================== -->
+
+<div class="main-content staff-page mt-4">
+  <div class="header header-super-users-top">
+    <div class="container-fluid">
+      <div class="header-body bg-white p-4 rounded-lg tabs-header">
+        <div class="row mb-2">
+          <div class="normal-user-profile">
+            <div class="col-auto left-img-col">
+              <div class="avatar avatar-xxl header-avatar-top">
+                <label class="cabinet center-block text-center">
+                  <figure>
+                    {% if not request.user.profile|load_profile_image %}
+                      <img src="{% static 'img/no_user.png' %}" id="item-img-output" alt="..." class="avatar-img rounded-circle">
+                    {% else %}
+                      <img src="{% get_media_prefix %}{{request.user.profile|load_profile_image}}" id="item-img-output" alt="..." class="avatar-img rounded-circle">
+                    {% endif %}
+                  </figure>
+                  <form id="ajax_upload_profile_form" method="POST" action="{% url 'save_profile_picture'%}" style="display: none">
+                    <input type="file" class="item-img file center-block" name="profile_image"/>
+                    <input type="submit" />
+                 </form>
+                </label>
+              </div>
+            </div>
+
+            <div class="user-profile-info">
+            <div class="col-auto right-content-col">
+              <h2 class="udername-title text-22 mb-2 mt-2 mt-sm-0"> {{ profile.first_last | capfirst }}</h2>
+              <!--<h3 class="position-title font-weight-normal">{{ profile.user_type }}</h3> -->
+              <div class="contactrow-div">
+                <p class="p-tags"><a href="tel:{{ profile.phone }}"><span class="fe fe-phone mr-2"></span>{{ profile.phone }}</a></p>
+                  <p class="p-tags mb-0"><a href="mailto:{{ profile.email }}"><span
+                      class="fe fe-mail mr-2"></span>{{ profile.email }}</a></p>
+              </div>
+            </div>
+            <div class="abs-right-viewprofile pr-3 mt-3 mt-lg-0">
+              <a href="{% url 'customer:customer-account-settings'%}" class="btn d-block d-md-inline-block viewprofile-btn">
+                {% trans "View Profile" %}
+              </a>
+            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="column-tab-row w-100">
+            <div class="col">
+              <!-- Nav -->
+              <ul class="nav nav-tabs nav-overflow header-tabs">
+                <li class="nav-item">
+                  <a href="{% url 'administration:staff' %}" class="nav-link  {{ staff }}">
+                    {% trans "Staff" %}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid custom-row-full">
+    <div class="row">
+      <div class="col-12 col-lg-12 col-xl-12 custom-column-12">
+        <!-- Card -->
+        <div class="card table-users-cards">
+          <div class="card-body">
+            <div class="align-items-center">
+              <div class="table-heading-row">
+                <h3>{% trans "Staff" %}</h3>
+
+                {% if messages %}
+                <div class="messages text-center">
+                  {% for message in messages %}
+                  <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped mb-0" id="StaffTable">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="text-left">{% trans "FIRST NAME" %}</th>
+                      <th scope="col" class="text-left">{% trans "LASTNAME" %}</th>
+                      <th class="text-left">{% trans "SERVICE PROVIDER?" %}</th>
+                      <th scope="col" class="text-left">{% trans "EMAIL" %}</th>
+                      <th scope="col" class="text-left">{% trans "PHONE NUMBER" %}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="list">
+                    {% if not staff_member %}
+                    <tr>
+                      <td class="tables-first">{% trans "No Upcoming Shifts Found" %}</td>
+                      <td class="tables-second"> <span class="weekly-span-text"></span>
+                        <span class="date-span-text"></span></td>
+                      <td class="text-center"></td>
+                      <td class="tables-handle"></td>
+                      <td class="tables-handle min145 last-field text-right">
+                        <div class="dropdown dropdown-calendar">
+                        </div>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      {% for staff in staff_member %}
+                      <td class="tables-first"> {{ staff.first_name }} </th>
+                      <td class="tables-second"> {{ staff.last_name }}</td>
+                      <td class="tables-last"> {% if staff.is_teacher %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</td>
+                      <td class="tables-handle">{{staff.email }}</td>
+                      <td class="tables-handle">{{staff.phone}} </td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- / .row -->
+  </div>
+</div> <!-- / .main-content -->
+<!-- JAVASCRIPT
+    ================================================== -->
+<!-- Libs JS -->
+<script>
+  $(document).ready(function () {
+    $('select').select2({
+      minimumResultsForSearch: -1,
+      placeholder: "{% trans "Select" %}"
+    });
+  });
+  $('.input-date').click(function () {
+    if (this.checked) {
+      $(".input-date-read").attr("readonly", false);
+    }
+    else {
+      $(".input-date-read").attr("readonly", true);
+    }
+  });
+</script>
+<!-- Pagination -->
+<script>
+
+  // get the table element
+  var $table = document.getElementById("StaffTable"),
+  // number of rows per page
+  $n = 10,
+  // number of rows of the table
+  $rowCount = $table.rows.length,
+  // get the first cell's tag name (in the first row)
+  $firstRow = $table.rows[0].firstElementChild.tagName,
+  // boolean var to check if table has a head row
+  $hasHead = ($firstRow === "TH"),
+  // an array to hold each row
+  $tr = [],
+  // loop counters, to start count from rows[1] (2nd row) if the first row has a head tag
+  $i,$ii,$j = ($hasHead)?1:0,
+  // holds the first row if it has a (<TH>) & nothing if (<TD>)
+  $th = ($hasHead?$table.rows[(0)].outerHTML:"");
+  // count the number of pages
+  var $pageCount = Math.ceil($rowCount / $n);
+  // if we had one page only, then we have nothing to do ..
+  if ($pageCount > 1) {
+      // assign each row outHTML (tag name & innerHTML) to the array
+      for ($i = $j,$ii = 0; $i < $rowCount; $i++, $ii++)
+          $tr[$ii] = $table.rows[$i].outerHTML;
+      // create a div block to hold the buttons
+      $table.insertAdjacentHTML("afterend","<div id='buttons' class='pagination justify-content-center'></div");
+      // the first sort, default page is the first one
+      sort(1);
+  }
+
+  // ($p) is the selected page number. it will be generated when a user clicks a button
+  function sort($p) {
+      /* create ($rows) a variable to hold the group of rows
+      ** to be displayed on the selected page,
+      ** ($s) the start point .. the first row in each page, Do The Math
+      */
+      var $rows = $th,$s = (($n * $p)-$n);
+      for ($i = $s; $i < ($s+$n) && $i < $tr.length; $i++)
+          $rows += $tr[$i];
+
+      // now the table has a processed group of rows ..
+      $table.innerHTML = $rows;
+      // create the pagination buttons
+      document.getElementById("buttons").innerHTML = pageButtons($pageCount,$p);
+      // CSS Stuff
+      document.getElementById("id"+$p).setAttribute("class","active");
+  }
+
+
+  // ($pCount) : number of pages,($cur) : current page, the selected one ..
+  function pageButtons($pCount,$cur) {
+      /* this variables will disable the "Prev" button on 1st page
+         and "next" button on the last one */
+      var $prevDis = ($cur == 1)?"disabled":"",
+          $nextDis = ($cur == $pCount)?"disabled":"",
+          /* this ($buttons) will hold every single button needed
+          ** it will creates each button and sets the onclick attribute
+          ** to the "sort" function with a special ($p) number..
+          */
+          $buttons = "<input type='button' id='page_button' value='&laquo; Prev' onclick='sort("+($cur - 1)+")' "+$prevDis+">";
+      for ($i=1; $i<=$pCount;$i++)
+          $buttons += "<input type='button' class='page_num' id='id"+$i+"'value='"+$i+"' onclick='sort("+$i+")'>";
+      $buttons += "<input type='button' id='page_button' value='Next &raquo;' onclick='sort("+($cur + 1)+")' "+$nextDis+">";
+      return $buttons;
+  }
+  </script>
+
+
+<script>
+  setTimeout(function() {
+      $('.messages').fadeOut('fast');
+  }, 4000);
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        if (!tour.ended() && is_msa_signed != false){
+            tour.start()
+        }
+    })
+  </script>
+{% endblock %}

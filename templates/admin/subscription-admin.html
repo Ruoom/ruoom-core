@@ -1,0 +1,119 @@
+<!-- templates/registration/password_reset_form.html -->
+{% extends "application.html" %}
+{% load static %}
+{% load i18n %}
+{% block title %}{% trans "Subscription Administration" %}{% endblock %}
+
+{% block body %}
+    <br>
+    <div class="container-fluid">
+        <div class="card mb-0 schedule-card">
+            <div class="card-header border-0 pt-3 mt-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h1 class="header-title mt-2">{% trans "Subscription Administration" %}</h1>
+                    </div>
+
+                    <div class="table-responsive table-purchase table-striped">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Business Name" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Business ID" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Country" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Joined On" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Payment Gateway" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Number of Staff" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Maximum Number of Staff" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Chargebee ID" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Subscription Active?" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "On Free Trial?" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Chargebee Current Plan" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Chargebee Plan Amount" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Chargebee Next Bill" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Card" %}</span>
+                                </th>
+                                <th scope="col">
+                                    <span class="d-inline-block">{% trans "Enrolled Staff Conflict?" %}</span>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="list">
+                            {% for biz in biz_objs %}
+                                <tr>
+                                    <td class="tables-first"><a href="https://beta0.us.ruoomplatform.com/admin/administration/studiosettings/{{biz.id}}/change/">{{ biz.name}}</a></td>
+                                    <td class="tables-first">{{ biz.business_id}}</td>
+                                    <td class="tables-first">{{ biz.default_country_code}}</td>
+                                    <td class="tables-first">{{ biz.joined_on}}</td>
+                                    <td class="tables-first" style="{% if biz.payment_gateway_type %} color:red; {% else %} color:green; {% endif %}">{{ biz.payment_gateway_type}}</td>
+                                    <td class="tables-first">{{ biz.num_staff}}</td>
+                                    <td class="tables-first">{{ biz.staff_user_subscription_val}}</td>
+                                    <td class="tables-first">{{ biz.chargebee_customer_id}}</td>
+                                    <td class="tables-first" style="{% if biz.active %} color:green; {% else %} color:red; {% endif %}">{{ biz.active}}</td>
+                                    <td class="tables-first" style="{% if biz.in_trial_val %} color:green; {% else %} color:red; {% endif %}">{{ biz.in_trial_val}}</td>
+                                    <td class="tables-first">{{ biz.current_plan}}</td>
+                                    <td class="tables-first">{{ biz.planAmount}}</td>
+                                    <td class="tables-first">{{ biz.next_billing_at}}</td>
+                                    <td class="tables-first" style="{% if biz.card %} color:green; {% else %} color:red; {% endif %}">{{ biz.card}}</td>
+                                    <td class="tables-first"  style="{% if biz.subscription_conflict_val %} color:red; {% else %} color:green; {% endif %}">{{ biz.subscription_conflict_val}}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+
+
+
+
+                        <div class='pagination-container' id="pgai_id">
+                            <nav>
+                                <ul class="pagination justify-content-center pagination-sm">
+                                    <li class="page-item" data-page="prev">
+                                        <a class="page-link" href="#">{% trans "« Prev" %}
+                                            <span class="sr-only">{% trans "(current)" %}</span>
+                                        </a>
+                                    </li>
+                                    <!--	Here the JS Function Will Add the Rows -->
+                                    <li class="page-item" data-page="next" id="prev">
+                                        <a class="page-link" href="#">{% trans "Next »" %}
+                                            <span class="sr-only">{% trans "(current)" %}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

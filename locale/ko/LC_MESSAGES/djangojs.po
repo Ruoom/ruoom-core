@@ -1,0 +1,449 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-15 20:16-0500\n"
+"PO-Revision-Date: 2023-11-25 22:30+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.4.1\n"
+
+#: .\administration\static\administration\js\calendar.js:4
+msgid "January"
+msgstr "1월"
+
+#: .\administration\static\administration\js\calendar.js:5
+msgid "February"
+msgstr "2월"
+
+#: .\administration\static\administration\js\calendar.js:6
+msgid "March"
+msgstr "3월"
+
+#: .\administration\static\administration\js\calendar.js:7
+msgid "April"
+msgstr "4월"
+
+#: .\administration\static\administration\js\calendar.js:8
+msgid "May"
+msgstr "5월"
+
+#: .\administration\static\administration\js\calendar.js:9
+msgid "June"
+msgstr "6월"
+
+#: .\administration\static\administration\js\calendar.js:10
+msgid "July"
+msgstr "7월"
+
+#: .\administration\static\administration\js\calendar.js:11
+msgid "August"
+msgstr "8월"
+
+#: .\administration\static\administration\js\calendar.js:12
+msgid "September"
+msgstr "9월"
+
+#: .\administration\static\administration\js\calendar.js:13
+msgid "October"
+msgstr "10월"
+
+#: .\administration\static\administration\js\calendar.js:14
+msgid "November"
+msgstr "11월"
+
+#: .\administration\static\administration\js\calendar.js:15
+msgid "December"
+msgstr "12월"
+
+#: .\administration\static\administration\js\calendar.js:26
+msgid "Day"
+msgstr "일"
+
+#: .\administration\static\administration\js\calendar.js:37
+msgid "Week"
+msgstr "주"
+
+#: .\administration\static\administration\js\calendar.js:53
+msgctxt "Order of AM/PM and hour number"
+msgid "h A"
+msgstr "A h"
+
+#: .\administration\static\administration\js\calendar.js:53
+msgctxt "character after time (hour only)"
+msgid " "
+msgstr "시"
+
+#: .\administration\static\administration\js\configuration.js:91
+#: .\administration\static\administration\js\configuration.js:92
+msgid " Feet"
+msgstr " 피트"
+
+#: .\administration\static\administration\js\dashboard.js:1
+msgid "Pilates"
+msgstr "필라테스"
+
+#: .\administration\static\administration\js\dashboard.js:1
+msgid "Hatha Flow"
+msgstr "하타"
+
+#: .\administration\static\administration\js\dashboard.js:1
+msgid "90s Spin"
+msgstr "90년대 스핀"
+
+#: .\administration\static\administration\js\dashboard.js:31
+msgid "Capacity"
+msgstr "수량"
+
+#: .\administration\static\administration\js\dashboard.js:38
+msgid "Enrolled"
+msgstr "등록됨"
+
+#: .\administration\static\administration\js\dashboard.js:43
+msgid "Waitlist"
+msgstr "대기자 목록"
+
+#: .\administration\static\administration\js\dashboard.js:63
+msgid "Today's classes."
+msgstr "오늘의 수업"
+
+#: .\administration\static\administration\js\schedule.js:355
+#: .\administration\static\administration\js\schedule.js:1127
+#: .\administration\static\administration\js\schedule.js:1153
+msgid "Days"
+msgstr "일"
+
+#: .\administration\static\administration\js\schedule.js:592
+msgid "Please resolve errors before submitting the form"
+msgstr "양식 제출 전 문제를 해결해 주세요"
+
+#: .\administration\static\administration\js\schedule.js:1138
+#: .\administration\static\administration\js\schedule.js:1163
+#: .\administration\static\administration\js\utils.js:16
+msgid "hours"
+msgstr "시"
+
+#: .\administration\static\administration\js\schedule.js:1140
+#: .\administration\static\administration\js\schedule.js:1165
+#: .\administration\static\administration\js\utils.js:17
+msgid "minutes"
+msgstr "분"
+
+#: .\administration\static\administration\js\schedule_draw_layout.js:16
+msgid "LAYOUT:"
+msgstr "레이아웃:"
+
+#: .\administration\static\administration\js\schedule_draw_layout.js:17
+msgid "ROOM:"
+msgstr "룸:"
+
+#: .\administration\static\administration\js\utils.js:13
+msgid "Duration:"
+msgstr "기간:"
+
+#: .\payment\static\js\payment-dev.js:357
+msgid "Unlimited"
+msgstr "무제한"
+
+#: .\payment\static\js\payment-dev.js:459
+msgid "% Off Services"
+msgstr "% 할인 서비스"
+
+#: .\payment\static\js\payment-dev.js:465
+msgid " & "
+msgstr " & "
+
+#: .\payment\static\js\payment-dev.js:468
+msgid "% Off Non-Services"
+msgstr "% 할인 서비스 외 상품"
+
+#: .\payment\static\js\payment-dev.js:481
+msgid "Promo code not found"
+msgstr "프로모션 코드 찾을 수 없음"
+
+#: .\payment\static\js\stripe_terminal.js:81
+msgid "Connect"
+msgstr "연결"
+
+#: .\static\assets\js\jquery-ui.min.js:8
+msgid "'"
+msgstr "'"
+
+#: .\static\dashkit\libs\mdb-color-picker\js\mdb.js:1014
+#: .\static\dashkit\libs\mdb-color-picker\js\mdb.min.js:25
+msgid "hidden"
+msgstr "숨겨진"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:19
+msgid "Homepage"
+msgstr "홈페이지"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:20
+msgid ""
+"A look at the next 24-hours displayed on one dashboard!<br> See all your "
+"scheduled services and compare your customer traffic between today and "
+"yesterday. Check out who’s on staff today and when they’re scheduled to be "
+"in, leave a note for your team and a get things done with your team to-do "
+"list."
+msgstr ""
+"다음 24시간 동안의 스케쥴을 대쉬보드에서 확인하세요!<br> 앞으로의 모든 서비스"
+"를 확인하시고 수강생들의 참석 여부 등을 오늘과 어제 날짜별로 비교해 보세요. "
+"어떤 직원이 오늘 근무하고 언제 근무를 하는지 확인하시고, 직원들에게 노트를 남"
+"기시거나 직원들에게 할일 목록을 공유받아 보세요."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:26
+msgid "Logo"
+msgstr "로고"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:27
+msgid "Upload your business logo here"
+msgstr "회사 로고를 업로드 해주세요"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:33
+msgid "Check-In"
+msgstr "체크인"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:34
+msgid ""
+"Use this page to check-in customers for services. Go to Schedule to populate "
+"this calendar."
+msgstr ""
+"고객이 체크인하도록 이 페이지를 사용하세요. 캘린더에서 스케쥴을 확인하세요."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:40
+msgid "Customers"
+msgstr "고객"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:41
+msgid ""
+"Access data for your customers here, and make changes to their accounts."
+msgstr "고객 데이터 확인을 위해서 이곳에서 계정 설정을 변경하세요."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:47
+msgid "Store"
+msgstr "스토어"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:48
+msgid ""
+"Sell items to in-person customers, and add items to your store such as "
+"service packs, merchandise, and gift cards."
+msgstr ""
+"면대면 수업을 하는 고객에게 제품을 판매하시고 서비스 팩, 기념품, 기프트 카드 "
+"등의 해당 아이템을 스토어에도 등록하세요."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:54
+msgid "Schedule"
+msgstr "스케쥴"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:55
+msgid ""
+"Use this familiar calendar view to add services to your calendar. First, "
+"create a new service type. Next, click Add Service to populate service "
+"details and add to the calendar."
+msgstr ""
+"이 캘린더 뷰를 캘린더에 추가하세요. 먼저 서비스 종류를 만드시고, 서비스 세부 "
+"내역을 결정하시고 캘린더에 추가하시면 됩니다."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:61
+msgid "Staff"
+msgstr "직원"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:62
+msgid "Manage your staff's shifts, tasks, and swap requests."
+msgstr "직원의 교대근무, 업무, 교대근무 요청을 조절 하세요."
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:75
+msgid "Ruoom Planner"
+msgstr "Ruoom 플래너"
+
+#: .\static\dashkit\libs\tour-guide\tour-custom.js:76
+msgid ""
+"Configure all your rooms and business settings here. Need to figure out how "
+"many customers can fit in a space? Our patent-pending optimisation algorithm "
+"will calculate that for you."
+msgstr ""
+"모든 룸과 비즈니스 설정을 이곳에서 하실 수 있습니다. 한 장소에 수강생들이 얼"
+"마나 많이 참석 가능한지 아셔야 하나요? 저희 특허 출원된 알고리즘으로 최적화 "
+"하여 알려 드립니다."
+
+#: .\static\timescheduler\moment.min.js:6
+msgid "year"
+msgstr "년"
+
+#: .\static\timescheduler\timelineScheduler.js:994
+msgid "Staff Timeline"
+msgstr "직원 타임라인"
+
+#, javascript-format
+#~ msgid "Available %s"
+#~ msgstr "이용 가능한 %s"
+
+#, javascript-format
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "이용 가능한 %s의 리스트 입니다. 아래 상자에서 선택한 후 두 상자 사이의 "
+#~ "\"선택\" 화살표를 클릭하여 선택할 수 있습니다."
+
+#, javascript-format
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr ""
+#~ "아래 박스에 키워드를 입력하여 이용할 수 있는 %s 리스트를 필터링하세요."
+
+#~ msgid "Filter"
+#~ msgstr "필터"
+
+#~ msgid "Choose all"
+#~ msgstr "모두 고르기"
+
+#, javascript-format
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "클릭하여 모든 %s 고르기."
+
+#~ msgid "Choose"
+#~ msgstr "고르기"
+
+#~ msgid "Remove"
+#~ msgstr "지우기"
+
+#, javascript-format
+#~ msgid "Chosen %s"
+#~ msgstr "선택한 %s"
+
+#, javascript-format
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "선택한 %s 입니다. 선택한 것을 클릭하고 상자 사이에 있는 \"지우기\" 버튼을 "
+#~ "누르면 지워집니다."
+
+#~ msgid "Remove all"
+#~ msgstr "모두 지우기"
+
+#, javascript-format
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "클릭하여 선택한 %s 모두 지우기."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "%(sel)s 개의 %(cnt)s 선택됨"
+
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "개별 편집 가능 필드에 저장되지 않은 변경사항이 있습니다. 작업을 실행하면 "
+#~ "저장되지 않은 변경 내용이 손실됩니다."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "수행을 선택했지만 개별 필드에 대한 변경 내용을 아직 저장하지 않았습니다. "
+#~ "확인을 클릭하여 저장하세요. 작업을 다시 실행해야 합니다."
+
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "수행을 선택했으며 개별 필드를 변경하지 않았습니다. 저장 단추 대신 이동 버"
+#~ "튼을 찾고 계신 걸까요?"
+
+#~ msgid "Now"
+#~ msgstr "지금"
+
+#~ msgid "Midnight"
+#~ msgstr "자정"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 a.m."
+
+#~ msgid "Noon"
+#~ msgstr "오후"
+
+#~ msgid "6 p.m."
+#~ msgstr "6 p.m."
+
+#, javascript-format
+#~ msgid "Note: You are %s hour ahead of server time."
+#~ msgid_plural "Note: You are %s hours ahead of server time."
+#~ msgstr[0] "Note: 귀하의 시간은 서버 시간보다 %s 시간 빠릅니다."
+
+#, javascript-format
+#~ msgid "Note: You are %s hour behind server time."
+#~ msgid_plural "Note: You are %s hours behind server time."
+#~ msgstr[0] "Note: 귀하의 시간은 서버 시간보다 %s 시간 느립니다."
+
+#~ msgid "Choose a Time"
+#~ msgstr "시간 선택"
+
+#~ msgid "Choose a time"
+#~ msgstr "시간 선택"
+
+#~ msgid "Cancel"
+#~ msgstr "취소"
+
+#~ msgid "Today"
+#~ msgstr "오늘"
+
+#~ msgid "Choose a Date"
+#~ msgstr "날짜 선택"
+
+#~ msgid "Yesterday"
+#~ msgstr "어제"
+
+#~ msgid "Tomorrow"
+#~ msgstr "오늘"
+
+#~ msgctxt "one letter Sunday"
+#~ msgid "S"
+#~ msgstr "일"
+
+#~ msgctxt "one letter Monday"
+#~ msgid "M"
+#~ msgstr "월오전"
+
+#~ msgctxt "one letter Tuesday"
+#~ msgid "T"
+#~ msgstr "화"
+
+#~ msgctxt "one letter Wednesday"
+#~ msgid "W"
+#~ msgstr "수"
+
+#~ msgctxt "one letter Thursday"
+#~ msgid "T"
+#~ msgstr "목"
+
+#~ msgctxt "one letter Friday"
+#~ msgid "F"
+#~ msgstr "금"
+
+#~ msgctxt "one letter Saturday"
+#~ msgid "S"
+#~ msgstr "토"
+
+#~ msgid "Show"
+#~ msgstr "보이기"
+
+#~ msgid "Hide"
+#~ msgstr "숨기기"
+
+#~ msgid "PM"
+#~ msgstr "오후"

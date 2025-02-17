@@ -1,0 +1,117 @@
+{% comment %}
+{% load bootstrap4 %}
+{% endcomment %}
+{% load static %}
+{% load i18n %}
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="Core code platform for Ruoom software">
+  <meta name="author" content="Ruoom Inc.">
+
+  <title>{% block title %}{% endblock %}</title>
+
+  <!-- Libss CSS -->
+  <link href="{% static 'fonts/feather/feather.min.css' %}" rel="stylesheet"/>
+  <link href="{% static 'fonts/font-awesome/font-awesome.min.css' %}" rel='stylesheet' />
+
+  <link href="{% static 'libs/flatpickr/dist/flatpickr.min.css' %}" rel="stylesheet"/>
+  <link href="{% static 'libs/highlight.js/styles/vs2015.css' %}" rel="stylesheet"/>
+  <link href="{% static 'libs/quill/dist/quill.core.css' %}" rel="stylesheet"/>
+  <link href="{% static 'libs/select2/dist/css/select2.min.css' %}" rel="stylesheet"/>
+
+  <!-- Theme CSS -->
+  <link rel="stylesheet" href="{% static 'css/theme.min.css' %}" id="stylesheetLight"/>
+  <!--<link rel="stylesheet" href="{% static 'css/theme-dark.min.css'%}" id="stylesheetDark"/>-->
+  <link rel="stylesheet" href="{% static 'css/custom-all.css' %}" id="stylesheetLight"/>
+  <link rel="stylesheet" href="{% static 'css/bootstrap-tourist.css'%}"/>
+  <link rel="stylesheet" href="{% static 'css/ruoom-tour.css'%}"/>
+
+  <!-- custom css -->
+  <link rel="stylesheet" href="{% static 'administration/css/croppie.css'%}" id="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/ruoom.css'%}" id="stylesheet" />
+  <link  href="{% static 'css/dev-custom.css' %}" rel='stylesheet' />
+  <link rel="stylesheet" href="{% static 'administration/css/admin-style.css'%}" id="stylesheet" />
+  <link rel="stylesheet" href="{% static 'libs/mdb-color-picker/css/style.css' %}"></link>
+
+  <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+
+  <!-- JS Libraries -->
+  <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+
+  <script src="{% static 'libs/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'libs/chart.js/dist/Chart.min.js' %}"></script>
+  <script src="{% static 'libs/highlightjs/highlight.pack.min.js' %}"></script>
+  <script src="{% static 'libs/flatpickr/dist/flatpickr.min.js' %}"></script>
+  <script src="{% static 'libs/jquery-mask-plugin/dist/jquery.mask.min.js' %}"></script>
+  <script src="{% static 'libs/list.js/dist/list.min.js' %}"></script>
+  <script src="{% static 'libs/quill/dist/quill.min.js' %}"></script>
+  <script src="{% static 'libs/dropzone/dist/min/dropzone.min.js' %}"></script>
+  <script src="{% static 'libs/select2/dist/js/select2.min.js' %}"></script>
+  <script src="{% static 'libs/chart.js/Chart.extension.min.js' %}"></script>
+  <script src="{% static 'libs/tour-guide/bootstrap-tourist.js' %}"></script>
+  <script src="{% static 'libs/tour-guide/tour-custom.js' %}"></script>
+
+  <!-- JS Theme -->
+
+  {% block sub_head %}{% endblock %}
+
+  <script type="text/javascript">
+    
+    $(function () {
+      $('[data-toggle="tooltip"]').popover({
+        trigger:"hover",
+        title: function(){
+          return "";
+        },
+        content: function() {
+          var content = "";
+          if($(this).attr("data-original-title") != undefined && $(this).attr("data-original-title") != ""){
+            content = $(this).attr("data-original-title");
+          }else if($(this).attr("data-content") != undefined && $(this).attr("data-content") != ""){
+            content = $(this).attr("data-content");
+          }else if($(this).attr("title") != undefined && $(this).attr("title") != ""){
+            content = $(this).attr("title");
+          }
+          return content;
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+
+  {% block body %}{% endblock %}
+
+  <!--<script src="{% static 'dashkit/js/theme.min.js' %}"></script>-->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  <script src="{% static 'libs/croppie/croppie.js' %}"></script>
+  <script src="{% static 'js/dev-custom.js' %}"></script>
+  
+  <div id="formSuccessModel" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modelTitle">{% trans "Saved" %}</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h4 class="text-success text-center mt-2" id="modelBodyText">{% trans "Updated Successfully!" %}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

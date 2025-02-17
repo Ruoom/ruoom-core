@@ -1,0 +1,115 @@
+//== Variables
+$statusNone: green;
+$statusOne: #FF2222;
+$statusTwo: blue;
+$statusThree: orange;
+
+//== Styling
+body {
+	font-family: 'Segoe UI', 'Droid Sans', Arial, sans-serif;
+	font-size: 11px;
+	}
+	
+.time-sch-item-event {
+	border-width: 1px;
+	border-style: solid;
+	width: 2px;
+	}  
+.item-event-none {
+    background-color: $statusNone;
+    border-color: darken($statusNone, 10%);
+	}
+.item-event-one {
+    background-color: $statusOne;
+    border-color: darken($statusOne, 10%);
+	}
+.item-event-two {
+    background-color: $statusTwo;
+    border-color: lighten($statusTwo, 10%);
+	}
+.item-event-three {
+    background-color: $statusThree;
+    border-color: darken($statusThree, 10%);
+	}
+
+.item-status-none {
+    background-color: $statusNone;
+	}
+.item-status-one {
+    background-color: $statusOne;
+	}
+.item-status-two {
+    background-color: $statusTwo;
+	}
+.item-status-three {
+    background-color: $statusThree;
+	}
+
+.time-sch-item {
+	transition: background-color ease 0.1s;
+
+	border-width: 1px;
+	border-style: solid;
+
+	&.item-status-none {
+		border-color: darken($statusNone, 5%);
+		&:hover { 
+			background-color: lighten($statusNone, 10%); 
+			}
+		}
+	&.item-status-one {
+		border-color: darken($statusOne, 5%);
+		&:hover { 
+			background-color: lighten($statusOne, 10%); 
+			}
+		}
+	&.item-status-two {
+		border-color: darken($statusTwo, 5%);
+		&:hover { 
+			background-color: lighten($statusTwo, 10%); 
+			}
+		}
+	&.item-status-three {
+		border-color: darken($statusThree, 5%);
+		&:hover { 
+			background-color: lighten($statusThree, 10%); 
+			}
+		}
+
+	&.ui-draggable-dragging {
+		cursor: move;
+		}
+	}
+
+.realtime-info {
+	display: none;
+}
+
+.period-3day {
+	.time-sch-header-0-date-even {
+		background-color: #F0F0F0;
+		}
+	}
+.period-1week {
+	.time-sch-header-0-date-even {
+		background-color: #F0F0F0;
+		}
+	}
+.period-1month {
+	.time-sch-header-1-date-even {
+		background-color: #F0F0F0;
+		}
+	}
+	
+.time-sch-wrapper {
+	.time-sch-header-1-current-time {
+		background-color: #999999;
+		border-color: #888888;
+		}
+	.time-sch-header-0-date-start {
+		border-left-color: #444444;
+		}
+	.time-sch-header-0-date-end {
+		border-right-color: #444444;
+		}
+	}

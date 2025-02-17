@@ -1,0 +1,227 @@
+
+canvas {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.fc-license-message{
+  display: none;
+}
+#class-carousel .chart{
+  width: 90%;
+  margin: 0 auto;
+}
+.carousel-control-prev, .carousel-control-next{
+  width: auto;
+}
+.carousel-control-next-icon, .carousel-control-prev-icon{
+  width: 30px;
+  height: 30px;
+}
+
+.week-calander.schedule {
+  border-radius: 30px;
+  margin: 0 2.25rem;
+}
+
+.week-calander .fc-toolbar.fc-header-toolbar, .fc-day-grid-event {
+  margin-bottom: 0;
+  padding: 6px 8px;
+}
+
+.week-calander .fc-toolbar.fc-header-toolbar {
+  padding: 0 0 10px 0;
+}
+
+.week-calander.schedule .card {
+  box-shadow: none;
+}
+
+.week-calander.schedule .card-header{
+  border-radius: 0;
+  padding-top: 1rem;
+  border-bottom: none;
+}
+
+.week-calander .fc-toolbar h2 {
+    margin: 0;
+    font-size: 18px;
+    border: solid 1px transparent;
+    background: 0 0;
+    color: inherit;
+    font-weight: 600;
+}
+
+.week-calander .btn-white{
+    background: transparent;
+    border: 0;
+    color: #fff;
+}
+
+.week-calander thead.fc-head {
+    text-transform: capitalize;
+    color: #8c949d;
+    font-weight: 400;
+    border-top: #fff;
+    font-size: .875rem;
+}
+
+.week-calander th.fc-day-header.fc-widget-header {
+    padding: 6px 0;
+}
+.week-calander .fc-axis.fc-time.fc-widget-content, .fc-time, .fc-title {
+    color: #fff;
+}
+
+.week-calander .fc-axis.fc-time {
+    margin-bottom: 2px;
+}
+
+.week-calander td.fc-time span,
+td.fc-title {
+    color: #1D1D4D;
+    font-size: .875rem;
+}
+
+.week-calander .fc-time-grid-event{
+  padding: 2px;
+  cursor: pointer;
+}
+.week-calander .fc-time-grid-event-hover:hover{
+  -webkit-box-shadow: 3px 12px 40px -16px rgba(0,174,204,0.69);
+  -moz-box-shadow: 3px 12px 40px -16px rgba(0,174,204,0.69);
+  box-shadow: 3px 12px 40px -16px rgba(0,174,204,0.69);
+  background-color: linear-gradient(to right,#00c6bf ,#00aecc) !important;
+  width: 100%;
+  z-index: 10 !important;
+  height: 48px;
+  padding: 5px;
+  top: 535px;
+}
+.week-calander .fc-time-grid-event:visited{
+  background-color: linear-gradient(to right,#00c6bf ,#00aecc);
+}
+
+.fc-dayGridMonth-view .fc-day-grid-event .fc-time {
+    display: block;
+}
+
+.modal-footer .btn-white:hover, .btn-white:hover{
+  color: #fff;
+  background: linear-gradient(to right,#00c6bf ,#00aecc);
+}
+
+.modal-footer .btn-white {
+  color: #000;
+}
+
+.week-calander .fc-nonbusiness {
+  background: #fff;
+}
+
+#modalClassForm .form-group input#id_duration_hours {
+  margin-right: 2px;
+}
+
+#modalClassForm .form-group input#id_duration_mins {
+  margin-left: 2px;
+}
+
+.fc-unthemed th, .fc-unthemed td, .fc-unthemed thead, .fc-unthemed tbody, .fc-unthemed .fc-divider, .fc-unthemed .fc-row, .fc-unthemed .fc-content, .fc-unthemed .fc-popover, .fc-unthemed .fc-list-view, .fc-unthemed .fc-list-heading td {
+  border-color: #dadce0 !important;
+}
+
+.fc-time-grid .fc-slats td {
+  border-bottom: 0 !important;
+  height: 24px !important;
+}
+
+.fc-time-grid .fc-slats .fc-minor td {
+  border: none !important;
+}
+
+.fc-button {
+  border-radius: 15px;
+  font-family: 'VisbyRoundCF-Regular';
+  font-size: .75rem;
+}
+
+.fc-left .fc-button-primary {
+  background-color: #fff;
+  border: none !important;
+  width: 34px;
+  min-width: 34px;
+  padding: 0 !important;
+  height: 34px;
+  box-shadow: 0px 3px 6px #00000029;
+  display: inline-block !important;
+  border-radius: 50% !important;
+  text-align: center;
+  background-repeat: no-repeat;
+}
+
+.fc-left .fc-button-primary:hover {
+  background-color: #F6F6F6;
+}
+
+.fc-button-primary span.fc-icon {
+  display: none;
+}
+
+.fc-right .fc-button-primary {
+  background-color: #F1F2F6;
+  color: inherit;
+  border-color: #DEDCDC;
+  width: 70px;
+  line-height: 1.2;
+  padding: .3rem .5rem;
+}
+
+.fc-right .fc-button-primary:hover {
+  background-color: #d8d9dd;
+}
+
+.fc-right .fc-button-primary:not(:disabled).fc-button-active {
+  color: #fff;
+  background-color: #43C3EF !important;
+  border-color: #43C3EF;
+  font-size: .875rem;
+  font-family: 'VisbyRoundCF-Bold';
+  cursor: default;
+}
+
+.fc-button-primary:not(:disabled).fc-button-active:focus {
+  box-shadow: none;
+}
+
+div.fc-scroller.fc-time-grid-container {
+  height: calc(100vh - 247px) !important;
+}
+
+.fc-dayGrid-view .fc-body .fc-row {
+  border: none !important;
+  color: #1D1D4D;
+}
+
+.modal-header.tab-nav .nav-link {
+  /*padding: 0.5rem 0.5rem 2rem 0.5rem;
+  margin: 0 0.5rem;*/
+  color: #1D1D4D;
+}
+
+.modal-header.tab-nav .nav-link.active {
+  color: #1E86C8;
+}
+
+/******** Responsive *********/
+@media (max-width: 599.98px) {
+    #id_calendar .fc-toolbar.fc-header-toolbar {
+        flex-direction: column;
+    }
+
+    #id_calendar .fc-left,
+    #id_calendar .fc-center,
+    #id_calendar .fc-right {
+        margin-bottom: 1rem;
+    }
+}

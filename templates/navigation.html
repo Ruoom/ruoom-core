@@ -1,0 +1,271 @@
+{% extends "application.html" %}
+{% load static %}
+{% load language_verbose %}
+{% load i18n %}
+{% load custom_tags %}
+{% block title %}
+{% trans "Administration" %} |
+{% block subtitle %}{% endblock %}
+{% endblock %}
+{% block body %}
+<style>
+   .select2-results__option:empty  {
+   display: none !important;
+   }
+   .dynamic-field {
+   border-bottom: 1px dashed black;
+   outline: none;
+   font-weight: bold;
+   }
+   .template_text {
+   white-space: pre-line;
+   border: 1px solid #d2ddec;
+   padding: 10px;
+   border-radius: 5px;
+   min-height: 150px;
+   max-height: 300px;
+   overflow: auto;
+   }
+   .bold {
+   font-weight: bold;  
+   }
+   div.editable {
+   width: 300px;
+   height: 200px;
+   border: 1px solid #ccc;
+   padding: 5px;
+   }
+   .popover{
+      max-width: 300px;
+   }
+   .nav-link{
+      color: #FFFFFF;
+   }
+</style>
+<style type="text/css">
+   input {font-weight:bold;}
+</style>
+<nav class="navbar navbar-vertical fixed-left navbar-expand-lg" id="sidebar">
+   <div class="container-fluid">
+   <!-- Toggler -->
+   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidebarCollapse" aria-controls="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+   <span></span>
+   <span></span>
+   <span></span>
+   </button>
+   <!-- Brand -->
+   <label class="cabinet center-block text-center">
+      <figure>
+         {% if 'ruoom_logo' in studio_setting_image %}
+         <img src="{% static studio_setting_image %}" class="navbar-brand-img mx-auto rounded-circle" id="item-img-output" alt="logo" />
+         <figcaption><i class="fa fa-camera"></i></figcaption>
+         {% else %}
+         <img src="{% get_media_prefix %}{{studio_setting_image}}" class="navbar-brand-img mx-auto rounded-circle" id="item-img-output" alt="logo" />
+         <figcaption><i class="fa fa-camera"></i></figcaption>
+         {% endif %}
+      </figure>
+      <form id="ajax_upload_studio_form" method="POST" action="{% url 'save_studio_picture'%}" style="display: none">
+         <input type="file" class="item-img file center-block" name="studio_image" {% disable_if_not_admin user=request.user %}/>
+         <input type="submit" />
+      </form>
+   </label>
+   <!-- Collapse -->
+   <div class="collapse navbar-collapse" id="sidebarCollapse">
+      <!-- Navigation mb-md-4"-->
+      <ul class="navbar-nav" >
+         <li class="nav-item" id="dashboard-content">
+            <a class="nav-link {{dashboard}}" href="{% url 'administration:dashboard'%}">
+            <i class="fe fe-home"></i> {% trans "Home" %}
+            </a>
+         </li>
+         <li class="nav-item" id="customers-page">
+            <a style="display:{% display_if_has_access user=request.user permission_group='customers' %}"  class="nav-link {{customerspage}}" href="{% url 'administration:customers'%}">
+            <i class="fe fe-users"></i>{% trans "Customers" %}
+            </a>
+         </li>
+         <li class="nav-item" id="schedule-page">
+            <a style="display:{% display_if_has_access user=request.user permission_group='schedule' %}"  class="nav-link {{schedule}}" href="{% url 'administration:schedule'%}">
+            <i class="fe fe-calendar"></i>{% trans "Schedule" %}
+            </a>
+         </li>
+      </ul>
+      <!-- Divider -->
+      <hr class="navbar-divider my-2">
+      <!-- Heading -->
+      <h4 class="mt-3 text-white">{% trans "Admin Pages" %}</h4>
+      <!-- <- Navigation -->
+      <ul class="navbar-nav mb-md-4">
+         <li class="nav-item" id="staff-page">
+            <a style="display:{% display_if_has_access user=request.user permission_group='Staff' %}"  class="nav-link {{staffpage}}" href="{% url 'administration:staff'%}">
+            <i class="fe fe-user"></i>{% trans "Staff" %}
+            </a>
+         </li>
+         <li class="nav-item" id="ruoom-planner-page">
+            <a style="display: {% display_if_has_access user=request.user permission_group='configuration' %}"  class="nav-link {{roomo}}" href="{% url 'administration:configuration'%}">
+               <img src="{% static 'img/icon-ruoom-planner-transparent.png' %}" alt="icon" class="mr-2" />{% trans "RoomO" %}
+            </a>
+         </li>
+         <li class="nav-item" id="permissions-page">
+            <a style="display: {% display_if_has_access user=request.user permission_group='admin' %}"  class="nav-link {{permissions}}" href="{% url 'administration:admin'%}">
+            <i class="fe fe-lock"></i>{% trans "Permissions" %}
+            </a>
+         </li>
+      </ul>
+      <hr class="navbar-divider my-2">
+      <div class="mt-auto"></div>
+
+      <div class="dropup mt-2">
+         <a href="#" id="language" class="dropdown-toggle text-white" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <span class="fe fe-globe"></span>
+         {{request.user.profile.language|language_verbose}}
+         </a>
+         <div class="dropdown-menu" aria-labelledby="language">
+            {% for language_code, language_name in languages.items %}
+            {% if language_code != request.user.profile.language %}
+            <form method="post" id="language_select_form" class="mb-0" enctype="multipart/form-data" action="{% url 'administration:language-select' %}" >
+               {% csrf_token %}
+               <input name="language" value="{{language_code}}" hidden="true">
+               <button class="dropdown-item d-md-block" name="language_select_form" type="submit">{{language_name}}</button>
+            </form>
+            {% endif %}
+            {% endfor %}
+         </div>
+      </div>
+      <hr class="navbar-divider my-3">
+      <div class="dropup mb-3">
+         <!-- Toggle -->
+         <a href="#" id="sidebarIconCopy" class="dropdown-toggle text-white" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         {{ request.user.profile.localized_name }}
+         </a>
+         <!-- Menu -->
+         <div class="dropdown-menu" aria-labelledby="sidebarIconCopy">
+            <!--<a href="#" id="btnStart" class="dropdown-item d-none d-md-block">{% trans "Platform Tour" %}</a>
+            <hr class="dropdown-divider d-none d-md-block">-->
+            <div>
+               <a href="/administration/help" class="dropdown-item">{% trans "Help Center" %}</a>
+               <hr class="dropdown-divider">
+            </div>
+            <div style="display: {% display_if_has_access user=request.user permission_group='admin' %}">
+               <a href="/administration/settings" class="dropdown-item">{% trans "Platform Settings" %}</a>
+               <hr class="dropdown-divider">
+            <div>
+            {% if request.user.is_authenticated %}
+            <a href="/registration/signout/" class="dropdown-item">{% trans "Sign Out" %}</a>
+            {% endif %}
+         </div>
+      </div>
+   </div>
+</nav>
+<div class="main-content">
+   {% block content %}{% endblock %}
+</div>
+
+<div class="modal fade" id="first-time-modal" tabindex="-1" role="dialog" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered modal" role="document">
+      <div class="modal-content">
+         <div class="modal-header d-block">
+            <h3 class="modal-title mb-2 fw-bold d-inline-block">{% trans "Please Create a Password For Your New Ruoom® Platform" %}</h3>
+         </div>
+         <form method="post" id="new_password_form" class="mb-0" enctype="multipart/form-data" action="{% url 'registration:new-password' %}" >
+            {% csrf_token %}
+            <div class="modal-body pb-0">
+
+               <!-- Input -->
+               <div class="form-group">
+                  <input type="password" name="password" class="form-control form-control-appended" placeholder='{% trans "Password" %}' required="" id="id_password" autocomplete="off" style="background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: pointer;">
+               </div> 
+               <div class="form-group">
+                  <input type="password" name="password_again" class="form-control form-control-appended" placeholder='{% trans "Repeat Password" %}' required="" id="id_password_again" autocomplete="off" style="background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: pointer;">
+               </div>
+               <div class="form-group mb-5" id="new_pass_error" style="display: none;">
+                  <p style="color: red">{% trans "Passwords must match" %}</p>
+               </div>
+            </div>
+            <input type="hidden" value="True" name="new_password_form">
+
+         </form>
+         <div class="modal-footer justify-content-start">
+            <button class="btn btn-primary" id="new_password_submit" onclick="newPassValidate()">{% trans "Submit" %}</button>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="modal fade" id="deactivated-modal" tabindex="-1" role="dialog" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered modal" role="document">
+      <div class="modal-content">
+         <div class="modal-header d-block">
+            <h3 class="modal-title mb-2 fw-bold d-inline-block">{% trans "Your Staff Account Has Been Deactivated" %}</h3>
+         </div>
+         <div class="modal-body p-4">
+            <p class="mb-0 font-italic">{% trans "Please contact your business administrator" %}</p>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="modal fade" id="cropImagePop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">
+               <?=multiLanguage( "Edit Foto" , "Edit Photo" )?>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         </div>
+         <div class="modal-body">
+            <div id="upload-demo" class="center-block"></div>
+         </div>
+         <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-default mr-3" data-dismiss="modal">{% trans "Cancel" %}</button>
+            <button type="button" id="cropImageBtn" class="btn btn-primary">{% trans "Crop" %}</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+{{ templates|json_script:"templates" }}
+{{ templates_error|json_script:"templates_error" }}
+<script type="text/javascript">
+   let dynamicVariables = [];
+   var userLanguage = "{{request.user.profile.language}}";
+   if (userLanguage == "ko"){
+     flatpickr.localize(flatpickr.l10ns.ko); 
+   }
+   
+   function onChangeDynamicField(element, defaultValue) {
+     if (!element.innerText.length) {
+       element.innerText = element.id;
+     }
+   }
+   
+   //Handle Popups   
+   //First time sign-on password logic & more
+   if ("{{request.user.profile.staff_is_active}}" == "False") {
+      $('#deactivated-modal').modal({
+           backdrop: 'static',
+           keyboard: false
+       });
+      $('#deactivated-modal').modal('show');
+   }
+   else if("{{first_time}}" == "True") {
+      $('#first-time-modal').modal({
+           backdrop: 'static',
+           keyboard: false
+       });
+      $('#msa-sign-modal').modal('hide');
+      $('#first-time-modal').modal('show');
+   }
+
+   var newpassform = document.getElementById("new_password_form");
+   //document.getElementById("new_password_submit").addEventListener("click", function () {
+   function newPassValidate() {
+      pass1 = $("#id_password").val()
+      pass2 = $("#id_password_again").val()
+      if (pass1 != pass2) {
+         $("#new_pass_error").show()
+      } else {
+         $("#new_pass_error").hide()
+         newpassform.submit();
+      }
+   };
+   </script>
+{% endblock %}

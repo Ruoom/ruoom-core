@@ -1,0 +1,131 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block subtitle %}Help Center{% endblock %}
+
+{% block sub_head %}{% endblock %}
+
+{% block content %}
+  <div class="help-center pt-4">
+      <div class="header">
+        <div class="container-fluid">
+          <h1 class="header-title mb-4">{% trans "Welcome to the Ruoom<sup>&reg;</sup> Help Center!" %}</h1>
+
+          <div class="bg-white pr-4 pb-4 pl-4 rounded-lg tabs-header">
+
+            <div class="row align-items-center">
+              <div class="col">
+                <ul class="nav nav-tabs nav-overflow header-tabs">
+                  <li class="nav-item ">
+                    <a href="{% url 'administration:help'%}" class="nav-link active">
+                        <span class="fe fe-database mr-1"></span>
+                        {% trans "Data" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:helpEmail'%}" class="nav-link">
+                        <span class="fe fe-mail mr-1"></span>
+                        {% trans "Emails" %}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end header -->
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- Card -->
+            <div class="card">
+              <div class="card-body">
+                  <div class="accordion" id="accordionHelp">
+                        <div class="">
+                            <div class="" id="headingOne">
+                              <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left font-weight-bold text-16" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    {% trans "How to set up business data" %}
+                                </button>
+                              </h2>
+                            </div>
+
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionHelp">
+                              <div class="pl-30 pr-30">
+                                  <p>
+                                  {% blocktrans %}Your business information, such as your business name, URL, and the name & email of your account, will be set up based on your form inputs from the beta site sign-up form.<br><br>
+
+                                  To set up your first business location information, please follow these steps:<br><br>
+
+                                  1) First, visit the "RoomO" page by clicking on the left side menu. When the page loads, select Add Location. Then, fill out the fields in the form.<br><br>
+
+                                  2) If you have customer data you need to import, visit the "Customers" page on the left side menu. From there, click on the Import Customer Data feature button. For more guidance, see the <b>How to import customer data</b> guide below.<br><br>
+
+                                  3) Visit "Platform Settings" to configure additional business information and third-party integrations (KakaoTalk, WhatsApp, email client, and payment processors). Those with administrator privileges can access Platform Settings by clicking their username in the bottom-left corner.<br><br>
+
+                                  If you're having trouble setting up any of your data, do not hesitate to reach out to our support team at support@ruoomsoftware.com.<br><br>{% endblocktrans %}
+                                  </p>
+                              </div>
+                            </div>
+                        </div>
+
+
+                        <div class="">
+                          <div class="" id="headingTwo">
+                            <h2 class="mb-0">
+                              <button class="btn btn-link btn-block text-left collapsed font-weight-bold text-16" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                  <i class="fa fa-lightbulb-o"></i>
+                                  {% trans "How to import customer data" %}
+                              </button>
+                            </h2>
+                          </div>
+                          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionHelp">
+                            <div class="pl-30 pr-30">
+                                <p>
+                                {% blocktrans %}To import customer data from another program or database, you must first obtain a CSV copy of your customer data. To easily view CSV data, open the file with Microsoft Excel.<br><br>
+
+                                Next, arrange the columns of the customer data in Microsoft Excel to match our input format. You can download an example of this format {% endblocktrans %}<a href="{% url 'administration:download_media' 'sample.csv' %}">{% trans "here" %}</a>.<br><br>
+
+                                {% blocktrans %}Our data importer only looks at the header row at the top of each column. So as long as those column headers match the example format, your customer data will import without a problem!<br><br>
+
+                                If there are any issues with the importing file, the platform will let you know. If you’re having trouble importing your customer data, don’t hesitate to reach out to our support team at support@ruoomsoftware.com.{% endblocktrans %}
+                                </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="">
+                          <div class="" id="headingTwo">
+                            <h2 class="mb-0">
+                              <button class="btn btn-link btn-block text-left collapsed font-weight-bold text-16" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                  <i class="fa fa-lightbulb-o"></i>
+                                  {% trans "Informing your customers about the Ruoom® platform migration" %}
+                              </button>
+                            </h2>
+                          </div>
+                          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionHelp">
+                            <div class="pl-30 pr-30">
+                                <p>
+                                {% blocktrans %}Once you transfer your customer data to Ruoom®, you’ll need to request that your existing customers create a new password to access their accounts.
+
+                                Using any email branding you’d like, add your unique reset password link below in the body of an email or a CTA button:<br><br>
+                                
+                                {{password_reset_link}}{% endblocktrans %}
+                                </p>
+                            </div>
+                          </div>
+                        </div>
+                    </div> <!-- end accordion -->
+              </div>
+            </div>
+          </div>
+        </div> <!-- / .row -->
+      </div>
+  </div>
+
+
+
+{% endblock %}

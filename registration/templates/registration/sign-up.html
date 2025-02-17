@@ -1,0 +1,54 @@
+{% extends "application.html" %}
+{% load static %}
+{% load i18n %}
+{% load bootstrap4 %}
+
+{% block title %}
+  {% trans "First-Time Sign-up" %}
+  {% block subtitle %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<script>
+  new_tab = '{{new_tab}}' == "True"
+  if (new_tab) {
+      window.open("/registration/signup", "_blank")
+  }
+  </script>
+
+  <body class="d-flex align-items-center bg-auth bg-login-main">
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6 my-5 custom-login-box">
+
+          {% if new_tab %}
+          <p class="text-muted text-center mb-5">
+            {% trans "Due to browser cookie restrictions, the registration calendar will open in another tab" %}
+            <br><br>
+            {% trans "If the new tab was blocked by your browser, simply navigate to:" %}
+            <br>
+            <a href="https://{{ request.META.HTTP_HOST }}{% url 'registration:signup' %}" target="_blank">https://{{ request.META.HTTP_HOST }}{% url 'registration:signup' %}</a>
+          </p>
+          {% else %}
+
+          <!-- Heading -->
+          <h1 class="display-4 text-center mb-3">
+            {% trans "Sign up" %}
+          </h1>
+
+          <!-- Subheading -->
+          <p class="text-muted text-center mb-5">
+            {% trans "Fill out the form to get started." %}
+          </p>
+          {% include 'registration/partials/signup_form.html' with form=form %}
+
+          {% endif %}
+        </div>
+      </div> <!-- / .row -->
+    </div> <!-- / .container -->
+  </body>
+
+{% endblock %}

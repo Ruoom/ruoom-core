@@ -1,0 +1,160 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% load custom_tags %}
+{% block subtitle %}{% trans "Dashboard" %}{% endblock %}
+
+{% block sub_head %}
+
+    <script src="{% static 'administration/js/dashboard.js' %}"></script>
+    <script src="{% static 'administration/js/utils.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'administration/css/errors.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+
+    <!-- MAIN CONTENT ================================================== -->
+    <div class="main-content home-page">
+
+        <!-- HEADER -->
+        <div class="header bg-white pb-5">
+            <div class="container-fluid">
+
+                <!-- Body -->
+                <div class="header-body border-0">
+                    <div class="row align-items-end">
+                        <div class="col-sm-7">
+
+                            <a>
+                                <h1 class="header-title mb-2">
+                                    {% trans "Welcome, " %} {{ request.user.first_name }}{{greeting_char}}
+                                </h1>
+                            </a>
+                            <h6 class="header-pretitle text-dim-gray font-600 text-11 mt-1">
+                                {% trans "This is what's happening today," %}
+                                {{ date }}.
+                            </h6>
+                        </div>
+                        
+                    </div> <!-- / .row -->
+
+                    {% if location_list|length > 1 %}
+                        <div class="dropdown mt-3">
+                            <a class="btn btn-light dropdown-toggle w-auto" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i class="fe fe-map-pin mr-2"></i>
+                                {% if location %}
+                                    {{location.name}}
+                                {% else %}
+                                    {% trans "Choose Location" %}
+                                {% endif %}
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                {% for place in location_list %}
+                                    <a class="dropdown-item" href="#" value="{{place.id}}">{{place.name}}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div> <!-- / .header-body -->
+
+                <!-- Footer -->
+                <div class="pt-4">
+
+                    <p>{% trans "This dashboard is yours to customize!" %}</p>
+                    <p>{% trans "Explore our premium plugins (Booking, Appointments, and/or Staff) for some example dashboard widgets" %}</p>
+
+                </div>
+
+            </div>
+        </div> <!-- / .header -->
+
+        <!-- CARDS -->
+        <div class="container-fluid">
+
+            <!-- ====================== Enrolled, Capacity, Waitlist and Attendace============================== -->
+
+            <div class="row" id="intro">
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <!-- Card -->
+                    <div class="card border-27">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                </div>
+                            </div> <!-- / .row -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <!-- Card -->
+                    <div class="card border-27">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                </div>
+                            </div> <!-- / .row -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <!-- Card -->
+                    <div class="card border-27">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                </div>
+                            </div> <!-- / .row -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+
+                    <!-- Card -->
+                    <div class="card border-27">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                </div>
+                            </div> <!-- / .row -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-xl-12">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-xl-4">
+                </div>
+                <div class="col-12 col-xl-8">
+                </div>
+            </div> <!-- / .row -->
+        </div>
+</div>
+<!-- / .main-content -->
+
+<script>
+    $(document).ready(function() {
+        if (!tour.ended() && is_msa_signed != false){
+            tour.start()
+        };
+        $("#dropdownMenuLink+div>a").on("click", (e) =>{
+        window.location.href = "/administration/dashboard/?location_id=" + $(e.target).attr("value");
+        })
+    })
+</script>
+
+{% endblock %}

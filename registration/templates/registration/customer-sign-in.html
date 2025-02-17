@@ -1,0 +1,43 @@
+{% extends "application.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+  {% trans "Sign in" %}
+  {% block subtitle %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+  <body class="d-flex align-items-center bg-auth bg-login-main">
+
+    <!-- CONTENT
+    ================================================== -->
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6 my-5 custom-login-box">
+
+          <!-- Heading -->
+          <h1 class="display-4 text-center mb-3">
+            {% trans "Customer Sign in" %}
+          </h1>
+
+          <!-- Subheading -->
+          <p class="text-muted text-center mb-5">
+            {% trans "Sign in to manage your account." %}
+          </p>
+
+          <!-- Form -->
+          {% include 'registration/partials/signin_form.html' with form=form %}
+
+          <div class="or-login-div mt-5">
+            <p class="text-center mb-0 mt-4 text-muted">
+                {% trans "Don't have an account yet?" %} <a href="{% url 'registration:signup' %}" class="d-inline-block">{% trans "Sign up" %}</a>
+            </p>
+          </div>
+
+
+        </div>
+      </div> <!-- / .row -->
+    </div> <!-- / .container -->
+  </body>
+{% endblock %}

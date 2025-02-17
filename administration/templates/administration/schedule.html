@@ -1,0 +1,172 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+{% load custom_tags %}
+
+{% block subtitle %}{% trans "Schedule" %}{% endblock %}
+
+{% block sub_head %}
+<!--Calendar Header-->
+<script>
+    function htmlDecode(input) {
+      var doc = new DOMParser().parseFromString(input, "text/html");
+      return doc.documentElement.textContent;
+    }
+
+    var tableGridThickness = '{{ table_grid_thickness }}';
+    var tableBorderColor = '{{ table_border_color }}';
+    var classBlockColor = '{{ class_block_color }}';
+    var classTextColor = '{{ class_text_color }}';
+    var highlightedClassColor = '{{ class_highlight_color }}';
+    var showAllDayBar;
+    var csrf_token = '{{csrf_token}}'
+    var locationTimezone = '{{ locationTimezone }}'
+
+    {% if show_all_day_bar %}
+    showAllDayBar = true;
+    {% endif %}
+
+    var businessHours;
+    {% if business_hours %}
+    businessHours = {
+        startTime: '{{ business_hours.start_time }}',
+        endTime: '{{ business_hours.end_time }}',
+        daysOfWeek: '{{ business_hours.days_of_week }}'
+    };
+    {% endif %}
+
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script src="{% static 'packages/timescheduler/moment.min.js' %}"></script>
+
+<script src="{% static 'administration/js/schedule.js' %}"></script>
+<script src="{% static 'administration/js/utils.js' %}"></script>
+
+<link href="{% static 'css/calendar.css' %}" rel="stylesheet">
+<link href="{% static 'css/custom-all.css' %}" rel="stylesheet">
+<link href="{% static 'administration/css/schedule.css' %}" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.css">
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+<!-- ====================== Calander script and styles ============== -->
+<script src="{% static 'packages/fullcalendar/core/main.js' %}"></script>
+<link href='{% static "packages/fullcalendar/core/main.css" %}' rel='stylesheet' />
+<script src="{% static 'packages/fullcalendar/common/main.js' %}" type="module"></script>
+<link href='{% static "packages/fullcalendar/common/main.css" %}' rel='stylesheet' />
+<script src="{% static 'packages/fullcalendar/timeline/main.js' %}"></script>
+<link href="{% static 'packages/fullcalendar/timeline/main.css' %}" rel='stylesheet' />
+<link href="{% static 'packages/fullcalendar/timegrid/schedule-cal.css' %}" rel="stylesheet">
+<script src="{% static 'packages/fullcalendar/timegrid/main.js' %}"></script>
+<link href="{% static 'packages/fullcalendar/daygrid/main.css' %}" rel='stylesheet' />
+<script src="{% static 'packages/fullcalendar/daygrid/main.js' %}"></script>
+<link href="{% static 'packages/fullcalendar/timegrid/main.css' %}" rel='stylesheet' />
+<script src="{% static 'packages/fullcalendar/list/main.js' %}"></script>
+<link href="{% static 'packages/fullcalendar/list/main.css' %}" rel='stylesheet' />
+<script src="{% static 'packages/fullcalendar/interaction/main.js' %}" type="module"></script>
+
+<style>
+    .right {
+        margin: 0 0 0 auto;
+    }
+
+    #menu1 .table tr,
+    #menu1 .table td {
+        white-space: nowrap;
+    }
+
+    .valid { color: green; }
+    .invalid { color: red; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<!--New Class Type Button -->
+<div class="container-fluid pt-4">
+    <div class="week-calander schedule bg-white">
+        <div class="card mb-0">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-lg-auto">
+                        <h1 class="header-title mt-2">{% trans "Schedule" %}</h1>
+                    </div>
+                </div>
+            </div>
+            
+            {% if location_list|length > 1 %}
+                <div class="card-header">
+                    <div class="dropdown">
+                        <label class="mr-2">Location:</label>
+                        <a class="btn btn-default dropdown-toggle w-auto" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if location %}
+                                {{location.name}} ({{locationTimezone}})
+                            {% else %}
+                                Choose Location
+                            {% endif %}
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            {% for place in location_list %}
+                                <a class="dropdown-item" href="#" value="{{place.id}}">{{place.name}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card-body">
+                <!-- Chart -->
+                <div class="">
+                    <div id="id_calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'info' %}
+
+            <ul class="messages" align="center" style="color: red;" id="tr_info_message">
+                {{ message }}
+            </ul>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+
+<script>
+    window.lang = "{{request.user.profile.language}}"
+
+    var a = $("#tr_message").text();
+    if (a.length !== 0) {
+        $("#success-payment-modals").modal("show");
+        setTimeout(function () {
+            $("#success-payment-modals").modal("hide");
+        }, 3000);
+    }
+
+    $(document).ready(function() { 
+        $('#id_size').hide();
+
+        $("#dropdownMenuLink+div>a").on("click", (e) => {
+            window.location.href = "/administration/schedule/?location_id=" + $(e.target).attr("value");
+        })
+        currency_symbol = "{% localized_currency_format "" business_id %}";
+    })
+
+</script>
+{% endblock %}

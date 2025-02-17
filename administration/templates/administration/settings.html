@@ -1,0 +1,67 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block subtitle %}{% trans "Platform Settings" %}{% endblock %}
+{% block sub_head %}
+{% endblock %}
+{% block content %}
+
+    <style>
+        .text-color {
+            color: {{ text_color }}
+        }
+
+        .text-color-bg {
+            background-color: {{ text_color }}
+        }
+    </style>
+    <div class="header">
+        <div class="container-fluid">
+          <h1 class="header-title my-4">{% trans "Platform Settings" %}</h1>
+  
+          <div class="bg-white pr-4 pb-4 pl-4 rounded-lg tabs-header">
+  
+            <div class="row align-items-center">
+              <div class="col">
+                <ul class="nav nav-tabs nav-overflow header-tabs">
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-embed'%}" id="embed-tab" class="nav-link">
+                        <span class="fe fe-calendar mr-1"></span>
+                        {% trans "Embed" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-contact'%}" id="contact-tab" class="nav-link">
+                        <span class="fe fe-mail mr-1"></span>
+                        {% trans "Contact" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-payment'%}" id="payment-tab" class="nav-link">
+                        <span class="fe fe-credit-card mr-1"></span>
+                        {% trans "Payment Processing" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-registration'%}" id="registration-tab" class="nav-link">
+                        <span class="fe fe-user-check mr-1"></span>
+                        {% trans "Registration" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-messaging'%}" id="messaging-tab" class="nav-link">
+                        <span class="fe fe-message-square mr-1"></span>
+                        {% trans "Messaging Services" %}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end header -->
+  
+      {% block settingscontent %}{% endblock %}
+
+{% endblock %}

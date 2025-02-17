@@ -1,0 +1,95 @@
+{% load i18n %}
+{% load static %}
+
+<style>
+
+.btn-social {
+    color: #545454;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 1px #ddd;
+}
+
+.btn-kakao img {
+  width: 50px;
+}
+
+.or-container {
+    align-items: center;
+    color: #ccc;
+    display: flex;
+    margin: 25px 0;
+}
+
+.social-button {
+  margin-bottom: 15px
+}
+
+.line-separator {
+    background-color: #ccc;
+    flex-grow: 5;
+    height: 1px;
+}
+
+.or-label {
+    flex-grow: 1;
+    margin: 0 15px;
+    text-align: center;
+}
+</style>
+<form action="{{ signin_url }}" class="mb-0" method="POST">
+    {% csrf_token %}
+    
+    <!-- Email address -->
+    <div class="form-group">
+      <!-- Input -->
+      {{signin_form.email}}
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+    <div class="row">
+      <div class="col-auto">
+        <!-- Help text -->
+        <a href="{% url 'password_reset' %}" class="form-text small text-muted">
+          {% trans "Forgot password?" %}
+        </a>
+      </div>
+    </div>
+    <!-- / .row -->
+
+    <!-- Input group -->
+    <div class="input-group input-group-merge">
+      <!-- Input -->
+      {{signin_form.password}}
+
+      <!-- Icon -->
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <i class="fe fe-eye"></i>
+        </span>
+      </div>
+    </div>
+    <div class="form-group mb-5">
+        {% for error in signin_form.password.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+    </div>
+
+    <input type="hidden" value="{{ redirect_url }}" name="redirect_url">
+
+    <p class="text-center mb-0 mt-4">
+      <a class="text-muted">
+        {% trans "Don't have an account yet?" %}
+          {% if embedded_signin %}<a href="#" onclick="$('#sign-in-modal').modal('hide');$('#sign-up-modal').modal('show')">
+          {% else %}<a href="{% url 'registration:signup' %}" class="d-inline-block">
+          {% endif %} {% trans "Sign up" %}</a>
+      </a>
+    </p>
+  </div>
+
+  <!-- Submit -->
+  <button type="submit" class="btn btn-lg btn-block btn-primary mb-3" id="signinButton">
+    {% trans "Sign in" %}
+  </button>
+  </div>
+</form>

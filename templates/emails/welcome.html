@@ -1,0 +1,301 @@
+<!doctype html>
+{% load i18n %}
+{% load static %}
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+        <meta content="width=device-width" name="viewport"/>
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+
+        <title>{% trans "Welcome to Ruoom®!" %}</title>
+
+        <style type="text/css">
+
+            table{
+                border-collapse:collapse;
+            }
+
+            img,a img{
+                border:0;
+                height:auto;
+                outline:none;
+                text-decoration:none;
+            }
+
+            body,#bodyTable,#bodyCell{
+                height:100%;
+                margin:0;
+                padding:0;
+                width:100%;  
+            }
+
+            img{
+                -ms-interpolation-mode:bicubic;
+            }
+
+            table{
+                mso-table-lspace:0pt;
+                mso-table-rspace:0pt;
+            }
+
+            p,a,li,td,blockquote{
+                mso-line-height-rule:exactly;
+            }
+
+            a[href^=tel],
+            a[href^=sms]{
+                color:inherit;
+                cursor:default;
+                text-decoration:none;
+            }
+
+            p,a,li,td,body,table,blockquote{
+                -ms-text-size-adjust:100%;
+                -webkit-text-size-adjust:100%;
+            }
+
+            a[x-apple-data-detectors]{
+                color:inherit !important;
+                text-decoration:none !important;
+                font-size:inherit !important;
+                font-family:inherit !important;
+                font-weight:inherit !important;
+                line-height:inherit !important;
+            }
+
+            .RetinaImage {
+                vertical-align:bottom;
+            }
+
+            .TextContent {
+                word-break:break-word;
+            }
+
+            .TextContent img{
+                height:auto !important;
+            }
+
+            body,
+            #bodyTable{
+                background-color: #ffffff;
+            }
+
+            #bodyCell{
+                border-top:0;
+            }
+
+            #templateBody{
+                background-color:#ffffff;
+                border-top:0;
+                border-bottom:0;
+            }
+
+            .bodyContainer .TextContent,
+            .bodyContainer .TextContent p,
+            .footerContainer .TextContent {
+                color: #1D1E4D;
+                font-family: Arial;
+                font-size: 16px;
+                line-height:150%;
+                text-align:left;
+                margin: 0;
+            }
+
+            .bodyContainer .TextContent.text-small,
+            .bodyContainer .TextContent.text-small p {
+                font-size: 14px;
+            }
+
+            .bodyContainer .TextContent a {
+                color:#0261B7;
+                font-weight:normal;
+                text-decoration:underline;
+            }
+
+            @media only screen and (max-width: 600px) {
+                body,table,td,p,a,li,blockquote{
+                    -webkit-text-size-adjust:none !important;
+                }
+
+                body {
+                    width:100% !important;
+                    min-width:100% !important;
+                }
+
+                .templateContainer {
+                    max-width: 100% !important;
+                    width:100% !important;
+                }
+
+                .RetinaImage{
+                    max-width:100% !important;
+                }
+
+                .TextContentContainer {
+                    max-width:100% !important;
+                    width:100% !important;
+                }
+
+                .FooterContent {
+                    padding: 20px 10px !important;
+                }
+
+                .bodyContainer .TextContent,
+                .bodyContainer .TextContent p {
+                    font-size:14px !important;
+                    line-height:125% !important;
+                }
+            }
+
+            @media only screen and (max-width: 420px) {
+
+                .footerContainer .TextContent {
+                    padding-top: 0 !important;
+                    padding-bottom: 10px;
+                }
+            }
+    	</style>
+    </head>
+
+    <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
+        <center>
+            <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+                <tr>
+                    <td align="center" valign="top" style="border-top: 2px solid #EC2660">
+
+                        <!-- BEGIN HEADER // -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center" valign="top">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="600" class="templateContainer">
+                                        <tr>
+                                            <td valign="top" class="headerContainer">
+                                                <table style="min-width:100%;" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-top: 20px" valign="top">
+                                                                <table class="ImageContentContainer" style="min-width:100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="ImageContent" style="text-align:left;" valign="top">
+                                                                                <img alt="" src="{% static 'img/ruoom_logo-small.png' %}" class="RetinaImage" align="middle">
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- // END HEADER -->
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" valign="top">
+                        <!-- BEGIN BODY // -->
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
+                            <tr>
+                                <td align="center" valign="top" style="padding-top:10px; padding-right:10px; padding-bottom:5px; padding-left:10px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="600" class="templateContainer">
+                                        <tr>
+                                            <td align="center" valign="top">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                    <tr>
+                                                        <td valign="top" class="bodyContainer" style="padding-top:10px; padding-bottom:10px; color:#1D1D4D;">
+
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="min-width:100%;">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td valign="top">
+                                                                            <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%; min-width:100%;" width="100%" class="TextContentContainer">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td valign="top" class="TextContent">
+                                                                                            <h1 style="font-size:24px; margin-bottom:24px;"><b>{% trans "Welcome to Ruoom®!" %}</b></h1>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                    <tr>
+                                                                                        <td valign="top" class="TextContent">
+                                                                                            <p style="margin-bottom:16px; font-size:18px;">{% trans "To access your new Ruoom® platform, please click the button below:" %}</p>
+                                                                                            <tr>
+                                                                                                <td valign="top" class="TextContent" style="padding-bottom:18px;">
+                                                                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                                                                        <tbody>
+                                                                                                            <tr>
+                                                                                                                <td align="center" style="padding-top:40px; padding-bottom: 30px;">
+                                                                                                                    <a href="https://{{customer_url}}" target="_blank" style="background-color: #EC2660; font-size: 18px; color: #FFFFFF; padding: 12px 30px; margin: 0 auto; text-align: center; border-radius: 50px; font-weight: 600; text-decoration: none;">{% trans "Get Access Now" %}</a>
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+
+                                                                                                    <p style="margin-bottom:20px; font-size:18px; color:#1D1D4D; text-decoration:none;"><em>{% trans "Your Username: " %}{{customer_email}}</em></p>
+                                                                                                    <p style="margin-bottom:20px; font-size:18px; color:#1D1D4D; text-decoration:none;"><em>{% trans "Your URL: " %}<a href="https://{{customer_url}}" style="color: #43c3ef;">{{customer_url}}</a></em></p>
+                                                                                                    <p style="margin-bottom:20px; font-size:18px;"><b>{% trans "We've put together some tips to help you navigate your new Ruoom® platform:" %}</b></p>
+                                                                                                    <p style="margin-bottom:20px; font-size:18px;">{% trans "1) You can find tutorials and guides by clicking your name at the bottom left-hand corner and selecting " %}<b>{% trans "Help Center." %}</b></p>
+                                                                                                    <p style="margin-bottom:20px; font-size:18px;">{% trans "2) For reporting errors, you can click on the " %}<b>{% trans "Report a Bug" %}</b>{% trans " button. To suggest a feature, you can click " %}<b>{% trans "Suggest a Feature" %}</b>{% trans ". Both buttons can be found on the left-hand navigation panel." %}</p>
+                                                                                                    <p style="font-size:18px;">{% trans "Feel free to contact us at any time if you have questions, suggestions, or feedback. Enjoy using Ruoom!" %}</p>
+
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                    <tr>
+                                                                                        <td valign="top" style="padding-top:50px;">
+                                                        									<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        										<tr>
+                                                                                                    <td class="ImageContent" style="text-align:left;" valign="top">
+                                                                                                        <img alt="logo" src="{% static 'img/powered-by-ruoom.png' %}" width="180px" class="RetinaImage" align="middle">
+                                                                                                        <br>
+                                                                                                        <br>
+                                                                                                    </td>
+                                                        										</tr>
+                                                        									</table>
+                                                        								</td>
+                                                                                    </tr>
+
+                                                                                    <tr>
+                                                                                        <td valign="top" style="padding-top:30px; border-top:1px solid #d2ddec;">
+                                                                                            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                                                                <tr>
+                                                                                                    <td valign="top" class="TextContent">
+                                                                                                        <p style="text-align:center;">{% trans "If you are having trouble accessing your account, please contact support at " %}<a href="#" style="color: #43c3ef;">support@ruoomsoftware.com</a>.</p>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- // END BODY -->
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>

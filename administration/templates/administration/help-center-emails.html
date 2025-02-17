@@ -1,0 +1,96 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block subtitle %}Help Center{% endblock %}
+
+{% block sub_head %}{% endblock %}
+
+{% block content %}
+  <div class="help-center pt-4">
+      <div class="header">
+        <div class="container-fluid">
+          <h1 class="header-title mb-4">{% trans "Welcome to the Ruoom<sup>&reg;</sup> Help Center!" %}</h1>
+
+          <div class="bg-white pr-4 pb-4 pl-4 rounded-lg tabs-header">
+
+            <div class="row align-items-center">
+              <div class="col">
+                <ul class="nav nav-tabs nav-overflow header-tabs">
+                  <li class="nav-item">
+                    <a href="{% url 'administration:help'%}" class="nav-link">
+                        <span class="fe fe-database mr-1"></span>
+                        {% trans "Data" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:helpEmail'%}" class="nav-link active">
+                        <span class="fe fe-mail mr-1"></span>
+                        {% trans "Emails" %}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end header -->
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- Card -->
+            <div class="card">
+              <div class="card-body">
+                  <div class="accordion" id="accordionHelp">
+
+                        <div class="">
+                            <div class="" id="headingOne">
+                              <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left font-weight-bold text-16" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    {% trans "How to set up email address for automated emails" %}
+                                </button>
+                              </h2>
+                            </div>
+
+                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionHelp">
+                              <div class="pl-30 pr-30">
+                                  <p class="mb-2">
+                                  {% blocktrans %}To set up your email address as the address from which automated business emails are sent (think: registration confirmations, reminders, etc.), visit the "Platform Settings" page by clicking your user's name on the bottom-left corner. <u>NOTE</u>: Only certain users will have access to this page for security purposes.<br><br>
+
+                                  Once on the "Platform Settings" page, you will see the section called, <i>Email information</i>. Fill in the email address information where you would like to send emails in the <i>Email information</i> section. Your email provider should inform you of these. Once you submit this information, your email setup is complete and ready to send automated emails!<br><br>
+
+                                  If you happen to use Gmail or G-suite, the details should be as follows:<br><br>{% endblocktrans %}
+
+                                  {% blocktrans %}<b>Details for Gmail or G-Suite:</b><br>
+                                  Host Address: smtp.gmail.com<br>
+                                  Host Port: 587<br>
+                                  Host Using TLS: Yes<br><br>{% endblocktrans %}
+
+                                  {% trans "<b>NOTE</b>: The Application Password field is not your regular log-in password for your email, but a password created explicitly for software integrations such as this. Here are the steps to generating an Application Password with a Gmail or G-suite based email address:" %}
+                                  </p>
+                                  <ol>
+                                      {% blocktrans %}
+                                      <li class="mb-2">On your Gmail page, click on your icon at the top right corner and select <i>Manage your Google Account</i>.</li>
+                                      <li class="mb-2">On the left-hand bar, click <i>Security</i>.</li>
+                                      <li class="mb-2">Under <i>Signing in to Google</i>, enable 2-factor authentication if it is not enabled yet.</li>
+                                      <li class="mb-2">Again under <i>Signing in to Google</i>, select (or search for) <i>App Passwords</i>.</li>
+                                      <li class="mb-2">Under <i>Type</i> select <i>Custom</i>, and type "Ruoom"</li>
+                                      <li>Your new 16-digit application password will be displayed on the screen. If you lose this password, you'll need to generate a new one, so enter it ASAP.</li>
+                                      {% endblocktrans %}
+                                  </ol>
+                              </div>
+                            </div>
+                        </div>
+                    </div> <!-- end accordion -->
+              </div>
+            </div>
+          </div>
+        </div> <!-- / .row -->
+      </div>
+  </div>
+
+
+
+{% endblock %}

@@ -1,0 +1,152 @@
+/************* Navbar vertical ***********/
+nav.navbar-vertical {
+  background: linear-gradient(to top, #1d2759, #20396d, #224b80, #265e92, #2b72a4, #2f7fb0, #338cbc, #399ac8, #3ba4d2, #3eaedc, #40b9e5, #43c3ef);
+  background: -moz-linear-gradien(to top, #1d2759, #20396d, #224b80, #265e92, #2b72a4, #2f7fb0, #338cbc, #399ac8, #3ba4d2, #3eaedc, #40b9e5, #43c3ef);
+  background: -webkit-linear-gradient(to top, #1d2759, #20396d, #224b80, #265e92, #2b72a4, #2f7fb0, #338cbc, #399ac8, #3ba4d2, #3eaedc, #40b9e5, #43c3ef);
+  border: none;
+}
+
+.navbar-light.navbar-vertical .nav-link {
+  color: #fff;
+}
+
+.navbar-light.navbar-vertical .nav-link.disabled {
+  color: rgba(255,255,255,.4);
+}
+
+.navbar-vertical .btn-dark {
+  background-color: #43C3EF;
+}
+
+.navbar-vertical.navbar-expand-lg .navbar-brand-img {
+  min-height: 86px;
+  width: 86px;
+}
+
+.navbar-vertical .btn-secondary,
+.navbar-vertical .btn-default {
+  padding: 7px 12px;
+  min-width: 160px !important;
+  width: 160px;
+}
+
+#userTable tbody img.rounded-circle {
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+}
+
+#userTable .table tbody td {
+  padding: 0.75rem;
+}
+#modalUserEditModal .modal-body input#id_is_superuser,
+#modalUserEditModal .modal-body input#id_is_teacher,
+#modalUserEditModal .modal-body input#id_message_consent,
+#modalUserEditModal .modal-body input#id_staff_is_active,
+#modalUserForm .modal-body input#id_message_consent,
+#modalUserForm .modal-body input#id_staff_is_active,
+#modalUserForm .modal-body input#id_is_superuser,
+#modalUserForm .modal-body input#id_is_teacher {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  margin-right: 8px;
+}
+
+#modalUserForm .modal-body .form-group label {
+  vertical-align: text-top;
+}
+
+#modalUserForm .modal-body ul#id_permissions,
+#modalUserEditModal .modal-body ul#id_permissions {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.dropup .dropdown-toggle:after {
+  vertical-align: middle;
+}
+
+div.accordion .card {
+  margin-bottom: 0;
+  box-shadow: none;
+}
+
+div.accordion h4 > a {
+  display: block;
+  position: relative;
+  background-repeat: no-repeat;
+  line-height: 1.5;
+  padding-left: 30px;
+  background-size: 20px;
+  background-position: left center;
+}
+
+div.accordion h4 > a.icon-card {
+  background-image: url(/static/img/icons/card.png);
+}
+
+div.accordion h4 > a.icon-tag {
+  background-image: url(/static/img/icons/tag.png);
+}
+
+div.accordion h4 > a.icon-bag {
+  background-image: url(/static/img/icons/money-bag.png);
+  background-size: 17px;
+}
+
+div.accordion h4 > a.icon-gift {
+  background-image: url(/static/img/icons/gift.png);
+  background-size: 17px;
+}
+
+div.accordion h4 > a:after {
+  content: "\e92e"; /* fa-chevron-down */
+  font-family: 'Feather';
+  position: absolute;
+  right: 0;
+}
+
+div.accordion h4 > a[aria-expanded="true"]:after {
+  content: "\e931"; /* fa-chevron-up */
+}
+
+/**** Import button ****/
+div.file.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+div.file.btn input {
+    position: absolute;
+    font-size: 50px;
+    opacity: 0;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+
+/* plans card css */
+
+.plan_card {
+  display: flex;
+  flex-direction: column;
+  border: 6px solid #3FB7E3;
+  border-radius: 25px;
+  width: 50%;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.plan_card:hover{
+  transform: scale(1.1);
+}
+
+.card__cover {
+  height: 120px;
+  width: 100%;
+}
+
+
+/* Plans update css ends */

@@ -1,0 +1,475 @@
+{% extends "administration/settings.html" %}
+{% load static %}
+{% load i18n %}
+{% block settingscontent %}
+    <div class="pt-0">
+        <div class="container-fluid">
+            <div class="platform-settings">
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Card -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="mb-5 d-flex align-items-center">{% trans "Customizing Colors for Embeddable Customer Pages" %}
+                                    <button type="button" class="btn-link info-icon info-icon-sm ml-3 flex-shrink-0"
+                                            data-toggle="tooltip" data-placement="top"
+                                            data-content="{% trans "Use these controls to select the colors presented on your customer-facing pages" %}">
+                                        {% trans "i" %}
+                                    </button>
+                                </h2>
+
+                                <div class="row">
+                                    <div class="col-xl-9 col-md-8">
+                                        <form action="{% url 'administration:settings-embed' %}" id="colorSettingForm" method="POST">
+                                            {% csrf_token %}
+                                            <h3>{% trans "Current Colors Applied" %}</h3>
+                                            <input type="hidden" id="setting_update" name="setting_update"
+                                                           value="colours_settings">
+                                            <div class="row mb-5">
+                                                <div class="col-auto mb-4">
+                                                    <label for="Header color">{% trans "Header color" %}</label>
+                                                    <div id="color-picker-header"
+                                                         class="form-control hex">{{ header_color }}</div>
+                                                    <div class="bg-color-header sample"
+                                                         style="background-color: {{ header_color }}"></div>
+                                                    <input type="hidden" id="headerValue" name="headerValue"
+                                                           value={{ header_color }}>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Button Color">{% trans "Button Color" %}</label>
+                                                    <div id="color-picker-button"
+                                                         class="form-control hex">{{ button_color }}</div>
+                                                    <div class="bg-color-button sample"
+                                                         style="background-color: {{ button_color }}"></div>
+                                                    <input type="hidden" id="buttonValue" name="buttonValue"
+                                                           value={{ button_color }}>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Background Color">{% trans "Background Color" %}</label>
+                                                    <div id="color-picker-card"
+                                                         class="form-control hex">{{ background_color }}</div>
+                                                    <div class="bg-color-card sample"
+                                                         style="background-color: {{ background_color }}"></div>
+                                                    <input type="hidden" id="backgroundValue" name="backgroundValue"
+                                                           value={{ background_color }}>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Text Color">{% trans "Text Color" %}</label>
+                                                    <div id="color-picker-text"
+                                                         class="form-control hex">{{ text_color }}</div>
+                                                    <div class="text-color-bg sample"
+                                                         style="background-color: {{ text_color }}"></div>
+                                                    <input type="hidden" id="textValue" name="textValue"
+                                                           value={{ text_color }}>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Text Color">Button Text Color</label>
+                                                    <div id="color-picker-button-text"
+                                                         class="form-control hex">{{ button_text_color }}</div>
+                                                    <div class="text-color-bg sample"
+                                                         style="background-color: {{ button_text_color }}"></div>
+                                                    <input type="hidden" id="buttonTextColor" name="buttonTextColor"
+                                                           value={{ button_text_color }}>
+                                                </div>
+                                            </div>
+                                            
+                                            <h3 class="pt-3">{% trans "Default Colors" %}</h3>
+                                            <div class="row mb-4">
+                                                <div class="col-auto mb-4">
+                                                    <label for="Header color">{% trans "Header color" %}</label>
+                                                    <div class="form-control hex">#EDF1F7</div>
+                                                    <div class="text-color-bg-1 sample"
+                                                         style="background-color: #EDF1F7"></div>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Button Color">{% trans "Button Color" %}</label>
+                                                    <div class="form-control hex">#EC2660</div>
+                                                    <div class="text-color-bg-1 sample"
+                                                         style="background-color: #EC2660"></div>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Background Color">{% trans "Background Color" %}</label>
+                                                    <div class="form-control hex">#FFFFFF</div>
+                                                    <div class="text-color-bg-1 sample"
+                                                         style="background-color: #FFFFFF"></div>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Text Color">{% trans "Text Color" %}</label>
+                                                    <div class="form-control hex">#12263F</div>
+                                                    <div class="text-color-bg-1 sample"
+                                                         style="background-color: #12263F"></div>
+                                                </div>
+                                                <div class="col-auto mb-4">
+                                                    <label for="Button Text Color">{% trans "Button Text Color" %}</label>
+                                                    <div class="form-control hex">#12263F</div>
+                                                    <div class="text-color-bg-1 sample"
+                                                         style="background-color: #12263F"></div>
+                                                </div>
+                                            </div>
+                                                
+                                            <button type="submit" class="btn btn-primary" id="save_colours_settings">{% trans "Save Platform Settings" %}</button>
+                                        </form>
+                                    </div>
+
+                                    <div class="col-xl-3 col-md-4 preview-section mt-4 mt-md-0">
+                                        <h3 class="mb-4">{% trans "Preview" %}</h3>
+                                        <div class="class-content-wrap">
+                                            <div class="bg-color-card"
+                                                 style="background-color: {{ background_color }}">
+                                                <div class="column-header bg-color-header pt-3 pb-3 text-color"
+                                                     style="background-color: {{ header_color }}">
+                                                    <div class="text-center d-flex justify-content-center align-items-center flex-column">
+                                                        <span class="d-block font-weight-bold">{% trans "Monday" %}</span>
+                                                        <small>{% trans "Feb 3" %}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="event-div p-3">
+                                                    <h3>{% trans "Core Power" %}</h3>
+                                                    <div class="event-tags">
+                                                        <span class="fe fe-clock mr-2 text-muted"></span>{% trans "8:30" %}
+                                                        <span class="ml-4">
+                                                            <i class="fa fa-hourglass-start mr-1 text-muted text-12"></i> {% trans "60 min" %}
+                                                        </span>
+                                                        <span class="row-text-block">{% trans "Clara Gibson" %}</span>
+                                                    </div>
+                                                    <div class="btn-row mt-2">
+                                                        <a href="#" data-id="4"
+                                                           class="btn btn-primary btn-book bg-color-button"
+                                                           style="background-color: {{ button_color }}; color: {{ button_text_color }}">{% trans "Book" %}</a>
+                                                        <a data-id="4" data-toggle="modal"
+                                                           class="btn-link info-icon d-inline-block">i</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="mt-5 mb-5">
+                                <h2 class="mb-4">{% trans "Embed links" %}</h2>
+
+                                {% if messages %}
+                                    <ul class="messages" style="margin-left:500px;">
+                                        {% for message in messages %}
+                                            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}><p
+                                                    style="color:darkblue;font-size: 18px;"><b>{{ message | title }}</b>
+                                            </p></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                                <div id="tab" class="btn-group-toggle radio d-inline-block" data-toggle="buttons">
+                                    <label class="btn mr-3 active" id="url_select">
+                                        <input type="radio" name="emebed_url" id="url_radio" value="url" checked="">
+                                        <i class="fe fe-check-circle"></i> Url
+                                    </label>
+                                    <label class="btn mr-2" id="iframe_select">
+                                        <input type="radio" name="emebed_url" id="iframe_radio" value="iFrame">
+                                        <i class="fe fe-check-circle"></i> iFrame
+                                    </label>
+                                </div>
+
+                                <span class="ml-md-5 d-block d-md-inline-block mt-4 mt-md-0">How to embed Customer pages?
+                                    <a href={% url 'administration:helpEmbed'%} target="_blank">
+                                        <span class="fe fe-external-link"></span>
+                                    </a>
+                                </span>
+
+                                <div class="tab-content mt-5">
+                                    <div class="tab-pane active" id="url">
+
+                                        <p>{% trans "Your embeddable URL for the " %}<b>{% trans "booking schedule page:" %}</b>
+                                            <button type="button" class="btn-link info-icon info-icon-sm ml-2" data-toggle="tooltip" data-placement="top" data-content="{% trans 'This URL can be used in your website creator (Squarespace, Wix, Wordpress, etc.) to embed your customer facing pages on your website.' %}">
+                                                i
+                                            </button>
+                                        </p>
+                                        
+                                        <div id="clipboardBooking" class="d-flex clipboard-frame mb-4">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">https://{{ domain }}/customer/booking</div>
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardBooking">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+                                        
+                                        <p>{% trans "Your embeddable URL for the " %}<b>{% trans "appointment page:" %}</b></p>
+
+                                        <div id="clipboardAppointment" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">https://{{ domain }}/customer/booking</div>
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardAppointment">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+
+                                        {% comment %}
+                                        <p>{% trans "Your embeddable URL for customer account pages:" %}</p>
+                                        <div id="clipboardAccount" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">https://{{ domain }}/customer/account-settings</div>
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardAccount">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+                                        {% endcomment %}
+
+                                    </div>
+
+                                    <div class="tab-pane" id="iframe">
+
+                                        <p>{% trans "Your iFrame embed code for the " %}<b>{% trans "booking schedule page:" %}</b>
+                                            <button type="button" class="btn-link info-icon info-icon-sm ml-2"
+                                                    data-toggle="tooltip" data-placement="top"
+                                                    data-content="{% trans "This html block can be used in your website creator (Squarespace, Wix, Wordpress, etc.) to embed your customer facing pages on your website." %}">
+                                                i
+                                            </button>
+                                        </p>
+                                        
+                                        <div id="clipboardBookingFrame" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">&lt;iframe id="ruoom" src="https://{{ domain }}/customer/booking" width="100%" style="border: none" title="Ruoom Customer Page"&gt;&lt;/iframe&gt;</div>
+
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardBookingFrame">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+
+                                        <p class="mt-4">{% trans "Your iFrame embed code for the " %}<b>{% trans "appointment page:" %}</b></p>
+                                        
+                                        <div id="clipboardAppointmentFrame" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">&lt;iframe id="ruoom" src="https://{{ domain }}/customer/appointment-services" width="100%" style="border: none" title="Ruoom Customer Page"&gt;&lt;/iframe&gt;</div>
+                                        
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardAppointmentFrame">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+                                        
+                                        <p class="mt-4">{% trans "To size the iFrame above, you can add this javascript to the body or footer of your page. Otherwise, you can manually set the size of the iFrame:" %}</p>
+                                        
+                                        <div id="clipboardJsFrame" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">&lt;script type="text/javascript" src="https://www.ruoomsoftware.com/iframeResizer/iframeResizer.min.js"&gt;&lt;/script&gt;<br>
+                                            &lt;script type="text/javascript"&gt;iFrameResize({log: true},'#ruoom')&lt;/script&gt;</div>
+                                        
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardJsFrame">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+
+                                        {% comment %}
+                                        <p class="mt-4">{% trans "Your iFrame embed code for customer account pages:" %}</p>
+                                        
+                                        <div id="clipboardAccountFrame" class="d-flex clipboard-frame">
+                                            <div class="bg-light px-3 py-16 border border-right-0 rounded-sm">&lt;iframe src="https://{{ domain }}/customer/account-settings" height="700" width="100%" style="border: none" title="Ruoom Customer Page"&gt;&lt;/iframe&gt;</div>
+                                        
+                                            <button type="button" class="btn btn-link btn-clipboard border text-18 border-left-0 rounded-sm" data-clipboard-action="copy" data-clipboard-target="#clipboardAccountFrame">
+                                                <span class="fe fe-copy"></span>
+                                            </button>
+                                        </div>
+                                        {% endcomment %}
+                                    </div>
+                                </div> <!-- end tab content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                                
+    <script src="{% static 'dashkit/libs/mdb-color-picker/js/mdb.min.js' %}"></script>
+    <script src="{% static 'dashkit/libs/mdb-color-picker/js/pickr.min.js' %}"></script>
+    <script>
+        const pickr1 = new Pickr({
+            el: '#color-picker-header',
+            useAsButton: true,
+            default: "303030",
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    /*hsla: true,
+                    hsva: true,
+                    cmyk: true,*/
+                    input: true,
+                    clear: true,
+                    save: true
+                }
+            },
+            onChange(hsva, instance) {
+                let colorObject = {
+                    hex: hsva.toHEX().toString(),
+                    /*rgba: hsva.toRGBA().toString(),
+                    hsla: hsva.toHSLA().toString(),
+                    hsva: hsva.toHSVA().toString(),
+                    cmyk: hsva.toCMYK().toString()*/
+                };
+                for (let col in colorObject) {
+                    $('#color-picker-header' + '.' + col).text(colorObject[col]);
+                    document.getElementById("headerValue").value = colorObject[col];
+                }
+                $('.bg-color-header').css('background-color', hsva.toRGBA().toString());
+            },
+            onSave(hsva, instance) {
+                $("#save_api_key").show();
+            }
+            /*onChange(hsva, instance) {
+              $('.bg-color-header').css('background-color', hsva.toRGBA().toString());
+            }*/
+        });
+        const pickr2 = new Pickr({
+            el: '#color-picker-button',
+            useAsButton: true,
+            default: "303030",
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    /*hsla: true,
+                    hsva: true,
+                    cmyk: true,*/
+                    input: true,
+                    clear: true,
+                    save: true
+                }
+            },
+            onChange(hsva, instance) {
+                let colorObject = {
+                    hex: hsva.toHEX().toString(),
+                    /*rgba: hsva.toRGBA().toString(),
+                    hsla: hsva.toHSLA().toString(),
+                    hsva: hsva.toHSVA().toString(),
+                    cmyk: hsva.toCMYK().toString()*/
+                };
+                for (let col in colorObject) {
+                    $('#color-picker-button' + '.' + col).text(colorObject[col]);
+                    document.getElementById("buttonValue").value = colorObject[col];
+
+                }
+                $('.bg-color-button').css('background-color', hsva.toRGBA().toString());
+            },
+            onSave(hsva, instance) {
+                $("#save_api_key").show();
+            }
+        });
+        const pickr3 = new Pickr({
+            el: '#color-picker-card',
+            useAsButton: true,
+            default: "303030",
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    input: true,
+                    clear: true,
+                    save: true
+                }
+            },
+            onChange(hsva, instance) {
+                let colorObject = {
+                    hex: hsva.toHEX().toString(),
+                };
+                for (let col in colorObject) {
+                    $('#color-picker-card' + '.' + col).text(colorObject[col]);
+                    document.getElementById("backgroundValue").value = colorObject[col];
+
+                }
+                $('.bg-color-card').css('background-color', hsva.toRGBA().toString());
+            },
+            onSave(hsva, instance) {
+                $("#save_api_key").show();
+            }
+        });
+        const pickr4 = new Pickr({
+            el: '#color-picker-text',
+            default: "303030",
+            useAsButton: true,
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    input: true,
+                    clear: true,
+                    save: true
+                }
+            },
+            onChange(hsva, instance) {
+                let colorObject = {
+                    hex: hsva.toHEX().toString(),
+                };
+                for (let col in colorObject) {
+                    $('#color-picker-text' + '.' + col).text(colorObject[col]);
+                    document.getElementById("textValue").value = colorObject[col];
+
+
+                }
+                $('.text-color').css('color', hsva.toRGBA().toString());
+                $('.text-color-bg').css('background-color', hsva.toRGBA().toString());
+            },
+            onSave(hsva, instance) {
+                $("#save_api_key").show();
+            }
+        });
+        const pick54 = new Pickr({
+            el: '#color-picker-button-text',
+            default: "303030",
+            useAsButton: true,
+            components: {
+                preview: true,
+                opacity: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    input: true,
+                    clear: true,
+                    save: true
+                }
+            },
+            onChange(hsva, instance) {
+                let colorObject = {
+                    hex: hsva.toHEX().toString(),
+                };
+                for (let col in colorObject) {
+                    $('#color-picker-button-text' + '.' + col).text(colorObject[col]);
+                    document.getElementById("buttonTextColor").value = colorObject[col];
+
+
+                }
+                $('.bg-color-button').css('color', hsva.toRGBA().toString());
+            },
+            onSave(hsva, instance) {
+                $("#save_api_key").show();
+            }
+        });
+
+        $("#url_select").click(function () {
+            $("#url").show();
+            $("#iframe").hide();
+        })
+
+        $("#iframe_select").click(function () {
+            $("#iframe").show();
+            $("#url").hide();
+        })
+    </script>
+
+    <script>
+        setTimeout(function () {
+            $('.messages').fadeOut('fast');
+        }, 3000);
+
+        $( document ).ready(function() {
+            new ClipboardJS('.btn-clipboard');
+        });
+
+        $("#embed-tab").addClass('active');
+    </script>
+{% endblock %}

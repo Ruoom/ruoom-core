@@ -1,0 +1,25 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% load custom_tags %}
+{% block subtitle %}
+    {% trans "Platform Settings" %}
+{% endblock %}
+{% block sub_head %}{% endblock %}
+{% block content %}
+<style>h1 {text-align: center;}</style>
+    <div class="pt-4">
+        <div class="container-fluid h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-12">
+                    <h1 class="header-title">{% trans "Please add a location to your business to view the schedule of services." %}<br>
+                        {% trans "This can be done on the " %}
+                        <a href="{% url 'administration:configuration' %}">{% trans "RoomO" %}</a>
+                        {% trans " page." %}
+                    </h1>
+                </div>
+            </div>
+            <!-- / .row -->
+        </div>
+    </div>
+{% endblock %}

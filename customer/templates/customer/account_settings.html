@@ -1,0 +1,532 @@
+{% extends customer_base_template %}
+{% load i18n %}
+{% load static %}
+{% block content_account_tabs %}
+    {% if admin_customer == 'true' %}
+        {% include "administration/customer_info_nav.html" with settings='active'  customer_name=customer_name  customer=customer_id customer_business_number=customer_business_number %}
+    {% endif %}
+
+    <div class="{% if admin_customer == 'true' %}{% else %}container-fluid custom-row-full{% endif %}">
+        
+        <div class="mw-1000">
+
+            <!-- Personal Info Card -->
+            <div class="card">
+                <div class="card-body p-4">
+                    <!-- Personal info input fields -->
+                    <div class="{% if profile_info_updated %}display-none{% endif %} row align-items-center"
+                            id="update-row-01">
+                        <div class="col">
+                            <!-- Heading -->
+                            <h2 class="mb-0">{% trans "Personal info" %}</h2>
+                            <hr class="navbar-divider my-3">
+
+                            <form method="post" class="mb-0">
+                                {% csrf_token %}
+                                <div class="custom-form-card">
+                                    <div class="custom-form-card-row">
+                                        <div class="row">
+
+                                            {% if request.user.profile.language == "ko" %}
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "Last Name" %}</label>
+                                                    <input required type="text" class="form-control"
+                                                            placeholder="{% trans "Last name" %}" value="{{ object.last_name | default_if_none:'' }}"
+                                                            name="last_name">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "First Name" %}</label>
+                                                    <input required type="text" class="form-control"
+                                                            placeholder="{% trans "First name" %}" value="{{ object.first_name | default_if_none:'' }}"
+                                                            name="first_name">
+                                                </div>
+                                            </div>
+
+                                            {% else %}
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "First Name" %}</label>
+                                                    <input required type="text" class="form-control"
+                                                            placeholder="{% trans "First name" %}" value="{{ object.first_name | default_if_none:'' }}"
+                                                            name="first_name">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "Last Name" %}</label>
+                                                    <input required type="text" class="form-control"
+                                                            placeholder="{% trans "Last name" %}" value="{{ object.last_name | default_if_none:'' }}"
+                                                            name="last_name">
+                                                </div>
+                                            </div>
+
+                                            {% endif %}
+
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "Gender" %}</label>
+                                                    <div>
+                                                        <select name="gender" class="form-control">
+                                                            {% if object.gender %}
+                                                                <option selected
+                                                                        value="{{ object.gender }}">{{ object.get_gender_display }}</option>
+                                                                {% for gender in gender_type_choices %}
+                                                                    {% if object.gender != gender.0 %}
+                                                                        <option value="{{ gender.0 }}">{{ gender.1 }}</option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <option value="">{% trans "Select Gender" %}</option>
+                                                                {% for gender in gender_type_choices %}
+                                                                    <option value="{{ gender.0 }}">{{ gender.1 }}</option>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label>{% trans "Date of birth" %}</label>
+                                                    <input class="form-control input-date-read"
+                                                            data-toggle="flatpickr" value="{{ object.date_of_birth | default_if_none:'' }}"
+                                                            name="date_of_birth">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-footer text-left ">
+                                        <button type="submit" class="btn btn-primary" id="update01"
+                                                name="personal_info">{% trans "Update" %}
+                                        </button>
+                                        <button type="submit" class="btn btn-link">{% trans "Cancel" %}</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <!--Personal info display card  -->
+                    <div class="row align-items-center data-row-show {% if profile_info_updated %}display-show{% endif %}"
+                            id="update-show-01">
+                        <div class="col">
+                            <!-- Heading -->
+                            <div class="card-title-price ">
+                        <span class="h2 mb-0 title-one">
+                            {% trans "Personal info" %}
+                            <button id="edit-show-01" class="btn btn-link btn-right-abs">
+                                <span class="fe fe-edit"></span>
+                            </button>
+                        </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="data-show pt-3 personal-info">
+                                <div class="mb-2">
+                                    <label>{% trans "Name" %}</label>
+                                    <span class="pl-4">{{ object.localized_name | default_if_none:'' }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <label>{% trans "Gender" %}</label>
+                                    <span class="pl-4">{{ object.get_gender_display | default_if_none:'' }}</span>
+                                </div>
+                                <div>
+                                    <label class="mb-0">{% trans "Date of birth" %}</label>
+                                    <span class="pl-4">{{ object.date_of_birth | default_if_none:'' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Card -->
+            <div class="card">
+                <div class="card-body p-4">
+
+                    <!-- Account info input fields-->
+                    <div class="row align-items-center {% if account_info_updated %}display-none{% endif %}"
+                            id="update-row-03">
+                        <div class="col">
+                            <!-- Heading -->
+                            <h2 class="mb-0">{% trans "Account / Password" %}</h2>
+                            <hr class="navbar-divider my-3">
+
+                            <div class="custom-form-card">
+                                <form method="post">
+                                    {% csrf_token %}
+
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label>{% trans "Email" %}</label>
+                                                <input type="text" class="form-control" placeholder="{% trans "Email Address" %}"
+                                                        value="{{ object.email | default_if_none:'' }}" name="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label>{% trans "Enter Current Password" %}</label>
+                                                <input type="password" class="form-control" name="password">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label>{% trans "Enter New Password" %}</label>
+                                                <input type="password" class="form-control" name="password">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label>{% trans "Verify New Password" %}</label>
+                                                <input type="password" class="form-control" name="password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group">
+                                                <label>{% trans "Choose Location" %}</label>
+                                                <div class="mb-4">
+                                                    <select name="default_location" id="default_location" class="form-control select2-div select-location" data-toggle="select" data-options='{"minimum-results-for-search": -1}'>
+                                                        <option value="" data-avatar-src="{% static 'administration/images/placeholder.png' %}">{% trans "Select Location" %}</option>
+                                                        {% for location in location_list %}
+                                                        <option value="{{location.id}}" data-avatar-src="{% static 'administration/images/placeholder.png' %}">{{location.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-footer text-left">
+                                        <button type="submit" class="btn btn-primary" id="update03"
+                                                name="account_info">{% trans "Update" %}
+                                        </button>
+                                        <button type="submit" class="btn btn-link">{% trans "Cancel" %}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account info display card -->
+                    <div class="row align-items-center data-row-show {% if account_info_updated %}display-show{% endif %}"
+                            id="update-show-03">
+                        <div class="col">
+                            <div class="card-title-price">
+                            <span class="h2 mb-0 title-one">
+                            {% trans "Account / Password" %}
+                            <button id="edit-show-03" class="btn btn-link btn-right-abs"><span
+                                    class="fe fe-edit"></span></button>
+                            </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group data-group">
+                                                <label>{% trans "Email" %}</label>
+                                                <p>{{ object.email | default_if_none:''}}</p>
+                                            </div>
+                                            <!--                                        <div class="form-group data-group">-->
+                                            <!--                                            <label >{% trans "Password" %}</label>-->
+                                            <!--                                            <p>{% trans "Last updated 2 days ago" %}</p>-->
+                                            <!--                                        </div>-->
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6">
+                                            <div class="form-group data-group mb-0">
+                                                <label>{% trans "Default Location" %}</label>
+                                                <p>{{ object.default_location.name | default_if_none:'-' }}</p>
+                                            </div>
+                                            <!--                                        <div class="form-group data-group">-->
+                                            <!--                                            <label >{% trans "Password" %}</label>-->
+                                            <!--                                            <p>{% trans "Last updated 2 days ago" %}</p>-->
+                                            <!--                                        </div>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Contact Info Card Edit-->
+            <div class="card">
+                <div class="card-body p-4">
+
+                    <!-- Contact Info input fields -->
+                    <form class="{% if contact_info_updated %}display-none{% endif %}  row align-items-center mb-0"
+                            method="post" id="update-row-02">
+                        {% csrf_token %}
+                        <!-- Address -->
+                        <div class="update-row-02">
+                            <div class="col">
+                                <!-- Heading -->
+
+
+                                <h2 class="mb-0">{% trans "Contact info" %}</h2>
+                                <hr class="navbar-divider my-3">
+
+                                <div class="custom-form-card">
+                                    <div class="custom-form-card-row">
+                                        <div class="row">
+                                            <div class="col-12 col-lg-12 col-xl-12">
+                                                <div class="form-group address-group">
+                                                    <label>{% trans "Address" %}</label>
+                                                    <div class="row">
+                                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                                            <input type="text" class="form-control"
+                                                                    placeholder="{% trans "Street" %}" name="street_address"
+                                                                    value="{{object.street_address | default_if_none:''}}">
+                                                                            
+                                                        </div>
+                                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                                            <input type="text" class="form-control"
+                                                                    placeholder="{% trans "City" %}" name="city" value="{{object.city | default_if_none:''}}">
+                                                                    
+                                                        </div>
+                                                        <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                                            <input type="text" class="form-control"
+                                                                    placeholder="{% trans "State" %}" name="state"  value="{{ object.state  | default_if_none:''}}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group">  
+                                                    <label>{% trans "Phone number" %}</label>
+                                                    <input type="text" class="form-control"placeholder="{% trans "Enter phone number" %}" name="phone"value="{{ object.phone | default_if_none:'' }}">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox table-checkbox mb-2">
+                                                <input class ="custom-control-input" type="checkbox" id="check_id" name="message_consent" value="{{ object.message_consent }}">
+                                                <label class="custom-control-label" for="check_id">{% trans "Agree to receive messages related to reservations" %}</label>
+                                            </div> 
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div class="align-items-center update-row-02 mt-10">
+                            <div class="col">
+                                <!-- Heading -->
+                                <h2 class="mb-0">{% trans "Emergency contact" %}</h2>
+                                <hr class="navbar-divider my-3">
+
+                                <div class="custom-form-card">
+                                    <div class="custom-form-card-row">
+                                        <div class="row">
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group">
+                                                    <label>{% trans "Name" %}</label>
+                                                    <input type="text" class="form-control" placeholder="{% trans "Full name" %}"
+                                                            name="emgcy_cont_name"
+                                                            value="{{ object.emgcy_cont_name | default_if_none:'' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group">
+                                                    <label>{% trans "Relationship to Client" %}</label>
+                                                    <input type="text" class="form-control"
+                                                            placeholder="{% trans "Relationship to Client" %}"
+                                                            name="emgcy_cont_relation" value="{{ object.emgcy_cont_relation | default_if_none:'' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <div class="form-group">
+                                                    <label>{% trans "Phone number" %}</label>
+                                                    <input type="text" class="form-control"
+                                                            placeholder="{% trans "Enter phone number" %}" name="emgcy_cont_num"
+                                                            value="{{ object.emgcy_cont_num | default_if_none:'' }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-footer text-left ">
+                                        <button type="submit" class="btn btn-primary" id="update02"
+                                                name="contact_info">{% trans "Update" %}
+                                        </button>
+                                        <button type="submit" class="btn btn-link">{% trans "Cancel" %}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Contact Info display card -->
+                    <div class="row align-items-center data-row-show {% if contact_info_updated %}display-show{% endif %}"
+                            id="update-show-02">
+                        <div class="col">
+                            <!-- Heading -->
+                            <div class="card-title-price">
+                            <span class="h2 mb-0 title-one">
+                            {% trans "Contact info" %}
+                            <button id="edit-show-02" class="btn btn-link btn-right-abs"><span
+                                    class="fe fe-edit"></span></button>
+                            </span>
+                                
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group data-group">
+                                                <label>{% trans "Address" %}</label>
+                                                <p>{% if object.street_address %}{{ object.street_address }}{% else %}-{% endif %}</p>
+                                                <p>{% if object.city %}{{ object.city }}{% else %}-{% endif %}</p>
+                                                <p>{% if object.state %}{{ object.state }}{% else %}-{% endif %}</p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label>{% trans "Phone number" %}</label>
+                                                <p>{% if object.phone %}{{ object.phone }}{% else %}-{% endif %}</p>
+                                            </div>
+                                            <div class="form-group data-group">
+                                                <label>{% trans "Emergency Contact Name" %}</label>
+                                                <p>{% if object.emgcy_cont_name %}{{ object.emgcy_cont_name }}{% else %}-{% endif %}</p>
+                                                <label>{% trans "Emergency Relationship to Client" %}</label>
+                                                <p>{{ object.emgcy_cont_relation }} </p>
+                                                <label>{% trans "Emergency Contact Number" %}</label>
+                                                <p>{{ object.emgcy_cont_num }}</p>
+                                                <label>{% trans "permissions" %}</label>
+                                                <p>{{ object.message_consent }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Card-->
+            <div class="card">
+                <div class="card-body p-4">
+                    <div id="update-row-04">
+                            <!-- Heading -->
+                            <div class="card-title-price d-block">
+                                <div class="row align-items-baseline">
+                                    <span class="h2 mb-3 mb-sm-0 col-sm-4 mt-0">
+                                        {% trans "Payments" %}
+                                    </span>
+                                    <div class="h3 mb-2 mb-sm-0 col-sm-4">
+                                        <span class="text-muted">{% trans "Balance:" %}</span> 
+                                        {{ currency }}{{ object.localized_balance | default_if_none:0}}
+                                    </div>
+                                    <div class="h3 mb-0 col-sm-4">
+                                        <span class="text-muted">{% trans "Credit:" %}</span>  
+                                        {{ object.credit | default_if_none:0}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group">
+                                                <label>{% trans "Credit card" %}</label>
+                                                <div class="row">
+                                                    <div class="col-12 col-xl-4 col-md-5 col-sm-6 mb-3 mb-sm-0">
+                                                        <select class="form-control" data-toggle="Choose card">
+                                                            <option value="">{% trans "Choose card" %}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-12 col-xl-4 col-md-5 col-sm-6">
+                                                        <input type="text" class="form-control"
+                                                                placeholder="{% trans "Expiration" %}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-footer text-left">
+                                    <button type="submit" class="btn btn-primary" id="update04">{% trans "Update" %}</button>
+                                    <button type="submit" class="btn btn-link">{% trans "Cancel" %}</button>
+                                </div>
+                            </div>
+
+                    <!-- / .row -->
+                    <div class="row align-items-center data-row-show" id="update-show-04">
+                        <div class="col">
+                            <div class="card-title-price">
+                        <span class="h2 mb-0 title-one">
+                        {% trans "Payments" %}
+                        <button id="edit-show-04" class="btn btn-link btn-right-abs"><span
+                                class="fe fe-edit"></span></button>
+                        </span>
+                            </div>
+                            <hr class="navbar-divider my-3">
+                            <div class="custom-form-card">
+                                <div class="custom-form-card-row data-show">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-12 col-xl-12">
+                                            <div class="form-group data-group">
+                                                <label>{% trans "Credit card" %} </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / .row -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        var userLanguage = "{{request.user.profile.language}}";
+        if (userLanguage == "ko"){
+          flatpickr.localize(flatpickr.l10ns.ko); 
+        }
+        $(document).ready(function () {
+            $('select').select2({
+                minimumResultsForSearch: -1,
+                placeholder: "{% trans "Select" %}",
+            });
+        });
+
+        $('.input-date').click(function () {
+            if (this.checked) {
+                $(".input-date-read").attr("readonly", false);
+
+            } else {
+                $(".input-date-read").attr("readonly", true);
+
+            }
+        });
+
+        $("#check_id").click(function(){
+            if ($(this).is(":checked")) {
+                $(this).val("True");
+       
+            } else {
+                $(this).val("False");
+            }
+        });
+
+        $('#default_location').val('{{ object.default_location.id }}').trigger('change');
+    </script>
+{% endblock %}
