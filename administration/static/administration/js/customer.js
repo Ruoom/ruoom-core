@@ -25,8 +25,8 @@ $(document).ready(function () {
             $("#cardinfo").addClass("active");
             $("#customercard").show()
             $("#customerSetup").show()
-            $('.header-title-customer').text(ui.item.localized_name())//ui.item.first_name + ' ' + ui.item.last_name)
-            $('#name').text(ui.item.localized_name())//first_name + ' ' + ui.item.last_name)
+            $('.header-title-customer').text(ui.item.localized_name)
+            $('#name').text(ui.item.localized_name)
             $('#gender').text(ui.item.gender);
             $('#dob').text(ui.item.dob)
             $('#email').text(ui.item.email)

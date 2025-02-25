@@ -969,18 +969,6 @@ class CustomersSearch(View):
             ).order_by('first_name')[:10]
             results = []
             for customer in search_qs:
-                list_of_classes = []
-                enrolled_classes = customer.enrolled_classes.all()
-                for enrolled_class in enrolled_classes:
-                    teacher_name = ""
-                    if enrolled_class.teacher:
-                        teacher_name = enrolled_class.teacher.localized_name()
-                    enrolled_class_data = {
-                        "schedule_time": datetime.strftime(enrolled_class.scheduled_time, '%b %d, %Y, %H:%M:%S'),
-                        "class_type": enrolled_class.class_type.name,
-                        "teacher": teacher_name
-                    }
-                    list_of_classes.append(enrolled_class_data)
                 obj = {
                     "id": customer.id.__str__(),
                     "email": customer.email.__str__(),
@@ -989,6 +977,7 @@ class CustomersSearch(View):
                     "emgcy_cont_num": customer.emgcy_cont_num.__str__(),
                     "first_name": customer.first_name.__str__(),
                     "last_name": customer.last_name.__str__(),
+                    "localized_name": customer.localized_name(),
                     "gender": customer.gender.__str__(),
                     "dob": customer.get_date_of_birth().__str__(),
                     "street_address": customer.street_address.__str__(),
