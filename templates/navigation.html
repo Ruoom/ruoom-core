@@ -96,13 +96,16 @@
       <!-- <- Navigation -->
       <ul class="navbar-nav mb-md-4">
          <li class="nav-item" id="staff-page">
-            <a style="display:{% display_if_has_access user=request.user permission_group='Staff' %}"  class="nav-link {{staffpage}}" href="{% url 'administration:staff'%}">
+            <a style="display:{% display_if_has_access user=request.user permission_group='staff' %}"  class="nav-link {{staffpage}}" href="{% url 'administration:staff'%}">
             <i class="fe fe-user"></i>{% trans "Staff" %}
             </a>
          </li>
+         {% if 'payment' in plugins %}
+            {% include 'payment/partials/purchases_nav.html' %}
+         {% endif %}
          <li class="nav-item" id="ruoom-planner-page">
-            <a style="display: {% display_if_has_access user=request.user permission_group='configuration' %}"  class="nav-link {{roomo}}" href="{% url 'administration:configuration'%}">
-               <img src="{% static 'img/icon-ruoom-planner-transparent.png' %}" alt="icon" class="mr-2" />{% trans "RoomO" %}
+            <a style="display: {% display_if_has_access user=request.user permission_group='locations' %}"  class="nav-link {{locations}}" href="{% url 'administration:locations'%}">
+               <i class="fe fe-map-pin"></i>{% trans "Locations" %}
             </a>
          </li>
          <li class="nav-item" id="permissions-page">

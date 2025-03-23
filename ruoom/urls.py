@@ -24,6 +24,7 @@ from . import views
 from django.views.generic import RedirectView
 from django.contrib import admin
 from .forms import DomainPasswordResetForm
+from .utils import load_plugin_urls
 
 app_name = 'admin'
 
@@ -55,6 +56,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
+
+# Dynamically load plugin URLs
+urlpatterns += load_plugin_urls()
+
 
 # Add media url in development
 if settings.DEFAULT_FILE_STORAGE == "django.core.files.storage.FileSystemStorage":

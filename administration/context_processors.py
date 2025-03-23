@@ -1,6 +1,6 @@
 import os
 import requests,json
-from administration.models import StudioSettings
+from administration.models import Business
 from django.conf import settings
 from django.db.models import Q
 from registration.models import Profile
@@ -28,10 +28,14 @@ def studio_image(request):
         context["first_time"] = False
 
     # Load studio settings
-    studio_settings = StudioSettings.objects.filter(
+    studio_settings = Business.objects.filter(
         business_id=profile.business_id
     ).first()
     
+    #Check installed plugins based on what's in folder
+    plugins = os.listdir(settings.PLUGINS_DIR)
+    context["plugins"] = plugins
+
     if not studio_settings:
         return context
 
@@ -60,6 +64,7 @@ def studio_image(request):
 
     # Replace image context
     context["studio_setting_image"] = image_url
+
     return context
 
 def language_list(request):

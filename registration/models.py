@@ -81,10 +81,10 @@ class Profile(User):
     balance = models.DecimalField(max_digits=8,decimal_places=2, default=0, verbose_name=_("Account Balance"))
 
     business_id = models.PositiveIntegerField(_("Business ID"), default=1)
-    staff_at_locations = models.ManyToManyField('administration.Locations', verbose_name=_("Staff At Locations"), related_name='staff_at_locations', blank=True)
+    staff_at_locations = models.ManyToManyField('administration.Location', verbose_name=_("Staff At Locations"), related_name='staff_at_locations', blank=True)
     msa_signed = models.BooleanField(verbose_name=_("Has this user signed the Master Service Agreement?"),default=False)
 
-    default_location = models.ForeignKey('administration.Locations', verbose_name=_("Default Location"),on_delete=models.CASCADE, blank=True, null=True)
+    default_location = models.ForeignKey('administration.Location', verbose_name=_("Default Location"),on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.localized_name()
@@ -169,12 +169,12 @@ class Profile(User):
         verbose_name = _('Profile')
 
     def location(self):
-        Locations = get_model("administration", "Locations")
+        Location = get_model("administration", "Location")
 
         if self.default_location:
             return self.default_location
         else:
-            return Locations.objects.filter(business_id=self.business_id).first()
+            return Location.objects.filter(business_id=self.business_id).first()
 
     def localized_balance(self):
         if self.location():
@@ -186,8 +186,8 @@ class Profile(User):
             return int(self.balance)
 
     def business(self):
-        StudioSettings = get_model("administration", "StudioSettings")
+        Business = get_model("administration", "Business")
 
-        business = StudioSettings.objects.filter(business_id=self.business_id).first()
+        business = Business.objects.filter(business_id=self.business_id).first()
         return business
 

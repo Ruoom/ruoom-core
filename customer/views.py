@@ -9,7 +9,7 @@ from django.http import JsonResponse
 #from .models import ClassBookingCart
 from administration.core.loading import get_model
 from django.views.decorators.clickjacking import xframe_options_exempt
-from administration.models import Locations, StudioSettings
+from administration.models import Location, Business
 from ruoom.automated_email_system import automated_email_send
 
 from django.template.loader import render_to_string
@@ -18,8 +18,8 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 Profile = get_model("registration","Profile")
-Locations = get_model("administration", "Locations")
-Rooms = get_model("administration", "Rooms")
+Location = get_model("administration", "Location")
+Room = get_model("administration", "Room")
 
 UPCOMING_CLASS_HOURS = 24
 ALIGNMENT_TOLERANCE_FACTOR = 0.5
@@ -52,11 +52,11 @@ class CustomerAccountSettings(TemplateView):
         customer_required = request.GET.get("customer")
         customer_business_number = request.user.profile.business_id #request.GET.get("customerBusinessNumber")
 
-        location_list = Locations.objects.filter(
+        location_list = Location.objects.filter(
             business_id=customer_business_number
         )
         self.context["location_list"] = location_list
-        self.context["currency"] = StudioSettings.objects.get(business_id=customer_business_number).currency_symbol()
+        self.context["currency"] = Business.objects.get(business_id=customer_business_number).currency_symbol()
         if customer_required:
             request.session["admin_customer_control"] = customer_required
             profile = Profile.objects.filter(business_id=request.user.profile.business_id, id=customer_required).first()
@@ -97,7 +97,7 @@ class CustomerAccountSettings(TemplateView):
             self.context["customer_id"] = customer_required
             self.context["customer_business_number"] = customer_business_number
 
-            studio_obj = StudioSettings.objects.get(business_id=request.user.profile.business_id)
+            studio_obj = Business.objects.get(business_id=request.user.profile.business_id)
             self.context["business_name"] = studio_obj.name
 
             return render(request, self.template_name, self.context)
@@ -132,7 +132,7 @@ class CustomerAccountSettings(TemplateView):
                 self.context["account_info_updated"] = True
             else:
                 self.context["account_info_updated"] = False
-        studio_obj = StudioSettings.objects.get(business_id=request.user.profile.business_id)
+        studio_obj = Business.objects.get(business_id=request.user.profile.business_id)
         self.context["business_name"] = studio_obj.name
         self.context["gender_type_choices"] = Profile.GENDER_TYPE_CHOICES
         self.context["admin_customer"] = "false"
@@ -198,7 +198,7 @@ class CustomerAccountSettings(TemplateView):
             if request.POST.get("password"):
                 profile.set_password(request.POST.get("password"))
             if request.POST.get("default_location"):
-                profile.default_location = Locations.objects.get(id=int(request.POST.get('default_location'))) or None
+                profile.default_location = Location.objects.get(id=int(request.POST.get('default_location'))) or None
             profile.save()
 
             return self.get(request)

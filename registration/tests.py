@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.template import exceptions as template_exceptions
 from unittest.mock import patch, MagicMock
-from administration.models import StudioSettings, Locations, ServiceTypes, Layouts, Rooms, AppointmentType, CustomerPlacement, StaffAvailability, DomainToBusinessMapping
+from administration.models import Business, Location, ServiceTypes, Layouts, Room, AppointmentType, CustomerPlacement, StaffAvailability, DomainToBusinessMapping
 from registration.models import Profile
 from payment.models import Payment, Order
 from .models import CustomerCheckin, Service, BookedAppointment, DisposableAuthenticationToken
@@ -39,16 +39,16 @@ class RegistrationTestCase(TestCase):
     def setUpTestData(cls):
         # Create base test data
         cls.business_id = 1
-        cls.location = Locations.objects.create(
+        cls.location = Location.objects.create(
             business_id=cls.business_id,
             name="Test Location",
             time_zone_string="UTC"
         )
         
-        cls.studio_settings = StudioSettings.objects.create(
+        cls.studio_settings = Business.objects.create(
             business_id=cls.business_id,
             late_cancel_hours=24,
-            noshow_options_prepay=StudioSettings.NOSHOW_PREPAY_FLATFEE,
+            noshow_options_prepay=Business.NOSHOW_PREPAY_FLATFEE,
             noshow_prepay_flatfee=Decimal('10.00')
         )
         
@@ -82,7 +82,7 @@ class RegistrationTestCase(TestCase):
         )
         
         # Create room and layout
-        cls.room = Rooms.objects.create(
+        cls.room = Room.objects.create(
             business_id=cls.business_id,
             name="Test Room",
             location=cls.location
@@ -506,7 +506,7 @@ class StaffAvailabilityTests(TestCase):
     def setUp(self):
         """Set up test data"""
         self.business_id = 1
-        self.location = Locations.objects.create(
+        self.location = Location.objects.create(
             business_id=self.business_id,
             name="Test Location",
             time_zone_string="UTC"
@@ -682,7 +682,7 @@ class RegistrationFunctionalTests(TestCase):
         
         # Create a test business
         self.business_id = 'test_business'
-        self.studio_settings = StudioSettings.objects.create(
+        self.studio_settings = Business.objects.create(
             business_id=self.business_id,
             default_country_code='US'
         )

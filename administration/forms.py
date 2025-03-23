@@ -6,20 +6,20 @@ import re
 
 from django import forms
 from django.conf import settings
-from administration.models import StudioSettings
+from administration.models import Business
 
 from registration.utils.authentication import set_user_groups
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from administration.models import Rooms, Locations
+from administration.models import Room, Location
 from registration.models import Profile
 from administration.core.loading import get_model
 from django.forms.utils import ErrorList
 
 Profile = get_model("registration","Profile")
-Locations = get_model("administration", "Locations")
-Rooms = get_model("administration", "Rooms")
+Location = get_model("administration", "Location")
+Room = get_model("administration", "Room")
 Waiver = get_model("administration", "Waiver")
 
 CHOICES = [
@@ -35,7 +35,7 @@ class BaseUserForm(forms.ModelForm):
         required=False
     )
     locations = forms.ModelChoiceField(
-        queryset=Locations.objects.none(),
+        queryset=Location.objects.none(),
         widget=forms.CheckboxSelectMultiple,
         required=False
     ) 
@@ -66,7 +66,7 @@ class BaseUserForm(forms.ModelForm):
 
         # Add location relation for location fields
         if self.user:
-            self.fields["locations"].queryset = Locations.objects.filter(
+            self.fields["locations"].queryset = Location.objects.filter(
                 business_id=self.user.profile.business_id
             )
 
@@ -77,13 +77,13 @@ class BaseUserForm(forms.ModelForm):
 
         # Pop permission and locations
         self.cleaned_data["permissions"] = []
-        self.cleaned_data["locations"] = Locations.objects.none()
+        self.cleaned_data["locations"] = Location.objects.none()
 
         # Check location
         staff_locations = []
         for location_id in locations:
             # Check exist
-            location = Locations.objects.filter(
+            location = Location.objects.filter(
                 id=location_id
             ).first()
             if not location:
@@ -256,7 +256,7 @@ class UpdateStaffForm(forms.ModelForm):
 
 class CreateLocationForm(forms.ModelForm):
     class Meta:
-        model = Locations
+        model = Location
         fields = ['name', 'street_address', 'city',
                   'state', 'ZIPcode', 'time_zone_string',
                   'business_hours_from', 'business_hours_to',
@@ -272,7 +272,7 @@ class CreateLocationForm(forms.ModelForm):
 
 class CreateRoomForm(forms.ModelForm):
     class Meta:
-        model = Rooms
+        model = Room
         fields = ['name', 'location', 'length', 'width']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -283,10 +283,10 @@ class CreateRoomForm(forms.ModelForm):
 
     def __init__(self, business_id, *args, **kwargs):
         super(CreateRoomForm, self).__init__(*args, **kwargs)
-        locations = Locations.objects.filter(business_id=business_id)
+        locations = Location.objects.filter(business_id=business_id)
         self.fields['location'].queryset = locations        
 
-        default_country = StudioSettings.objects.get(business_id=business_id).default_country_code
+        default_country = Business.objects.get(business_id=business_id).default_country_code
 
         for visible in self.visible_fields():
             if 'Length' in visible.field.label:
@@ -308,7 +308,7 @@ class UploadWaiverForm(forms.ModelForm):
         fields = []
 
     def save(self, request):
-        location = Locations.objects.get(pk=request.POST.get('location_id'))
+        location = Location.objects.get(pk=request.POST.get('location_id'))
         file = request.FILES['file']
 
         # handle file saving here. Verify path of file as well .... ... .. .. ..

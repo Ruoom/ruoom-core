@@ -5,7 +5,7 @@ from ruoom.settings import COUNTRY_LANGUAGES
 register = template.Library()
 
 Profile = get_model('registration', 'Profile')
-StudioSettings = get_model('administration', 'StudioSettings')
+Business = get_model('administration', 'Business')
 
 @register.filter('language_verbose')
 def language_verbose( language_code):

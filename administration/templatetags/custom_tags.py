@@ -6,7 +6,7 @@ from registration.utils.authentication import can_access
 from decimal import Decimal
 import pytz
 import datetime
-from administration.models import StudioSettings
+from administration.models import Business
 
 register = template.Library()
 FEET_PER_METER = 3.28084
@@ -78,29 +78,29 @@ def set_timezone(time_str, timezone):
 
 @register.simple_tag
 def localized_currency_format(num, business_id):
-    business_obj = StudioSettings.objects.filter(business_id=business_id).first()
+    business_obj = Business.objects.filter(business_id=business_id).first()
     currency = business_obj.currency()
 
     if num == "":
-        return dict(StudioSettings.CURRENCY_TYPE_CHOICES)[currency]
+        return dict(Business.CURRENCY_TYPE_CHOICES)[currency]
         
-    if currency == StudioSettings.CURRENCY_WON:
+    if currency == Business.CURRENCY_WON:
         decimal_places = 0
-    elif currency == StudioSettings.CURRENCY_DOLLAR:
+    elif currency == Business.CURRENCY_DOLLAR:
         decimal_places = 2
     else:
         decimal_places = 2
 
     rounded_num = round(Decimal(num),decimal_places)
-    localized_amount = dict(StudioSettings.CURRENCY_TYPE_CHOICES)[currency] + str(rounded_num)
+    localized_amount = dict(Business.CURRENCY_TYPE_CHOICES)[currency] + str(rounded_num)
 
     return localized_amount
 
 @register.simple_tag
 def currency_symbol(business_id):
-    business_obj = StudioSettings.objects.filter(business_id=business_id).first()
+    business_obj = Business.objects.filter(business_id=business_id).first()
     currency = business_obj.currency()
-    return dict(StudioSettings.CURRENCY_TYPE_CHOICES)[currency]
+    return dict(Business.CURRENCY_TYPE_CHOICES)[currency]
 
 @register.filter(name="trim")
 def trim(string):

@@ -6,7 +6,7 @@ from administration.core.loading import get_model
 from django.utils.translation import gettext_lazy as _
 register = template.Library()
 
-Locations = get_model('administration', 'Locations')
+Location = get_model('administration', 'Location')
 
 def format_to_24hr(twelve_hour_time):
     return datetime.strftime(

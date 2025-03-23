@@ -5,7 +5,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from security.key_lock import RuoomSecurity
-from administration.models import StudioSettings
+from administration.models import Business
 
 
 def automated_email_send(recipient_email,subject,text_content,business_id=None):
@@ -14,7 +14,7 @@ def automated_email_send(recipient_email,subject,text_content,business_id=None):
     from_email = ""
     if business_id:
         ruoom_security = RuoomSecurity()
-        studio_obj = StudioSettings.objects.filter(business_id=business_id).first()
+        studio_obj = Business.objects.filter(business_id=business_id).first()
         if studio_obj.email_address and studio_obj.host_address and studio_obj.application_password and studio_obj.host_address and studio_obj.host_tls:
             from_email= studio_obj.email_address
             application_password = ruoom_security.decrypt_message(encrypted_message=studio_obj.application_password)

@@ -6,7 +6,7 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from administration.models import StudioSettings
+from administration.models import Business
 from django.views.generic import View
 from django.contrib.auth.views import PasswordResetView
 from django.shortcuts import render, redirect
@@ -101,7 +101,7 @@ class SaveStudioPictureView(SavePictureView):
         if not profile:
             return None, HttpResponseBadRequest("User profile not found.")
 
-        studio = StudioSettings.objects.filter(
+        studio = Business.objects.filter(
             business_id=profile.business_id
         ).first()
         if not studio:
@@ -139,7 +139,7 @@ def save_picture(request, **kwargs):
     if not profile:
         return HttpResponseBadRequest("User profile not found.")
 
-    studio = StudioSettings.objects.filter(
+    studio = Business.objects.filter(
         business_id=profile.business_id
     ).first()
     if not studio:
@@ -189,7 +189,7 @@ class PasswordResetViewRuoom(PasswordResetView):
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
         profile = Profile.objects.filter(email=email, business_id=business_id).first()
         user = super(Profile,profile)
-        biz = StudioSettings.objects.get(business_id=business_id)
+        biz = Business.objects.get(business_id=business_id)
 
         # Assign extra context
         self.extra_email_context = {

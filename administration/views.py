@@ -36,13 +36,13 @@ from ruoom.automated_email_system import automated_email_send
 # from weasyprint import HTML
 from django.template.loader import render_to_string
 
-from .models import StudioSettings, Locations
+from .models import Business, Location
 
 from ruoom.settings import COUNTRY_LANGUAGES
 import os
 
 Profile = get_model("registration", "Profile")
-Locations = get_model("administration", "Locations")
+Location = get_model("administration", "Location")
 DaysOfOperation = get_model("administration", "DaysOfOperation")
 
 # Create your views here.
@@ -130,7 +130,7 @@ class Dashboard(TemplateView):
         # Load location filter
         location = None
         if staff.default_location and location_id is None:
-            location = Locations.objects.get(pk=int(staff.default_location.id))
+            location = Location.objects.get(pk=int(staff.default_location.id))
         if location is None and location_id is None:
              # Prepare classes
             classes_queries = Q(
@@ -139,7 +139,7 @@ class Dashboard(TemplateView):
 
         if location is None:
             # Load location filter
-            location = Locations.objects.filter(
+            location = Location.objects.filter(
                 id=location_id,
                 business_id=staff.business_id
             ).order_by('id').first()
@@ -149,15 +149,15 @@ class Dashboard(TemplateView):
             return redirect(settings.CUSTOMER_LOGIN_REDIRECT_URL)
 
         # Prepare list of locations
-        location_list = Locations.objects.filter(business_id=staff.business_id)
+        location_list = Location.objects.filter(business_id=staff.business_id)
 
         # Prepare task
         if location:
             #task_queries = task_queries & Q(location=location)
-            tz = pytz.timezone(Locations.objects.get(id=location.id).time_zone_string)
+            tz = pytz.timezone(Location.objects.get(id=location.id).time_zone_string)
         else:
-            if Locations.objects.filter(business_id=request.user.profile.business_id):
-                tz = pytz.timezone(Locations.objects.filter(business_id=request.user.profile.business_id).first().time_zone_string)
+            if Location.objects.filter(business_id=request.user.profile.business_id):
+                tz = pytz.timezone(Location.objects.filter(business_id=request.user.profile.business_id).first().time_zone_string)
             else:
                 tz = pytz.utc
 
@@ -202,7 +202,7 @@ class CustomerPage(FormView):
             customer_form = CreateCustomerForm()
         csv_form = ProfileCsvForm()
         business_id = request.user.profile.business_id
-        studio_settings = StudioSettings.objects.filter(business_id=business_id).first()
+        studio_settings = Business.objects.filter(business_id=business_id).first()
         default_country_code = (
             studio_settings.default_country_code if studio_settings else "us"
         )
@@ -311,7 +311,7 @@ class Schedule(TemplateView):
         # Load Location
         location_id = self.request.GET.get("location_id")
         if not(location_id) or location_id == '': #if no location, assume first location at the business
-            loc = Locations.objects.filter(business_id=request.user.profile.business_id).first()
+            loc = Location.objects.filter(business_id=request.user.profile.business_id).first()
             if loc:
                 location_id = loc.id
             else:
@@ -319,17 +319,17 @@ class Schedule(TemplateView):
 
         location = None
         if staff.default_location and location_id is None:
-            location = Locations.objects.get(pk=int(staff.default_location.id))
+            location = Location.objects.get(pk=int(staff.default_location.id))
         
         if location is None:
             # Load location filter
-            location = Locations.objects.filter(
+            location = Location.objects.filter(
                 id=location_id,
                 business_id=staff.business_id
             ).order_by('id').first()
 
         # Prepare list of locations
-        location_list = Locations.objects.filter(business_id=staff.business_id)
+        location_list = Location.objects.filter(business_id=staff.business_id)
 
         # Hours other than business hours are dimmed if these settings are available in calendar
         business_hours = {}
@@ -356,7 +356,7 @@ class Schedule(TemplateView):
         if not location:
             return redirect('/administration/nolocation')
         else:
-            tz = Locations.objects.get(id=location_id).time_zone_string
+            tz = Location.objects.get(id=location_id).time_zone_string
 
             # Prepare context arguments
             args = {
@@ -391,9 +391,9 @@ class StaffPage(TemplateView):
     def post(self, request):
         location_id = request.POST.get('location_id',None)
         if not(location_id) or location_id == '': #if no location, assume first location at the business
-            location_id = Locations.objects.filter(business_id=request.user.profile.business_id).first().id     #MAKE THIS PAGE HAVE LOCATION ID
+            location_id = Location.objects.filter(business_id=request.user.profile.business_id).first().id     #MAKE THIS PAGE HAVE LOCATION ID
         
-        tz = pytz.timezone(Locations.objects.get(id=location_id).time_zone_string)
+        tz = pytz.timezone(Location.objects.get(id=location_id).time_zone_string)
 
         if 'new_staff' in request.POST:
             form = CreateStaffForm(request.POST)
@@ -437,13 +437,13 @@ class HelpEmail(TemplateView):
     def get(self, request):
         return render(request, self.template_name)
 
-class Config(FormView):
+class Locations(FormView):
     
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(Config, self).dispatch(request, *args, **kwargs)
+        return super(Locations, self).dispatch(request, *args, **kwargs)
 
-    template_name = 'administration/configuration.html'
+    template_name = 'administration/locations.html'
     px_per_unit = 20
     alignment_factor = 1
     shape_type = 'span'
@@ -454,13 +454,13 @@ class Config(FormView):
 
         if request.GET.get('split_location'):
             location_id = request.GET.get('split_location')
-            update_location = Locations.objects.get(id=location_id)
+            update_location = Location.objects.get(id=location_id)
             edit_form = CreateLocationForm(instance=update_location) 
             return HttpResponse(edit_form.as_p())
 
         elif request.GET.get('split_room'):
             room_id = request.GET.get('split_room')
-            update_room = Rooms.objects.get(id=room_id)
+            update_room = Room.objects.get(id=room_id)
             room_edit_form = CreateRoomForm(business_id=business_id,instance=update_room)
             return HttpResponse(room_edit_form.as_p())
         
@@ -468,9 +468,9 @@ class Config(FormView):
 
             loc_form = CreateLocationForm()
             room_form = CreateRoomForm(business_id=business_id)
-            locations = Locations.objects.filter(business_id=business_id)
+            locations = Location.objects.filter(business_id=business_id)
 
-            business_obj = StudioSettings.objects.get(business_id=business_id)
+            business_obj = Business.objects.get(business_id=business_id)
             default_location = business_obj.default_country_code
 
             args = {
@@ -479,7 +479,7 @@ class Config(FormView):
                 'loc_form': loc_form,
                 'room_form': room_form,
                 'locations': locations,
-                'rooms': Rooms.objects.filter(location__in=locations),
+                'rooms': Room.objects.filter(location__in=locations),
                 'default_location': default_location,
                 'currency': business_obj.currency()
             }
@@ -494,7 +494,7 @@ class Config(FormView):
             if form.is_valid():
                 new_location_instance = form.save()
                 new_location_instance.business_id = request.user.profile.business_id
-                obj = StudioSettings.objects.filter(business_id=new_location_instance.business_id).first()
+                obj = Business.objects.filter(business_id=new_location_instance.business_id).first()
                 new_location_instance.country_code = obj.default_country_code
                 for i in range(1,8):
                     new_day_of_operation = DaysOfOperation.objects.create(day_of_week=i, location=new_location_instance)
@@ -510,7 +510,7 @@ class Config(FormView):
         elif 'edit_location' in request.POST:
             edit_locid = request.POST.get('edit_form_id')
             if edit_locid:
-                edit_obj = get_object_or_404(Locations, pk=edit_locid)
+                edit_obj = get_object_or_404(Location, pk=edit_locid)
                 if edit_obj:
                     form = CreateLocationForm(request.POST, instance=edit_obj) 
                  
@@ -528,7 +528,7 @@ class Config(FormView):
         elif 'edit_room' in request.POST:
             room_id = request.POST.get('edit_room_id')
             if room_id:
-                room_obj = get_object_or_404(Rooms, pk=room_id)
+                room_obj = get_object_or_404(Room, pk=room_id)
                 if room_obj:
                     form = CreateRoomForm(request.user.profile.business_id,request.POST, instance=room_obj) 
                     if form.is_valid():  
@@ -549,7 +549,7 @@ class Config(FormView):
                 new_room_instance = form.save()
                 new_room_instance.business_id = request.user.profile.business_id
 
-                country = StudioSettings.objects.get(business_id=request.user.profile.business_id).default_country_code
+                country = Business.objects.get(business_id=request.user.profile.business_id).default_country_code
                 if country == "kr":   #Convert meters to feet for storage
                     length = float(request.POST.get('length'))
                     width = float(request.POST.get('width'))
@@ -564,7 +564,7 @@ class Config(FormView):
                 return HttpResponseRedirect('/unsuccess/')
 
 class Admin(TemplateView):
-    template_name = 'administration/admin.html'
+    template_name = 'administration/permissions.html'
 
     def get(self, request):
         staff_id = request.GET.get('staff_id')
@@ -623,7 +623,7 @@ class Admin(TemplateView):
                 new_user = create_form.save(request)
                 new_user.business_id = request.user.profile.business_id
                 new_user.password = "rl9HYY*ou0R4sWh&w3D6E#5*oC#"       #This password will be reset immediately, and isn't salted with encryption so is impossible to replicate
-                obj = StudioSettings.objects.filter(business_id=new_user.business_id).first()
+                obj = Business.objects.filter(business_id=new_user.business_id).first()
                 new_user.language = COUNTRY_LANGUAGES.get(obj.default_language(), "en")
                 new_user.save()
 
@@ -719,7 +719,7 @@ class Settings(TemplateView):
         if not template_name:
             return redirect(reverse_lazy("administration:settings-embed"))
         self.context = {}
-        obj = StudioSettings.objects.filter(business_id=request.user.profile.business_id).first()
+        obj = Business.objects.filter(business_id=request.user.profile.business_id).first()
         
         if obj:
             self.context["obj"] = obj
@@ -735,7 +735,7 @@ class Settings(TemplateView):
 
     def post(self, request, url):
         self.context = {}
-        obj_list = StudioSettings.objects.filter(business_id=request.user.profile.business_id)
+        obj_list = Business.objects.filter(business_id=request.user.profile.business_id)
         
         setting_update = request.POST.get("setting_update")
 
@@ -743,7 +743,7 @@ class Settings(TemplateView):
             obj = obj_list.first()
       
         else:
-            obj = StudioSettings.objects.create(
+            obj = Business.objects.create(
                 name="NEW OBJ CREATED ON SETTINGS PAGE, REPORT", business_id=request.user.profile.business_id
             )
 
@@ -777,7 +777,7 @@ class Settings(TemplateView):
         - background color
 
         Args:
-            studio_setting_obj (type = StudioSettings object): StudioSettings model object
+            studio_setting_obj (type = Business object): Business model object
         """
         self.context["header_color"] = studio_setting_obj.header_color
         self.context["button_color"] = studio_setting_obj.button_color
@@ -798,7 +798,7 @@ class Settings(TemplateView):
         - Host using TLS?
 
         Args:
-            studio_setting_obj (type = StudioSettings object): StudioSettings model object
+            studio_setting_obj (type = Business object): Business model object
         """
         self.context["email_address"] = studio_setting_obj.email_address
         if studio_setting_obj.application_password:
@@ -822,7 +822,7 @@ class Settings(TemplateView):
         - business website
 
         Args:
-            studio_setting_obj (type = StudioSettings object): StudioSettings model object
+            studio_setting_obj (type = Business object): Business model object
         """
         if studio_setting_obj.name:
             self.context["business_name"] = studio_setting_obj.name
@@ -859,7 +859,7 @@ class Settings(TemplateView):
 
     def set_email_information(self, request_dict, studio_settings_obj):
         """
-        this method will set email inforamtion under the "StudioSettings"
+        this method will set email inforamtion under the "Business"
         we mainly have colors for
         - Email Address
         - Applicaiton Password
@@ -869,7 +869,7 @@ class Settings(TemplateView):
 
         Args:
             request_dict (type = request dict ): its the request information which comes with every request
-            studio_settings_obj (type = StudioSettings object):  StudioSettings model object
+            studio_settings_obj (type = Business object):  Business model object
         """
         email_address, application_password, host_address, host_port, host_tls = (
             request_dict.POST.get("email_address"),
@@ -893,7 +893,7 @@ class Settings(TemplateView):
 
     def set_business_information(self, request_dict, studio_settings_obj):
         """
-        this method will set email inforamtion under the "StudioSettings"
+        this method will set email inforamtion under the "Business"
         we mainly have colors for
         - Business Email Address
         - Business Website
@@ -902,7 +902,7 @@ class Settings(TemplateView):
         
         Args:
             request_dict (type = request dict ): its the request information which comes with every request
-            studio_settings_obj (type = StudioSettings object):  StudioSettings model object
+            studio_settings_obj (type = Business object):  Business model object
         """
         if request_dict.POST.get("business_name"):
             studio_settings_obj.name = request_dict.POST.get("business_name")
@@ -932,7 +932,7 @@ class Settings(TemplateView):
           
     def set_colors(self, request_dict, studio_settings_obj):
         """
-        this method will set colors under the "StudioSettings"
+        this method will set colors under the "Business"
         we mainly have colors for
         1.header
         2.button
@@ -941,7 +941,7 @@ class Settings(TemplateView):
 
         Args:
             request_dict (type = request dict ): its the request information which comes with every request
-            studio_settings_obj (type = StudioSettings object):  StudioSettings model object
+            studio_settings_obj (type = Business object):  Business model object
         """
         header_value, button_value, text_value, background_value, button_text_color = (
             request_dict.POST.get("headerValue"),
@@ -1138,9 +1138,9 @@ class LanguageSelect(FormView):
 
 def ajax_for_selected_room_on_modal(request):
     room_id = request.GET.get('room_id', None)
-    rooms = Rooms.objects.filter(id=room_id)
+    rooms = Room.objects.filter(id=room_id)
 
-    country = StudioSettings.objects.get(business_id=request.user.profile.business_id).default_country_code
+    country = Business.objects.get(business_id=request.user.profile.business_id).default_country_code
 
     if len(rooms) > 0:
         rooms = rooms.first()
@@ -1159,7 +1159,7 @@ class UploadWaiverView(View):
         form = UploadWaiverForm(request.POST)
         if form.is_valid():
             form.save(request)
-            return redirect('administration:configuration')
+            return redirect('administration:locations')
 
 class StaffPage(TemplateView):
     template_name = 'administration/staff.html'
@@ -1167,7 +1167,7 @@ class StaffPage(TemplateView):
     def get(self, request):
         profile = Profile.objects.filter(pk=request.user.id).first()
         staff_member = Profile.objects.filter(user_type='staff', business_id=request.user.profile.business_id)
-        locations = Locations.objects.filter(business_id=request.user.profile.business_id)
+        locations = Location.objects.filter(business_id=request.user.profile.business_id)
         user_form = CreateUserForm()
         context = {
             'staff': 'active',
@@ -1182,7 +1182,7 @@ class StaffPage(TemplateView):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             staff_users_count = Profile.objects.filter(business_id=request.user.profile.business_id, user_type="staff").count()
-            staff_user_subscription = StudioSettings.objects.get(business_id=request.user.profile.business_id).staff_user_subscription
+            staff_user_subscription = Business.objects.get(business_id=request.user.profile.business_id).staff_user_subscription
             if staff_users_count >= staff_user_subscription:
                 messages.info(request, _('Staff members limit reached. Please update you subscription to add more staff members.'))
                 return redirect('administration:staff')

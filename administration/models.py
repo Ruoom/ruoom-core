@@ -36,7 +36,7 @@ def studio_settings_path(instance, filename):
     return f"studio_settings/{instance.pk}/{filename}"
 
 # Create your models here.
-class StudioSettings(models.Model):
+class Business(models.Model):
     name = models.CharField(_("Name"),max_length=200)
     customer_type = models.IntegerField(_("Customer Type"),
         default=0
@@ -83,7 +83,8 @@ class StudioSettings(models.Model):
     business_registration_number = models.CharField(_("Business Registration Number"), max_length=100, null=True, blank=True)
     business_owner = models.CharField(_("Business Representative"), max_length=100, null=True, blank=True)
     show_contact = models.BooleanField(_("Show Contact Information to Customers"),default=False)
-    
+    time_zone_string = models.CharField(_("Time Zone"),max_length=400, null=True, blank=True)
+
     studio_image = models.ImageField(_("Studio Image"), upload_to=studio_settings_path, blank=True, null=True)
 
     def __str__(self):
@@ -109,7 +110,7 @@ class StudioSettings(models.Model):
 
 class DomainToBusinessMapping(models.Model):
     domain = models.CharField(_("Domain"),max_length=500)
-    business = models.OneToOneField(StudioSettings, verbose_name=_("Business"), on_delete=models.CASCADE, related_name="domain_mapping")
+    business = models.OneToOneField(Business, verbose_name=_("Business"), on_delete=models.CASCADE, related_name="domain_mapping")
     created_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -118,7 +119,7 @@ class DomainToBusinessMapping(models.Model):
     def __str__(self):
         return str(self.domain) + " <-> " + str(self.business)
 
-class Locations(models.Model):
+class Location(models.Model):
     CURRENCY_DOLLAR = "usd"
     CURRENCY_WON = "krw"
 
@@ -157,7 +158,7 @@ class Locations(models.Model):
 
     business_id = models.PositiveIntegerField(_("Business ID"),default=1)
 
-    #Rooms object cites this Locations object
+    #Room object cites this Location object
     def time_zone(self):
         return pytz.timezone(self.time_zone_string)
 
@@ -195,7 +196,7 @@ class DaysOfOperation(models.Model):
     }
     day_of_week = models.PositiveIntegerField(_("Day of Week"),default=1)
     is_checked = models.BooleanField(_("enabled"),default=False)
-    location = models.ForeignKey(Locations, verbose_name=_("Location"), on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, verbose_name=_("Location"), on_delete=models.CASCADE)
 
     def __str__(self):
         return self.days.get(self.day_of_week)
@@ -206,19 +207,19 @@ class DaysOfOperation(models.Model):
 
 # creating separate to handle multiple uploads against one location
 class Waiver(models.Model):
-    location = models.ForeignKey(Locations, verbose_name=_("Location"), related_name="waivers", on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, verbose_name=_("Location"), related_name="waivers", on_delete=models.CASCADE)
     waiver_file = models.FileField(_("Waiver File"), upload_to=waiver_directory_path)
     business_id = models.PositiveIntegerField(_("Business ID"), default=1)
 
-class Rooms(models.Model):
+class Room(models.Model):
     name = models.CharField(_("Name"), max_length=200)
-    location = models.ForeignKey(Locations, verbose_name=_("Location"), on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, verbose_name=_("Location"), on_delete=models.CASCADE)
     obstruction = models.BooleanField(_("Obstruction"), default=True)
     length = models.FloatField(_("Length (Feet)"), default=None, null=True, blank=True)       #Units Feet
     width = models.FloatField(_("Width (Feet)"), default=None, null=True, blank=True)       #Units Feet
     business_id = models.PositiveIntegerField(_("Business ID"), default=1)
     
-    #Layouts object cites this Rooms object
+    #Layouts object cites this Room object
     def __str__(self):
         return self.name
 
@@ -241,20 +242,20 @@ def default_weekdays():
     }
  
 def localized_currency_format(num, business_id):
-    business_obj = StudioSettings.objects.filter(business_id=business_id).first()
+    business_obj = Business.objects.filter(business_id=business_id).first()
     currency = business_obj.currency()
 
     if num == "":
-        return dict(StudioSettings.CURRENCY_TYPE_CHOICES)[currency]
+        return dict(Business.CURRENCY_TYPE_CHOICES)[currency]
         
-    if currency == StudioSettings.CURRENCY_WON:
+    if currency == Business.CURRENCY_WON:
         decimal_places = 0
-    elif currency == StudioSettings.CURRENCY_DOLLAR:
+    elif currency == Business.CURRENCY_DOLLAR:
         decimal_places = 2
     else:
         decimal_places = 2
 
     rounded_num = round(Decimal(num),decimal_places)
-    localized_amount = dict(StudioSettings.CURRENCY_TYPE_CHOICES)[currency] + str(rounded_num)
+    localized_amount = dict(Business.CURRENCY_TYPE_CHOICES)[currency] + str(rounded_num)
 
     return localized_amount

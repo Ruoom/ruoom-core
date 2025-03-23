@@ -11,7 +11,7 @@ from registration.utils.authentication import authenticate_with_email, set_user_
 
 from django.utils.translation import gettext_lazy as _
 
-from administration.models import StudioSettings
+from administration.models import Business
 from registration.models import Profile
 from registration.controller import return_business_id_for_domain
 from ruoom.settings import COUNTRY_LANGUAGES
@@ -41,7 +41,7 @@ class CreateCustomerForm(forms.ModelForm):
         customer.user_type = Profile.USER_TYPE_CUSTOMER
         customer.business_id = request.user.profile.business_id
         group = Group.objects.filter(name="Customer")
-        obj = StudioSettings.objects.filter(business_id=customer.business_id).first()
+        obj = Business.objects.filter(business_id=customer.business_id).first()
         customer.language = COUNTRY_LANGUAGES.get(obj.default_country_code, "en") 
         if group:
             customer.groups.add(group.first())
@@ -104,16 +104,16 @@ class SignupForm(forms.ModelForm):
         del self.cleaned_data['password_2']
         full_name = self.cleaned_data['first_name'].strip()
 
-        if not StudioSettings.objects.filter(business_id=business_id):
-            StudioSettings.objects.create(business_id=business_id)
+        if not Business.objects.filter(business_id=business_id):
+            Business.objects.create(business_id=business_id)
 
-        language_code = StudioSettings.objects.filter(business_id=business_id).first().default_language()
+        language_code = Business.objects.filter(business_id=business_id).first().default_language()
         first_name, last_name = parse_fullname(full_name, language_code)
         
         user = Profile(**self.cleaned_data)
         user.set_password(self.cleaned_data['password'])
-        if not StudioSettings.objects.all().exists():
-            StudioSettings.objects.create(business_id=os.environ.get('BUSINESS_ID', 1))
+        if not Business.objects.all().exists():
+            Business.objects.create(business_id=os.environ.get('BUSINESS_ID', 1))
         if Profile.get_count(is_superuser=True) and Profile.get_count(business_id=business_id):
             user.is_superuser = False
             user.user_type = Profile.USER_TYPE_CUSTOMER

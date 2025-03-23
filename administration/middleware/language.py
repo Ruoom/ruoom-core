@@ -1,6 +1,6 @@
 from django.utils import translation
 from django.utils.deprecation import MiddlewareMixin
-from administration.models import StudioSettings
+from administration.models import Business
 from ruoom.settings import COUNTRY_LANGUAGES
 from registration.controller import return_business_id_for_domain
 from django.conf import settings
@@ -22,7 +22,7 @@ class LocaleMiddleware(MiddlewareMixin):
           request.LANGUAGE_CODE = translation.get_language()
       else:
           business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
-          obj = StudioSettings.objects.filter(business_id=business_id).first()
+          obj = Business.objects.filter(business_id=business_id).first()
           if obj:
             language = COUNTRY_LANGUAGES.get(obj.default_country_code, "en")
           else:

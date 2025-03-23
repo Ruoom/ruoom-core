@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 
 from .controller import return_business_id_for_domain
 from ruoom.settings import COUNTRY_LANGUAGES
-from administration.models import StudioSettings
+from administration.models import Business
 from registration.models import Profile
 
 
@@ -57,7 +57,7 @@ class UserSignin(TemplateView):
         self.context = {'signin_form': form}
 
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
-        country_code = StudioSettings.objects.filter(business_id=business_id).first().default_country_code
+        country_code = Business.objects.filter(business_id=business_id).first().default_country_code
         self.context['country_code'] = country_code
 
         redirect_domain = settings.LOGIN_REDIRECT_URL
@@ -77,7 +77,7 @@ class UserSignin(TemplateView):
         self.context = {'signin_form': form}
                         
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
-        country_code = StudioSettings.objects.filter(business_id=business_id).first().default_country_code
+        country_code = Business.objects.filter(business_id=business_id).first().default_country_code
         self.context['country_code'] = country_code
         self.context['business_id'] = business_id
 
@@ -128,8 +128,8 @@ class UserSignup(TemplateView):
         self.context = {'signup_form': form}
         self.context['business_id'] = business_id
 
-        if StudioSettings.objects.filter(business_id=business_id):
-            country_code = StudioSettings.objects.filter(business_id=business_id).first().default_country_code
+        if Business.objects.filter(business_id=business_id):
+            country_code = Business.objects.filter(business_id=business_id).first().default_country_code
             self.context['country_code'] = country_code
 
         if form.is_valid():
@@ -140,7 +140,7 @@ class UserSignup(TemplateView):
                 return render(request, self.template_name, self.context)
 
             user.business_id = business_id
-            obj = StudioSettings.objects.filter(business_id=user.business_id).first()
+            obj = Business.objects.filter(business_id=user.business_id).first()
             user.language = COUNTRY_LANGUAGES.get(obj.default_country_code, "en") 
 
             #If this is the first user in the entire database, go ahead and make it a superuser
@@ -173,7 +173,7 @@ class CustomerSignIn(TemplateView):
         self.context = {'signin_form': form}
                         
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
-        country_code = StudioSettings.objects.filter(business_id=business_id).first().default_country_code
+        country_code = Business.objects.filter(business_id=business_id).first().default_country_code
         self.context['country_code'] = country_code
 
         return render(request, self.template_name, self.context)
@@ -183,7 +183,7 @@ class CustomerSignIn(TemplateView):
         self.context = {'signin_form': form}
                         
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
-        country_code = StudioSettings.objects.filter(business_id=business_id).first().default_country_code
+        country_code = Business.objects.filter(business_id=business_id).first().default_country_code
         self.context['country_code'] = country_code
 
         if form.is_valid():

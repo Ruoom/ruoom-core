@@ -29,7 +29,7 @@
               </button>
             </div>
        
-            <form id="editlocationform" method="post" action="{% url 'administration:configuration' %}" class="editlocationform"> 
+            <form id="editlocationform" method="post" action="{% url 'administration:locations' %}" class="editlocationform"> 
               {% csrf_token %}
               <input type="hidden" name="update_shift">
               <input type="hidden" id="shift_id" name="edit_form_id">
@@ -305,7 +305,7 @@
                   </button>
                 </div>
            
-                <form id="EditRoomform" method="post" action="{% url 'administration:configuration' %}" class="mb-0"> 
+                <form id="EditRoomform" method="post" action="{% url 'administration:locations' %}" class="mb-0"> 
                   {% csrf_token %}
                   <input type="hidden" name="update_room">
                   <input type="hidden" id="edit_room_id" name="edit_room_id" />
