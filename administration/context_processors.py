@@ -33,8 +33,11 @@ def studio_image(request):
     ).first()
     
     #Check installed plugins based on what's in folder
-    plugins = os.listdir(settings.PLUGINS_DIR)
-    context["plugins"] = plugins
+    try:
+        plugins = os.listdir(settings.PLUGINS_DIR)
+        context["plugins"] = plugins
+    except:
+        pass
 
     if not studio_settings:
         return context
