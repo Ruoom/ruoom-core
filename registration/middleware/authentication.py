@@ -67,10 +67,10 @@ class AuthenticationMiddleware(object):
 
             if "customer/appointment" in request.path: #Appointment pages are permitted
                 allowed_pages.append(request.path)
-            elif "customer/checkout/digitalgood" in request.path: #Permit customer digital good guest checkout, which will have arguments in the path
+            elif "digitalproducts/checkout/" in request.path: #Permit customer digital product guest checkout, which will have arguments in the path
                 allowed_pages.append(request.path)
-            elif "customer/payment" in request.path:
-                if request.POST.get('guest_cart_id', None) or (request.path.split("=")[-1]).isdigit(): #Posts with guest information can go through
+            elif "payment/checkout" in request.path:
+                if "?cart=" in request.path or request.POST.get('new_customer_email', None): #Posts with guest information can go through
                     allowed_pages.append(request.path)
             elif "admin/subscriptions" in request.path:
                 if not request.user.is_staff:

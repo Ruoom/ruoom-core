@@ -36,12 +36,15 @@ def studio_image(request):
     try:
         plugins = os.listdir(settings.PLUGINS_DIR)
         context["plugins"] = plugins
+        if 'digitalproducts' in plugins or 'store' in plugins:
+            context["store_plugins"] = True
+        
+        if not studio_settings:
+            return context
     except:
-        pass
+        print("No plugins installed")
 
-    if not studio_settings:
-        return context
-
+    #Country code
     context["country_code"] = studio_settings.default_country_code
 
     # Check if profile image available

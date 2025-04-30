@@ -18,7 +18,6 @@ from decouple import config
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -60,6 +59,8 @@ LOCAL_APPS = [
     'administration.apps.AdminConfig',
     'registration.apps.RegConfig',
     'customer.apps.CustomerConfig',
+    'plugins.payment',
+    'plugins.digitalproducts',
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -254,3 +255,10 @@ CSRF_COOKIE_SECURE = True
 # Plugin settings
 ENABLE_PLUGINS = True
 PLUGINS_DIR = os.path.join(BASE_DIR, 'plugins')
+
+#Automated email sender can be defined here or in database
+EMAIL_HOST = None
+EMAIL_PORT = None
+EMAIL_HOST_USER = None
+EMAIL_HOST_PASSWORD = None
+EMAIL_USE_TLS = None

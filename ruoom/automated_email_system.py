@@ -21,10 +21,13 @@ def automated_email_send(recipient_email,subject,text_content,business_id=None):
             backend = EmailBackend(host=studio_obj.host_address, port=studio_obj.host_port, username=studio_obj.email_address, 
                        password=application_password, use_tls=studio_obj.host_tls, fail_silently=False)
     
-    if not from_email:  #Default to Ruoom credentials
+    if not from_email and settings.EMAIL_HOST:  #Default to Ruoom credentials
         backend = EmailBackend(host=settings.EMAIL_HOST, port=settings.EMAIL_PORT, username=settings.EMAIL_HOST_USER, 
                        password=settings.EMAIL_HOST_PASSWORD, use_tls=settings.EMAIL_USE_TLS, fail_silently=False)
         from_email= settings.EMAIL_HOST_USER
+
+    if not from_email:
+        return JsonResponse({"message":"No email configured"})
 
     subject = subject
     text_content = text_content

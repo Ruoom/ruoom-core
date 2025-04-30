@@ -116,9 +116,6 @@ class DomainToBusinessMapping(models.Model):
     def __str__(self):
         return str(self.domain) + " <-> " + str(self.business)
 
-    def __str__(self):
-        return str(self.domain) + " <-> " + str(self.business)
-
 class Location(models.Model):
     CURRENCY_DOLLAR = "usd"
     CURRENCY_WON = "krw"

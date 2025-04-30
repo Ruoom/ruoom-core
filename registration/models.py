@@ -78,12 +78,9 @@ class Profile(User):
 
     is_teacher = models.BooleanField(verbose_name=_("Is This User a Service Provider?"),default=False)
     message_consent = models.BooleanField(verbose_name=_("May we communicate with you via mobile messages regarding your registrations?"),default=False)
-    balance = models.DecimalField(max_digits=8,decimal_places=2, default=0, verbose_name=_("Account Balance"))
-
     business_id = models.PositiveIntegerField(_("Business ID"), default=1)
     staff_at_locations = models.ManyToManyField('administration.Location', verbose_name=_("Staff At Locations"), related_name='staff_at_locations', blank=True)
     msa_signed = models.BooleanField(verbose_name=_("Has this user signed the Master Service Agreement?"),default=False)
-
     default_location = models.ForeignKey('administration.Location', verbose_name=_("Default Location"),on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
@@ -175,15 +172,6 @@ class Profile(User):
             return self.default_location
         else:
             return Location.objects.filter(business_id=self.business_id).first()
-
-    def localized_balance(self):
-        if self.location():
-            currency = self.location().currency
-        else:
-            currency = "usd"
-
-        if currency == "krw":
-            return int(self.balance)
 
     def business(self):
         Business = get_model("administration", "Business")

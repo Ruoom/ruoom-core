@@ -459,33 +459,33 @@
                                                                                             <div>
                                                                                             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="float:left;" class="virtual-classes">
                                                                                                 <tbody>
-                                                                                                    {% if digitalgoods %}
+                                                                                                    {% if digitalproducts %}
                                                                                                     <tr>
                                                                                                         <td>
-                                                                                                            <h3 style="margin-bottom:0;">{% trans "Details for your Digital Goods:" %}</h3>
+                                                                                                            <h3 style="margin-bottom:0;">{% trans "Details for your Digital Products:" %}</h3>
                                                                                                         </td>
                                                                                                     </tr>
-                                                                                                    {% for dg in digitalgoods %}   
+                                                                                                    {% for dp in digitalproducts %}   
                                                                                                     <tr>
                                                                                                         <td style="padding-right:10px;">
-                                                                                                            <span style='color: #1D1E4D; font-size:16px; display:block;'>{{dg.name}}</span>
-                                                                                                            {% if dg.link %}
+                                                                                                            <span style='color: #1D1E4D; font-size:16px; display:block;'>{{dp.name}}</span>
+                                                                                                            {% if dp.link %}
                                                                                                             <div>
                                                                                                                 <span style='color: #1D1E4D; font-size:15px;'>{% trans "URL to Access Content:" %}</span>
-                                                                                                                <span style='color: #1D1E4D; font-size:15px; font-weight:600;'>{{dg.link}}</span>
+                                                                                                                <span style='color: #1D1E4D; font-size:15px; font-weight:600;'>{{dp.link}}</span>
                                                                                                             </div>
                                                                                                             {% endif %}
-                                                                                                            {% if dg.pass %}
+                                                                                                            {% if dp.pass %}
                                                                                                             <div>
                                                                                                                 <span style='color: #1D1E4D; font-size:15px;'>{% trans "Passcode:" %}</span>
-                                                                                                                <span style='color: #1D1E4D; font-size:15px; font-weight:600;'>{{dg.pass}}</span>
+                                                                                                                <span style='color: #1D1E4D; font-size:15px; font-weight:600;'>{{dp.pass}}</span>
                                                                                                             </div>
                                                                                                             {% endif %}
-                                                                                                            {% if dg.notes %}
+                                                                                                            {% if dp.notes %}
                                                                                                             <br>
                                                                                                             <div>
                                                                                                                 <span style='color: #1D1E4D; font-size:15px;'>{% trans "Description:" %}</span>
-                                                                                                                <span style='color: #1D1E4D; font-size:15px;'>{{dg.notes|linebreaks}}</span>
+                                                                                                                <span style='color: #1D1E4D; font-size:15px;'>{{dp.notes|linebreaks}}</span>
                                                                                                             </div>
                                                                                                              {% endif %}
                                                                                                         </td>

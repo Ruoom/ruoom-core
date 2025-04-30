@@ -1,4 +1,4 @@
-# Ruoom Backend
+# Ruoom
 
 A [Django](https://docs.djangoproject.com) project.
 

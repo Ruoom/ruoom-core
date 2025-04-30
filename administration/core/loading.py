@@ -25,7 +25,6 @@ def get_model(app_label, model_name):
             # in the app registry. This effectively emulates
             # `from path.to.app.models import Model` where we use
             # `Model = get_model('app', 'Model')` instead.
-            print(app_label, model_name)
             app_config = apps.get_app_config(app_label)
             # `app_config.import_models()` cannot be used here because it
             # would interfere with `apps.populate()`.

@@ -88,6 +88,9 @@
             <i class="fe fe-calendar"></i>{% trans "Schedule" %}
             </a>
          </li>
+         {% if store_plugins %}
+            {% include 'partials/store_top_nav.html' %}
+         {% endif %}
       </ul>
       <!-- Divider -->
       <hr class="navbar-divider my-2">

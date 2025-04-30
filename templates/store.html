@@ -1,0 +1,176 @@
+{% extends "navigation.html" %}
+{% load static %}
+{% load i18n %}
+{% block subtitle %}{% trans "Store" %}{% endblock %}
+{% block sub_head %}
+{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/store.css'%}">
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<div class="store-page pt-4">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="container-fluid">
+      <!-- Body -->
+      <div class="bg-white p-4 rounded-lg tabs-header">
+        <div class="row mb-3">
+          <div class="col">
+            <h1 class="header-title">{% trans "Store" %}</h1>
+          </div>
+          <div class="col-auto">
+            <!-- Button -->
+            <!-- <a href="#!" class="btn btn-primary lift">{% trans "Create Report" %}</a> -->
+            <a href="#!" class="shopping-cart" data-toggle="modal" id="cart_badge" data-target="#cart-details">
+              <span class="fe fe-shopping-cart"></span>
+              <span class="badge badge-pill badge-secondary" id="add_cart_count">{{add_cart_count}}</span>
+            </a>
+          </div>
+        </div> <!-- / .row -->
+
+        <select class="form-control" name="location_select" data-toggle="select" id="location_select">
+          {% for loc in locations %}
+            <option value="{{loc.id}}"> {{loc.name}}</option>
+          {% endfor %}
+        </select>
+
+        <div class="row align-items-center">
+          <div class="col">
+            <!-- Nav -->
+            <ul class="nav nav-tabs nav-overflow header-tabs">
+              {% if 'store' in plugins %}
+                {% include 'store/partials/storenav_servicepass.html' %}
+              {% endif %}
+              {% if 'store' in plugins %}
+                {% include 'store/partials/storenav_giftcard.html' %}
+              {% endif %}
+              {% if 'digitalproducts' in plugins %}
+                {% include 'digitalproducts/partials/storenav_digitalproducts.html' %}
+              {% endif %}
+              {% if 'store' in plugins %}
+                {% include 'store/partials/storenav_merchandise.html' %}
+              {% endif %}
+              {% if 'store' in plugins %}
+                {% include 'store/partials/storenav_rentals.html' %}
+              {% endif %}
+              {% if 'store' in plugins %}
+                {% include 'store/partials/storenav_miscellaneous.html' %}
+              {% endif %}
+              {% if 'promocodes' in plugins %}
+                {% include 'promocodes/partials/promocodes_nav.html' %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- / .header-body -->
+    </div>
+  </div>
+  <!-- / .header -->
+  <div class="modal fade" id="cart-details" tabindex="-1" role="dialog" aria-labelledby="modal-cart-details"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">{% trans "Your Cart" %}</h3>
+          <p id="qt_message"></p>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="mb-0" method="POST" action="{% url 'payment:checkout' %}">
+            {% csrf_token %}
+            <input type="hidden" value="bulk" name="bulk_data">
+            <input id="selected_location" type="hidden" name="selected_location">
+          <div class="modal-body">
+
+            <div>
+              <h4>{% trans "Which Customer is Purchasing?" %}</h4>
+           
+               <!--  <input id="search_customer_purchase" type="text" class="form-control"
+                    placeholder="{% trans "Enter Customer Name To Search" %}"> -->
+                <input id="search_customer_purchase" type="text" class="form-control"
+                                      placeholder="{% trans "Enter Customer Name To Search" %}">
+                
+                <div id="appendToHere" style="display: block;position: relative;">
+                </div>
+                <div class="invalid-feedback">
+                    {% trans "Please Search Name or select Guest" %}
+                </div>
+                <input id="selected_purchase_student_id" type="hidden" name="selected_purchase_student_id">
+                <input type="hidden" value="" name="bulk_data">
+                <input type="hidden" value="True" name="render_checkout" />
+                <!--<div class="custom-control custom-checkbox table-checkbox mt-3">
+                  <input type="checkbox" class="custom-control-input" name="guest_checkout" id="miscellaneous_tracked">
+                  <label class="custom-control-label" for="miscellaneous_tracked">
+                    {% trans "Guest Checkout" %}
+                  </label>
+                </div>-->
+            </div>
+            <br>
+
+            <div class="table-responsive">
+              <table class="table mb-0" id="maintable">
+                <thead>
+                  <tr>
+                    <th scope="col">{% trans "ITEM" %}</th>
+                    <th scope="col" class="text-center">{% trans "QUANTITY" %}</th>
+                    <th scope="col" class="text-right">{% trans "PRICE" %}</th>
+                    <th scope="col" class="text-right">{% trans "TOTAL" %}</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                {% for cart in carts %}
+                <tbody>
+                  <tr>
+                    <td>{{ cart.name }} </td>
+                    <td class="text-center" id="counter_test">
+                      <div class="counter">
+                        <span class="minu" id="{{ cart.id }}" ><p style="display:none;">{{ cart.id }}</p>-</span>
+                        <input type="number" class="count" name="counter" id="qn_num" value="{{ cart.product_quantity}}">
+                        <span class="plu" id="{{ cart.id }}"><p style="display:none;">{{ cart.id }}</p>+</span>
+                      </div>
+                    </td>
+                    <td class="text-right">{{ currency_symbol }}{{ cart.price }}</td>
+                    <td class="text-right">{{ currency_symbol }}{{ cart.total_price }}</td>
+                    <td class="text-right">
+                      <a href="#">
+                        <span class="fe fe-trash-2" id="{{ cart.id }}" ><p style="display:none;" >{{ cart.id }}</p></span>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="card-footer text-right pr-0 pb-0">
+              <!--<p class="text-right small">{% trans "* Tax cost calculated at Checkout" %}</p>-->
+              <div class="d-inline-block mr-4">
+                {% trans "Total price:" %}
+                {% if total_price is None %}
+                <span class="h3 font-600 ml-2" id="cart_total_price">{{ currency_symbol }}{% trans "0.00" %}</span>
+                {% else %}
+                <span class="h3 font-600 ml-2" id="cart_total_price">{{ currency_symbol }}{{ total_price }}</span>
+                {% endif %}
+
+              </div>
+                <button class="btn btn-primary" id="store_cart_submit_btn" disabled="disabled">{% trans "Checkout" %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    $("#not_clickable_row").on("click", function (e) {
+      return false;
+    });
+  </script>
+  {% block content1 %} {% endblock %}
+  <script type="text/javascript">
+    window.CSRF_TOKEN = "{{ csrf_token }}";
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+  <script src="{% static 'js/store.js' %}"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
+  {% endblock %}

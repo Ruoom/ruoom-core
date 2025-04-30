@@ -1,0 +1,15 @@
+{% load custom_tags %}
+{% load i18n %}
+{% load static %}
+<li class="nav-item" id="store-page" style="display:{% display_if_has_access user=request.user permission_group='store' %}">
+   <a class="nav-link" href="#sidebarPages" data-toggle="collapse" role="button" aria-expanded="{{ area_expand }}" aria-controls="sidebarPages">
+   <i class="fe fe-shopping-bag"></i>{% trans "Store" %}
+   </a>
+   <div class="collapse {{ class_show }} " id="sidebarPages">
+      <ul class="nav nav-sm flex-column">
+         {% if 'digitalproducts' in plugins %}
+            {% include 'digitalproducts/partials/digitalproducts_nav.html' %}
+         {% endif %}
+      </ul>
+   </div>
+</li>

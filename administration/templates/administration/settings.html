@@ -37,24 +37,17 @@
                         {% trans "Contact" %}
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="{% url 'administration:settings-payment'%}" id="payment-tab" class="nav-link">
-                        <span class="fe fe-credit-card mr-1"></span>
-                        {% trans "Payment Processing" %}
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{% url 'administration:settings-registration'%}" id="registration-tab" class="nav-link">
-                        <span class="fe fe-user-check mr-1"></span>
-                        {% trans "Registration" %}
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{% url 'administration:settings-messaging'%}" id="messaging-tab" class="nav-link">
-                        <span class="fe fe-message-square mr-1"></span>
-                        {% trans "Messaging Services" %}
-                    </a>
-                  </li>
+                  {% if 'payment' in plugins %}
+                    {% include "payment/partials/settings_nav.html" %}
+                  {% endif %}
+
+                  {% if 'booking' in plugins %}
+                    {% include "booking/partials/settings_nav.html" %}
+                  {% endif %}
+
+                  {% if 'messaging' in plugins %}
+                    {% include "registration/partials/settings_nav.html" %}
+                  {% endif %}
                 </ul>
               </div>
             </div>
