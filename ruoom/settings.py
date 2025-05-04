@@ -59,8 +59,6 @@ LOCAL_APPS = [
     'administration.apps.AdminConfig',
     'registration.apps.RegConfig',
     'customer.apps.CustomerConfig',
-    'plugins.payment',
-    'plugins.digitalproducts',
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
