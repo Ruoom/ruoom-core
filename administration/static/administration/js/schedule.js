@@ -15,6 +15,10 @@ $(document).ready(function() {
 
   showAllDayBar = false
   var events_list = []   //List of events to be rendered on the calendar 
+
+  if (booking_plugin) {
+    events_list = events_list.concat(list_services());
+  }
   
   var calendar = new FullCalendar.Calendar(calendarDiv, {
     plugins: ["dayGrid", "timeGrid", "interaction"],
@@ -30,7 +34,7 @@ $(document).ready(function() {
       center: "title",
       right: "timeGridDay,timeGridWeek,dayGridMonth"
     },
-    events: [],
+    events: events_list,
     allDaySlot: showAllDayBar ? true : false,
     scrollTime: "9:00:00",
     businessHours: businessHours,
@@ -39,8 +43,15 @@ $(document).ready(function() {
     eventClick: function(eventInfo) {
       //Event rendering logic here
 
+      if (booking_plugin) {
+        service_click(eventInfo);
+      }
+
     },
     eventRender: function(eventInfo) {
+      if (booking_plugin) {
+        render_service(eventInfo);
+      }
     },
     dateClick: (dateInfo) => {
       // Load date object
@@ -157,34 +168,6 @@ $(document).ready(function() {
       }
     }
   });
-
-  $("input").change(function(event) {
-    if (event.target.value === "") {
-      $(event.target).hasClass("is-valid")
-        ? event.target.classList.remove("is-valid")
-        : null;
-      !$(event.target).hasClass("is-invalid")
-        ? event.target.classList.add("is-invalid")
-        : null;
-    } else if (event.target.id === "id_level" && event.target.value < 0) {
-      $(event.target).hasClass("is-valid")
-        ? event.target.classList.remove("is-valid")
-        : null;
-      !$(event.target).hasClass("is-invalid")
-        ? event.target.classList.add("is-invalid")
-        : null;
-      $(
-        '<span class="invalid-feedback">Level cannot be negative</span>'
-      ).insertAfter("#id_level");
-    } else {
-      $(event.target).hasClass("is-invalid")
-        ? event.target.classList.remove("is-invalid")
-        : null;
-      !$(event.target).hasClass("is-valid")
-        ? event.target.classList.add("is-valid")
-        : null;
-    }
-  });
   
   $("form").submit(function(event) {
     try {
@@ -255,10 +238,3 @@ $(document).ready(function() {
     $("#registrationStatusMessage").removeClass();
   });
 });
-
-$(document).ready(function() {
-
-  if (!tour.ended() != false){
-      tour.start()
-  }
-})

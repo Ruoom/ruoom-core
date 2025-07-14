@@ -65,7 +65,9 @@ class AuthenticationMiddleware(object):
                 settings.CUSTOMER_LOGIN_URL
             ]
 
-            if "customer/appointment" in request.path: #Appointment pages are permitted
+            if "appointments/services" in request.path: #Appointment pages are permitted
+                allowed_pages.append(request.path)
+            elif "booking/calendar" in request.path: #Booking calendar is permitted
                 allowed_pages.append(request.path)
             elif "digitalproducts/checkout/" in request.path: #Permit customer digital product guest checkout, which will have arguments in the path
                 allowed_pages.append(request.path)

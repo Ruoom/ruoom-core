@@ -14,6 +14,7 @@ import os
 from django.urls import reverse_lazy
 from pathlib import Path
 from decouple import config
+from ruoom.utils import load_plugin_statics
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,8 +60,6 @@ LOCAL_APPS = [
     'administration.apps.AdminConfig',
     'registration.apps.RegConfig',
     'customer.apps.CustomerConfig',
-    'plugins.payment',
-    'plugins.digitalproducts',
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -179,6 +178,7 @@ MEDIA_URL = "/media/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+STATICFILES_DIRS += load_plugin_statics(BASE_DIR)
 
 # Static and media storage option
 STORAGE = os.environ.get("STORAGE", "")

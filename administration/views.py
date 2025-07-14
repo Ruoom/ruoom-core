@@ -375,6 +375,17 @@ class Schedule(TemplateView):
                 'business_id': business_id,
             }
      
+            plugins = os.listdir(settings.PLUGINS_DIR)
+            if 'booking' in plugins:
+                from plugins.booking import forms as booking_forms
+                from plugins.booking.models import ServiceType, Service
+                args["ctype_form"] = booking_forms.CreateClassTypeForm(business_id=business_id)
+                args["ctype_update_form"] = booking_forms.UpdateClassTypeForm()
+                args["class_form"] = booking_forms.CreateClassForm(business_id=business_id)
+                args["class_update_form"] = booking_forms.UpdateClassForm(business_id=business_id)
+                args["class_types"] = ServiceType.objects.filter(business_id=business_id)
+                args["classes"] = Service.objects.filter(business_id=business_id)
+
             return render(request, self.template_name, args)
 
 class StaffPage(TemplateView):

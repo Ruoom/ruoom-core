@@ -43,6 +43,11 @@
 
 <script src="{% static 'packages/timescheduler/moment.min.js' %}"></script>
 
+{% if "booking" in plugins %}
+<script>booking_plugin = true</script>
+{% include "booking/partials/schedule_services_initialize.html" %}
+<script src="{% static 'booking/js/schedule_services.js' %}"></script>
+{% endif %}
 <script src="{% static 'administration/js/schedule.js' %}"></script>
 <script src="{% static 'administration/js/utils.js' %}"></script>
 
@@ -89,12 +94,19 @@
 {% block content %}
 <!--New Class Type Button -->
 <div class="container-fluid pt-4">
+
     <div class="week-calander schedule bg-white">
         <div class="card mb-0">
             <div class="card-header">
                 <div class="row">
                     <div class="col-lg-auto">
                         <h1 class="header-title mt-2">{% trans "Schedule" %}</h1>
+                    </div>
+                    <div class="col text-lg-right mt-4 mt-lg-0">
+
+                        {% if "booking" in plugins %}
+                            {% include "booking/partials/schedule_services_buttons.html" %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -128,6 +140,11 @@
             </div>
         </div>
     </div>
+
+    {% if "booking" in plugins %}
+        {% include "booking/partials/schedule_services.html" %}
+    {% endif %}
+
 </div>
 
 <div>
