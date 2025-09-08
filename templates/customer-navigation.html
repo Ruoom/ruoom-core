@@ -52,13 +52,13 @@
 
                   <a href="{% url 'customer:customer-account-settings'%}" class="dropdown-item">
                       <span class="fe fe-user mr-2"></span>{% trans "My Account" %}
-                    </a>
+                  </a>
 
-                    {% if request.user.is_authenticated %}
-                      <a href="/registration/signout/" class="dropdown-item">
-                        <span class="fe fe-log-out mr-2"></span> {% trans "Sign Out" %}
-                      </a>
-                    {% endif %}
+                  {% if request.user.is_authenticated %}
+                    <a href="/registration/signout/" class="dropdown-item">
+                      <span class="fe fe-log-out mr-2"></span> {% trans "Sign Out" %}
+                    </a>
+                  {% endif %}
                 </div>
             </li>
         </ul>

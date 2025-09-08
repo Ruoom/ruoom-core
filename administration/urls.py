@@ -14,7 +14,6 @@ urlpatterns = [
     path('locations/', views.Locations.as_view(), name='locations'),
     path('permissions/', views.Admin.as_view(), name='admin'),
     path('settings/', views.Settings.as_view(), name='settings'),
-    path('settings/embed/', views.settingsEmbed, name='settings-embed'),
     path('settings/contact/', views.settingsContact, name='settings-contact'),
     
     path('customers/search/', views.CustomersSearch.as_view(), name='customersearch'),

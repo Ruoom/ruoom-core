@@ -108,6 +108,33 @@ class Business(models.Model):
     def num_staff(self):
         return Profile.objects.filter(user_type=Profile.USER_TYPE_STAFF, business_id=self.business_id, staff_is_active=True).count()
 
+    #These methods return the customized colors if populated - otherwise return the default
+    def get_header_color(self):
+        if self.header_color:
+            return self.header_color
+        else:
+            return "#EDF1F7"
+    def get_button_color(self):
+        if self.button_color:
+            return self.button_color
+        else:
+            return "#EC2660"
+    def get_text_color(self):
+        if self.text_color:
+            return self.text_color
+        else:
+            return "#12263F"
+    def get_background_color(self):
+        if self.background_color:
+            return self.background_color
+        else:
+            return "#FFFFFF"
+    def get_button_text_color(self):
+        if self.button_text_color:
+            return self.button_text_color
+        else:
+            return "#FFFFFF"
+
 class DomainToBusinessMapping(models.Model):
     domain = models.CharField(_("Domain"),max_length=500)
     business = models.OneToOneField(Business, verbose_name=_("Business"), on_delete=models.CASCADE, related_name="domain_mapping")

@@ -12,8 +12,12 @@ def load_plugin_urls():
             plugin_path = os.path.join(plugins_dir, plugin_name)
             if os.path.isdir(plugin_path) and plugin_name != 'disabled':
                 try:
-                    # Append the URL patterns
-                    urlpatterns += path(plugin_name + '/', include('plugins.' + plugin_name + '.urls'), name=plugin_name),              
+                    # Append the URL patterns with an explicit namespace so {% url 'plugin:view' %} works
+                    # The included module must define app_name = plugin_name
+                    urlpatterns += path(
+                        plugin_name + '/',
+                        include('plugins.' + plugin_name + '.urls', namespace=plugin_name),
+                    ),
                     logging.info(f"Loaded URLs for plugin: {plugin_name}")
                 except (ImportError, AttributeError) as e:
                     logging.error(f"Error loading URLs for plugin {plugin_name}: {e}")

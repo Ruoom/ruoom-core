@@ -700,17 +700,6 @@ class Admin(TemplateView):
             return redirect('administration:admin')
         
         return redirect('administration:admin')
-
-def settingsEmbed(request):
-    template_name = 'administration/settings-embed.html'
-    settings = Settings()
-    url = "administration:settings-embed"
-    if request.method == 'GET':
-        return settings.get(request=request,template_name=template_name)
-    if request.method == 'POST':
-        return settings.post(request=request,url=url)
-    else:
-        return HttpResponseRedirect('/unsuccess/')
         
 def settingsContact(request):
     template_name = 'administration/settings-contact.html'
@@ -728,7 +717,7 @@ class Settings(TemplateView):
 
     def get(self, request, template_name=None):
         if not template_name:
-            return redirect(reverse_lazy("administration:settings-embed"))
+            return redirect(reverse_lazy("administration:settings-contact"))
         self.context = {}
         obj = Business.objects.filter(business_id=request.user.profile.business_id).first()
         
@@ -790,11 +779,11 @@ class Settings(TemplateView):
         Args:
             studio_setting_obj (type = Business object): Business model object
         """
-        self.context["header_color"] = studio_setting_obj.header_color
-        self.context["button_color"] = studio_setting_obj.button_color
-        self.context["text_color"] = studio_setting_obj.text_color
-        self.context["background_color"] = studio_setting_obj.background_color
-        self.context["button_text_color"] = studio_setting_obj.button_text_color
+        self.context["header_color"] = studio_setting_obj.get_header_color()
+        self.context["button_color"] = studio_setting_obj.get_button_color()
+        self.context["text_color"] = studio_setting_obj.get_text_color()
+        self.context["background_color"] = studio_setting_obj.get_background_color()
+        self.context["button_text_color"] = studio_setting_obj.get_button_text_color()
 
     def set_email_information_to_context(self,studio_setting_obj):
         """

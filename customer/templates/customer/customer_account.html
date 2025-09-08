@@ -46,6 +46,7 @@
                     <div class="col-auto"></div>
                 </div>
                 <div class="row align-items-center">
+
                     <div class="col">
                         <ul class="nav nav-tabs nav-overflow header-tabs">
                             <li class="nav-item">
@@ -55,6 +56,19 @@
                             </li>
                         </ul>
                     </div>
+
+                    {% if 'booking' in plugins %}
+                    <div class="col">
+                      <ul class="nav nav-tabs nav-overflow header-tabs">
+                          <li class="nav-item">
+                              <a href="{% url 'booking:customer-classes-schedule'%}" class="nav-link {{ booked_services }}">
+                                  {% trans "Booked Services" %}
+                              </a>
+                          </li>
+                      </ul>
+                    </div>
+                    {% endif %}
+                  
                 </div>
             </div>
         </div>
