@@ -104,6 +104,12 @@
                         <h1 class="header-title mt-2">{% trans "Schedule" %}</h1>
                     </div>
                     <div class="col text-lg-right mt-4 mt-lg-0">
+                        {% if request.user.profile.google_sync_enabled %}
+                            <span class="badge badge-success mr-2">Google Calendar Connected</span>
+                            <a class="btn btn-outline-danger" href="{% url 'administration:google_oauth_disconnect' %}">Disconnect Google</a>
+                        {% else %}
+                            <a class="btn btn-outline-primary" href="{% url 'administration:google_oauth_start' %}">Connect Google Calendar</a>
+                        {% endif %}
 
                         {% if "booking" in plugins %}
                             {% include "booking/partials/schedule_services_buttons.html" %}

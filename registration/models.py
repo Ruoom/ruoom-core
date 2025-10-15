@@ -71,7 +71,6 @@ class Profile(User):
     state = models.CharField(_("State"), max_length=50, null=True, blank=True)
     country = models.CharField(_("Country"), max_length=50, null=True, blank=True)
 
-    #Service object cites this Staff object
     emgcy_cont_name = models.CharField(verbose_name=_("Emergency Contact Name"), max_length=400, null=True, blank=True)
     emgcy_cont_relation = models.CharField(verbose_name=_("Emergency Contact Relationship"), max_length=400, null=True, blank=True)
     emgcy_cont_num = PhoneNumberField(verbose_name=_("Emergency Contact Number"), blank=True, null=True)
@@ -83,14 +82,15 @@ class Profile(User):
     msa_signed = models.BooleanField(verbose_name=_("Has this user signed the Master Service Agreement?"),default=False)
     default_location = models.ForeignKey('administration.Location', verbose_name=_("Default Location"),on_delete=models.CASCADE, blank=True, null=True)
 
-    def __str__(self):
-        return self.localized_name()
-    
-    def first_last(self):
-        return self.first_name + ' ' + self.last_name
+    # Google Calendar integration
+    google_sync_enabled = models.BooleanField(_("Google Calendar Sync Enabled"), default=False)
+    google_credentials_json = models.TextField(_("Google OAuth Credentials (JSON)"), blank=True, null=True)
 
     def first_last_user(self):
         return self.first_name + ' ' + self.last_name + ' ' + '('+str(self.user_type) + ')'
+
+    def first_last(self):
+        return self.first_name + ' ' + self.last_name
 
     def last_first(self):
         return self.last_name + ' ' + self.first_name

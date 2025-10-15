@@ -249,8 +249,13 @@ SECRET_FILE_NAME =  "secret.key"
 
 FIRST_TIME_PASS = "rl9HYY*ou0R4sWh&w3D6E#5*oC#" #To be reset immediately upon first sign in. platform cannot be used with this password
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if 'DEBUG' in globals() and DEBUG:
+    # Relax cookie security for local development on http://localhost
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Plugin settings
 ENABLE_PLUGINS = True
@@ -262,3 +267,22 @@ EMAIL_PORT = None
 EMAIL_HOST_USER = None
 EMAIL_HOST_PASSWORD = None
 EMAIL_USE_TLS = None
+
+# Google OAuth client configuration (populate with your real credentials)
+GOOGLE_OAUTH_CLIENT_CONFIG = {
+    "web": {
+        "client_id": os.environ.get("GOOGLE_CLIENT_ID", "YOUR_CLIENT_ID"),
+        "project_id": os.environ.get("GOOGLE_PROJECT_ID", "YOUR_PROJECT_ID"),
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET", "YOUR_CLIENT_SECRET"),
+        "redirect_uris": [
+            # Local development
+            "http://localhost:8000/administration/google/oauth/callback",
+        ],
+        "javascript_origins": [
+            "http://localhost:8000",
+        ],
+    }
+}

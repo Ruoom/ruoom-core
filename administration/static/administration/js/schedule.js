@@ -14,8 +14,7 @@ $(document).ready(function() {
   var calendarDiv = document.getElementById("id_calendar");
 
   showAllDayBar = false
-  var events_list = []   //List of events to be rendered on the calendar 
-
+  var events_list = []   // List of events to be rendered on the calendar
   if (booking_plugin) {
     events_list = events_list.concat(list_services());
   }
@@ -35,19 +34,25 @@ $(document).ready(function() {
       right: "timeGridDay,timeGridWeek,dayGridMonth"
     },
     events: events_list,
-    allDaySlot: showAllDayBar ? true : false,
-    scrollTime: "9:00:00",
-    businessHours: businessHours,
-    eventMouseEnter: function(mouseEnterInfo) {
-    },
-    eventClick: function(eventInfo) {
-      //Event rendering logic here
-
-      if (booking_plugin) {
-        service_click(eventInfo);
+    eventSources: [
+      function(fetchInfo, successCallback, failureCallback) {
+        try {
+          $.ajax({
+            url: "/administration/schedule/google-events",
+            method: "GET",
+            data: {
+              start: fetchInfo.start.toISOString(),
+              end: fetchInfo.end.toISOString(),
+              tz: (typeof locationTimezone !== 'undefined' && locationTimezone) ? locationTimezone : Intl.DateTimeFormat().resolvedOptions().timeZone
+            },
+            success: function(data) { successCallback(data || []); },
+            error: function() { failureCallback(); }
+          });
+        } catch (e) {
+          failureCallback(e);
+        }
       }
-
-    },
+    ],
     eventRender: function(eventInfo) {
       if (booking_plugin) {
         render_service(eventInfo);

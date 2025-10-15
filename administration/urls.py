@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from . import views
+from . import gcal
 
 app_name = 'administration'
 urlpatterns = [
@@ -10,6 +11,11 @@ urlpatterns = [
     path('customers/', views.CustomerPage.as_view(), name='customers'),
     path('customers/modify/option', views.CustomerOptions.as_view(), name='customers_nav_bar'),
     path('schedule/', views.Schedule.as_view(), name='schedule'),
+    # Google Calendar integration
+    path('schedule/google-events', gcal.google_events, name='google_events'),
+    path('google/oauth/start', gcal.google_oauth_start, name='google_oauth_start'),
+    path('google/oauth/callback', gcal.google_oauth_callback, name='google_oauth_callback'),
+    path('google/oauth/disconnect', gcal.google_oauth_disconnect, name='google_oauth_disconnect'),
     path('staff/', views.StaffPage.as_view(), name='staff'),
     path('locations/', views.Locations.as_view(), name='locations'),
     path('permissions/', views.Admin.as_view(), name='admin'),
