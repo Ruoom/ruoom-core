@@ -4,6 +4,7 @@ from http import HTTPStatus
 from datetime import datetime
 import pytz
 import csv
+import os
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.db.models import Q
@@ -24,7 +25,11 @@ from django.contrib import messages
 from django.utils.translation import pgettext, gettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.dateparse import parse_datetime
 from security.key_lock import RuoomSecurity
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
 
 from registration.forms import *
 from registration.models import *
@@ -37,9 +42,6 @@ from ruoom.automated_email_system import automated_email_send
 from django.template.loader import render_to_string
 
 from .models import Business, Location
-
-from ruoom.settings import COUNTRY_LANGUAGES
-import os
 
 Profile = get_model("registration", "Profile")
 Location = get_model("administration", "Location")
@@ -387,6 +389,134 @@ class Schedule(TemplateView):
                 args["classes"] = Service.objects.filter(business_id=business_id)
 
             return render(request, self.template_name, args)
+
+class ScheduleEvents(View):
+    def get(self, request):
+        profile = request.user.profile
+        business_id = getattr(profile, 'business_id', None)
+
+        # Filters from FullCalendar
+        start_param = request.GET.get('start')
+        end_param = request.GET.get('end')
+        location_id = request.GET.get('location_id')
+
+        start_dt = parse_datetime(start_param) if start_param else None
+        end_dt = parse_datetime(end_param) if end_param else None
+
+        # Localize naive datetimes to UTC
+        if start_dt and start_dt.tzinfo is None:
+            start_dt = pytz.utc.localize(start_dt)
+        if end_dt and end_dt.tzinfo is None:
+            end_dt = pytz.utc.localize(end_dt)
+
+        qs = Event.objects.all()
+        if business_id is not None:
+            qs = qs.filter(business_id=business_id)
+        if location_id:
+            qs = qs.filter(location_id=location_id)
+        if start_dt and end_dt:
+            # Events starting before end and ending after start
+            qs = qs.filter(scheduled_time__lt=end_dt)
+        elif start_dt:
+            qs = qs.filter(scheduled_time__gte=start_dt)
+        elif end_dt:
+            qs = qs.filter(scheduled_time__lt=end_dt)
+
+        events = []
+        for ev in qs:
+            try:
+                end_time = ev.scheduled_time + ev.duration
+            except Exception:
+                end_time = ev.scheduled_time
+
+            events.append({
+                'id': ev.id,
+                'title': ev.name or '',
+                'start': ev.scheduled_time.isoformat(),
+                'end': end_time.isoformat() if end_time else None,
+                'extendedProps': {
+                    'description': ev.description or ''
+                }
+            })
+
+        return JsonResponse(events, safe=False)
+
+class GoogleOAuthStart(View):
+    def get(self, request):
+        client_id = os.environ.get('GOOGLE_CLIENT_ID')
+        client_secret = os.environ.get('GOOGLE_CLIENT_SECRET')
+        client_config = {
+            'web': {
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+                'token_uri': 'https://oauth2.googleapis.com/token'
+            }
+        }
+        callback_uri = request.build_absolute_uri(reverse_lazy('administration:google_oauth_callback'))
+        flow = Flow.from_client_config(client_config, scopes=['https://www.googleapis.com/auth/calendar'])
+        flow.redirect_uri = callback_uri
+        auth_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true', prompt='consent')
+        request.session['google_oauth_state'] = state
+        return redirect(auth_url)
+
+class GoogleOAuthCallback(View):
+    def get(self, request):
+        client_id = os.environ.get('GOOGLE_CLIENT_ID')
+        client_secret = os.environ.get('GOOGLE_CLIENT_SECRET')
+        client_config = {
+            'web': {
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+                'token_uri': 'https://oauth2.googleapis.com/token'
+            }
+        }
+        callback_uri = request.build_absolute_uri(reverse_lazy('administration:google_oauth_callback'))
+        flow = Flow.from_client_config(client_config, scopes=['https://www.googleapis.com/auth/calendar'], state=request.session.get('google_oauth_state'))
+        flow.redirect_uri = callback_uri
+        flow.fetch_token(authorization_response=request.build_absolute_uri())
+        creds = flow.credentials
+        profile = request.user.profile
+        profile.google_credentials_json = creds.to_json()
+        profile.google_sync_enabled = True
+        profile.save()
+        return redirect(reverse_lazy('administration:schedule'))
+
+class PublishEventsToGoogleCalendar(View):
+    def post(self, request):
+        profile = request.user.profile
+        if not profile.google_credentials_json:
+            return redirect(reverse_lazy('administration:google_oauth_start'))
+        creds = Credentials.from_authorized_user_info(json.loads(profile.google_credentials_json), scopes=['https://www.googleapis.com/auth/calendar'])
+        service = build('calendar', 'v3', credentials=creds)
+        calendar_id = 'primary'
+        qs = Event.objects.filter(business_id=profile.business_id)
+        results = {'created': 0, 'updated': 0}
+        for ev in qs:
+            tz = ev.location.time_zone_string if getattr(ev, 'location', None) and getattr(ev.location, 'time_zone_string', None) else 'UTC'
+            end_time = ev.scheduled_time + ev.duration
+            body = {
+                'summary': ev.name or '',
+                'description': ev.description or '',
+                'start': {'dateTime': ev.scheduled_time.isoformat(), 'timeZone': tz},
+                'end': {'dateTime': end_time.isoformat(), 'timeZone': tz},
+            }
+            if ev.google_event_id:
+                try:
+                    service.events().update(calendarId=calendar_id, eventId=ev.google_event_id, body=body).execute()
+                    results['updated'] += 1
+                except Exception:
+                    created = service.events().insert(calendarId=calendar_id, body=body).execute()
+                    ev.google_event_id = created.get('id')
+                    ev.save(update_fields=['google_event_id'])
+                    results['created'] += 1
+            else:
+                created = service.events().insert(calendarId=calendar_id, body=body).execute()
+                ev.google_event_id = created.get('id')
+                ev.save(update_fields=['google_event_id'])
+                results['created'] += 1
+        return JsonResponse(results)
 
 class StaffPage(TemplateView):
     template_name = 'administration/staff.html'

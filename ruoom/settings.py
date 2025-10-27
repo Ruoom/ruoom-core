@@ -272,11 +272,11 @@ EMAIL_USE_TLS = None
 GOOGLE_OAUTH_CLIENT_CONFIG = {
     "web": {
         "client_id": os.environ.get("GOOGLE_CLIENT_ID", "YOUR_CLIENT_ID"),
+        "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET", "YOUR_CLIENT_SECRET"),
         "project_id": os.environ.get("GOOGLE_PROJECT_ID", "YOUR_PROJECT_ID"),
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET", "YOUR_CLIENT_SECRET"),
         "redirect_uris": [
             # Local development
             "http://localhost:8000/administration/google/oauth/callback",

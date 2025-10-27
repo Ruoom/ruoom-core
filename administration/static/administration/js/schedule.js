@@ -34,7 +34,23 @@ $(document).ready(function() {
       center: "title",
       right: "timeGridDay,timeGridWeek,dayGridMonth"
     },
-    events: events_list,
+    eventSources: [
+      { events: events_list },
+      {
+        events: function(fetchInfo, successCallback, failureCallback) {
+          $.ajax({
+            url: "/administration/schedule/events/",
+            data: {
+              start: fetchInfo.startStr,
+              end: fetchInfo.endStr,
+              location_id: window.currentLocationId
+            },
+            success: function(data) { successCallback(data); },
+            error: function(err) { failureCallback(err); }
+          });
+        }
+      }
+    ],
     allDaySlot: showAllDayBar ? true : false,
     scrollTime: "9:00:00",
     businessHours: businessHours,

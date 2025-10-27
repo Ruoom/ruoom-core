@@ -22,6 +22,7 @@
     var showAllDayBar;
     var csrf_token = '{{csrf_token}}'
     var locationTimezone = '{{ locationTimezone }}'
+    window.currentLocationId = '{{ location.id }}'
 
     {% if show_all_day_bar %}
     showAllDayBar = true;
@@ -108,6 +109,12 @@
                         {% if "booking" in plugins %}
                             {% include "booking/partials/schedule_services_buttons.html" %}
                         {% endif %}
+                        <form method="post" action="{% url 'administration:publish_google_calendar' %}" style="display:inline-block; margin-left: 8px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                Publish to Google Calendar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

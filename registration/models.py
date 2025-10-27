@@ -186,6 +186,7 @@ class Event(models.Model):
     duration = models.DurationField(verbose_name=_("Duration"))
     location = models.ForeignKey('administration.Location', on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Location'))
     description = models.TextField(_("Description"), default="", blank=True, null=True)
+    google_event_id = models.CharField(_("Google Event ID"), max_length=256, blank=True, null=True)
 
     def __str__(self):
         return self.name
