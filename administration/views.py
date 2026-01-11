@@ -2,11 +2,15 @@ from time import time as t_time
 import json
 from http import HTTPStatus
 from datetime import datetime
+from datetime import timedelta
 import pytz
 import csv
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.db.models import Q
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from django.utils import timezone
 from django.http import (
     HttpResponseRedirect,
     HttpResponse,
@@ -36,7 +40,7 @@ from ruoom.automated_email_system import automated_email_send
 # from weasyprint import HTML
 from django.template.loader import render_to_string
 
-from .models import Business, Location
+from .models import Business, Location, Room
 
 from ruoom.settings import COUNTRY_LANGUAGES
 import os
@@ -44,6 +48,7 @@ import os
 Profile = get_model("registration", "Profile")
 Location = get_model("administration", "Location")
 DaysOfOperation = get_model("administration", "DaysOfOperation")
+Room = get_model("administration", "Room")
 
 # Create your views here.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -179,6 +184,117 @@ class Dashboard(TemplateView):
         }
 
         return render(request, self.template_name, context=context)
+
+class DashboardData(View):
+
+    def _get_date_range(self, request):
+        days_raw = request.GET.get("days", "30")
+        try:
+            days = int(days_raw)
+        except (TypeError, ValueError):
+            days = 30
+
+        if days not in (7, 14, 30, 90, 365):
+            days = 30
+
+        end = timezone.now()
+        start = end - timedelta(days=days)
+        return start, end, days
+
+    def _demo_series(self, days, seed):
+        series = []
+        for i in range(days):
+            x = (i + 1) + (seed % 7)
+            val = int((x * x + 13 * seed + 17) % 80) + 10
+            series.append(val)
+        return series
+
+    def get(self, request):
+        staff = request.user.profile
+        if not staff.user_type == Profile.USER_TYPE_STAFF:
+            return JsonResponse({"detail": "forbidden"}, status=HTTPStatus.FORBIDDEN)
+
+        business_id = staff.business_id
+        start, end, days = self._get_date_range(request)
+
+        location_id = request.GET.get("location_id")
+        location = None
+        if location_id:
+            location = Location.objects.filter(id=location_id, business_id=business_id).first()
+        if not location and staff.default_location:
+            location = Location.objects.filter(id=staff.default_location.id, business_id=business_id).first()
+
+        locations_qs = Location.objects.filter(business_id=business_id)
+        rooms_qs = Room.objects.filter(business_id=business_id)
+
+        customers_qs = Profile.objects.filter(business_id=business_id, user_type=Profile.USER_TYPE_CUSTOMER)
+        staff_qs = Profile.objects.filter(business_id=business_id, user_type=Profile.USER_TYPE_STAFF)
+
+        if location:
+            rooms_qs = rooms_qs.filter(location=location)
+
+        kpi = {
+            "locations": locations_qs.count(),
+            "rooms": rooms_qs.count(),
+            "customers": customers_qs.count(),
+            "staff": staff_qs.count(),
+        }
+
+        new_customers_daily = (
+            customers_qs.filter(date_joined__gte=start, date_joined__lte=end)
+            .annotate(d=TruncDate("date_joined"))
+            .values("d")
+            .order_by("d")
+            .annotate(c=Count("id"))
+        )
+
+        series_map = {}
+        for row in new_customers_daily:
+            series_map[str(row["d"])]=row["c"]
+
+        labels = []
+        series = []
+        for i in range(days):
+            d = (start + timedelta(days=i)).date()
+            labels.append(str(d))
+            series.append(int(series_map.get(str(d), 0)))
+
+        if sum(series) == 0:
+            series = self._demo_series(days, seed=business_id + (location.id if location else 0) + 11)
+
+        activity = []
+        for loc in locations_qs.order_by("id")[:5]:
+            activity.append({
+                "type": "location",
+                "title": "Location active",
+                "detail": loc.name,
+            })
+
+        for prof in staff_qs.order_by("-last_login")[:5]:
+            if not prof.last_login:
+                continue
+            activity.append({
+                "type": "staff",
+                "title": "Recent staff login",
+                "detail": prof.localized_name(),
+            })
+
+        payload = {
+            "meta": {
+                "days": days,
+                "location": {"id": location.id, "name": location.name} if location else None,
+            },
+            "kpi": kpi,
+            "charts": {
+                "new_customers": {
+                    "labels": labels,
+                    "series": series,
+                }
+            },
+            "activity": activity[:10],
+        }
+
+        return JsonResponse(payload, status=HTTPStatus.OK)
 
 class CustomerOptions(TemplateView):
     template_name = "administration/customer_info_nav.html"

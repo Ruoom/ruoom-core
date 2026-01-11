@@ -7,6 +7,7 @@ app_name = 'administration'
 urlpatterns = [
     path('', RedirectView.as_view(url='dashboard/')),
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
+    path('dashboard/data/', views.DashboardData.as_view(), name='dashboard_data'),
     path('customers/', views.CustomerPage.as_view(), name='customers'),
     path('customers/modify/option', views.CustomerOptions.as_view(), name='customers_nav_bar'),
     path('schedule/', views.Schedule.as_view(), name='schedule'),

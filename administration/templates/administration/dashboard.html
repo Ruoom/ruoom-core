@@ -9,13 +9,13 @@
     <script src="{% static 'administration/js/dashboard.js' %}"></script>
     <script src="{% static 'administration/js/utils.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'administration/css/errors.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'administration/css/dashboard.css' %}">
 
 {% endblock %}
 
 {% block content %}
 
 {% get_current_language as LANGUAGE_CODE %}
-
 
     <!-- MAIN CONTENT ================================================== -->
     <div class="main-content home-page">
@@ -77,84 +77,151 @@
         <!-- CARDS -->
         <div class="container-fluid">
 
-            <!-- ====================== Enrolled, Capacity, Waitlist and Attendace============================== -->
-
-            <div class="row" id="intro">
-                <div class="col-12 col-sm-6 col-lg-3">
-
-                    <!-- Card -->
-                    <div class="card border-27">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                </div>
-                            </div> <!-- / .row -->
-                        </div>
+            <div class="dashboard-toolbar mb-4">
+                <div class="dashboard-toolbar-left">
+                    <div class="btn-group" role="group" aria-label="Date range">
+                        <button type="button" class="btn btn-sm btn-white dashboard-days" data-days="7">7d</button>
+                        <button type="button" class="btn btn-sm btn-white dashboard-days" data-days="30">30d</button>
+                        <button type="button" class="btn btn-sm btn-white dashboard-days" data-days="90">90d</button>
                     </div>
+                    <span class="text-muted small" id="dashboard-scope"></span>
                 </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-
-                    <!-- Card -->
-                    <div class="card border-27">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                </div>
-                            </div> <!-- / .row -->
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-
-                    <!-- Card -->
-                    <div class="card border-27">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                </div>
-                            </div> <!-- / .row -->
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-lg-3">
-
-                    <!-- Card -->
-                    <div class="card border-27">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                </div>
-                            </div> <!-- / .row -->
-                        </div>
-                    </div>
-
+                <div class="dashboard-toolbar-right">
+                    <button type="button" class="btn btn-sm dashboard-btn-blue" data-toggle="modal" data-target="#dashboardCustomizeModal">
+                        <i class="fe fe-sliders mr-2"></i>{% trans "Customize" %}
+                    </button>
+                    <button type="button" class="btn btn-sm btn-white" id="dashboard-refresh">
+                        <i class="fe fe-refresh-cw mr-2"></i>{% trans "Refresh" %}
+                    </button>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-12 col-xl-12">
+            <div class="row" id="dashboard-widgets">
+                <div class="col-12 col-sm-6 col-lg-3" data-widget="kpi_customers">
+                    <div class="card dashboard-kpi">
+                        <div class="card-body">
+                            <div class="dashboard-kpi-icon"><i class="fe fe-users"></i></div>
+                            <h6 class="text-uppercase text-muted mb-2">{% trans "Customers" %}</h6>
+                            <div class="h2 mb-0" id="kpi-customers">—</div>
+                            <div class="text-muted small mt-2" id="kpi-customers-sub">{% trans "Total in business" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3" data-widget="kpi_staff">
+                    <div class="card dashboard-kpi">
+                        <div class="card-body">
+                            <div class="dashboard-kpi-icon"><i class="fe fe-user"></i></div>
+                            <h6 class="text-uppercase text-muted mb-2">{% trans "Staff" %}</h6>
+                            <div class="h2 mb-0" id="kpi-staff">—</div>
+                            <div class="text-muted small mt-2" id="kpi-staff-sub">{% trans "Active team" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3" data-widget="kpi_locations">
+                    <div class="card dashboard-kpi">
+                        <div class="card-body">
+                            <div class="dashboard-kpi-icon"><i class="fe fe-map-pin"></i></div>
+                            <h6 class="text-uppercase text-muted mb-2">{% trans "Locations" %}</h6>
+                            <div class="h2 mb-0" id="kpi-locations">—</div>
+                            <div class="text-muted small mt-2" id="kpi-locations-sub">{% trans "Across business" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3" data-widget="kpi_rooms">
+                    <div class="card dashboard-kpi">
+                        <div class="card-body">
+                            <div class="dashboard-kpi-icon"><i class="fe fe-grid"></i></div>
+                            <h6 class="text-uppercase text-muted mb-2">{% trans "Rooms" %}</h6>
+                            <div class="h2 mb-0" id="kpi-rooms">—</div>
+                            <div class="text-muted small mt-2" id="kpi-rooms-sub">{% trans "In scope" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-8" data-widget="chart_new_customers">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h4 class="card-header-title mb-0 mr-2">{% trans "New customers" %}</h4>
+                                        <span class="dashboard-pill" id="chart-new-customers-total">—</span>
+                                    </div>
+                                    <div class="text-muted small" id="chart-new-customers-sub">{% trans "In selected period" %}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="dashboard-chart-wrap">
+                                <canvas id="chart-new-customers"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-4" data-widget="activity_feed">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-header-title mb-0">{% trans "Activity" %}</h4>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="text-muted small" id="dashboard-activity-updated">{% trans "Updated" %} —</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" id="dashboard-activity">
+                            <div class="text-muted">{% trans "Loading…" %}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-12 col-xl-4">
-                </div>
-                <div class="col-12 col-xl-8">
-                </div>
-            </div> <!-- / .row -->
         </div>
-</div>
-<!-- / .main-content -->
+    </div>
+    <!-- / .main-content -->
 
-<script>
-    $(document).ready(function() {
-        if (!tour.ended() && is_msa_signed != false){
-            tour.start()
-        };
-        $("#dropdownMenuLink+div>a").on("click", (e) =>{
-        window.location.href = "/administration/dashboard/?location_id=" + $(e.target).attr("value");
+    <div class="modal fade" id="dashboardCustomizeModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{% trans "Customize dashboard" %}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">{% trans "Toggle widgets and reorder them. Changes are saved in your browser." %}</p>
+
+                    <div id="dashboard-customize-list" class="list-group"></div>
+
+                    <div class="alert alert-light mt-3 mb-0" role="alert">
+                        <div class="d-flex">
+                            <div class="mr-2"><i class="fe fe-info"></i></div>
+                            <div class="small text-muted">{% trans "Tip: drag the handle to reorder." %}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" id="dashboard-reset">{% trans "Reset" %}</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Done" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            if (!tour.ended() && is_msa_signed != false){
+                tour.start()
+            };
+            $("#dropdownMenuLink+div>a").on("click", (e) =>{
+            window.location.href = "/administration/dashboard/?location_id=" + $(e.target).attr("value");
+            })
         })
-    })
 </script>
 
 {% endblock %}
