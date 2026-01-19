@@ -65,10 +65,6 @@
 
                 <!-- Footer -->
                 <div class="pt-4">
-
-                    <p>{% trans "This dashboard is yours to customize!" %}</p>
-                    <p>{% trans "Explore our premium plugins (Booking, Appointments, and/or Staff) for some example dashboard widgets" %}</p>
-
                 </div>
 
             </div>
@@ -87,8 +83,8 @@
                     <span class="text-muted small" id="dashboard-scope"></span>
                 </div>
                 <div class="dashboard-toolbar-right">
-                    <button type="button" class="btn btn-sm dashboard-btn-blue" data-toggle="modal" data-target="#dashboardCustomizeModal">
-                        <i class="fe fe-sliders mr-2"></i>{% trans "Customize" %}
+                    <button type="button" class="btn btn-sm dashboard-btn-blue" id="dashboard-edit-toggle">
+                        <i class="fe fe-edit-3 mr-2"></i>{% trans "Edit layout" %}
                     </button>
                     <button type="button" class="btn btn-sm btn-white" id="dashboard-refresh">
                         <i class="fe fe-refresh-cw mr-2"></i>{% trans "Refresh" %}
@@ -137,6 +133,43 @@
                             <h6 class="text-uppercase text-muted mb-2">{% trans "Rooms" %}</h6>
                             <div class="h2 mb-0" id="kpi-rooms">—</div>
                             <div class="text-muted small mt-2" id="kpi-rooms-sub">{% trans "In scope" %}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6" data-widget="revenue_tracking">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h4 class="card-header-title mb-0 mr-2">{% trans "Revenue" %}</h4>
+                                        <span class="dashboard-pill" id="revenue-total">—</span>
+                                    </div>
+                                    <div class="text-muted small" id="revenue-sub">{% trans "Revenue in selected period" %}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="dashboard-sparkline-wrap">
+                                <canvas id="chart-revenue-sparkline"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6" data-widget="action_center">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-header-title mb-0">{% trans "Action Center" %}</h4>
+                                    <div class="text-muted small">{% trans "Items that need attention" %}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" id="dashboard-action-center">
+                            <div class="text-muted">{% trans "Loading…" %}</div>
                         </div>
                     </div>
                 </div>

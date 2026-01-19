@@ -53,6 +53,11 @@
   display: none !important;
 }
 
+.dashboard-editing .dashboard-widget-hidden {
+  display: block !important;
+  opacity: 0.35;
+}
+
 .dashboard-chart-wrap {
   position: relative;
   height: 260px;
@@ -81,4 +86,160 @@
   padding: 2px 8px;
   border-radius: 999px;
   background: rgba(0,0,0,0.06);
+}
+
+.dashboard-sparkline-wrap {
+  position: relative;
+  height: 90px;
+}
+
+.dashboard-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.dashboard-action-item:last-child {
+  border-bottom: 0;
+}
+
+.dashboard-action-title {
+  font-weight: 700;
+}
+
+.dashboard-action-meta {
+  font-size: 12px;
+  color: rgba(0,0,0,0.55);
+}
+
+.dashboard-badge-red {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+.dashboard-badge-amber {
+  background: rgba(255, 193, 7, 0.16);
+  color: #b78103;
+}
+
+.dashboard-badge-blue {
+  background: rgba(44, 123, 229, 0.12);
+  color: #2C7BE5;
+}
+
+.dashboard-action-section {
+  border-left: 3px solid rgba(0,0,0,0.08);
+  padding-left: 12px;
+}
+
+.dashboard-action-section.approvals {
+  border-left-color: rgba(44, 123, 229, 0.55);
+}
+
+.dashboard-action-section.issues {
+  border-left-color: rgba(220, 53, 69, 0.55);
+}
+
+.dashboard-action-section.reminders {
+  border-left-color: rgba(255, 193, 7, 0.65);
+}
+
+.dashboard-action-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-action-section-title i {
+  opacity: 0.9;
+}
+
+.dashboard-action-table td {
+  vertical-align: top;
+}
+
+.dashboard-chip {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+.dashboard-chip-blue {
+  background: rgba(44, 123, 229, 0.12);
+  color: #2C7BE5;
+}
+
+.dashboard-chip-amber {
+  background: rgba(255, 193, 7, 0.16);
+  color: #b78103;
+}
+
+.dashboard-chip-red {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+.dashboard-chip-gray {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.65);
+}
+
+.dashboard-editing [data-widget] {
+  position: relative;
+}
+
+.dashboard-editing [data-widget] .card {
+  outline: 2px dashed rgba(44, 123, 229, 0.35);
+  outline-offset: 4px;
+}
+
+.dashboard-widget-controls {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  z-index: 5;
+  display: none;
+  gap: 6px;
+}
+
+.dashboard-editing .dashboard-widget-controls {
+  display: flex;
+}
+
+.dashboard-widget-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.10);
+  color: rgba(0,0,0,0.65);
+}
+
+.dashboard-widget-control:hover {
+  background: rgba(255,255,255,1);
+  color: rgba(0,0,0,0.85);
+}
+
+.dashboard-widget-handle {
+  cursor: grab;
+}
+
+.dashboard-editing [data-widget][draggable="true"] {
+  cursor: grab;
+}
+
+.dashboard-editing [data-widget].dashboard-drop-target .card {
+  outline-color: rgba(44, 123, 229, 0.8);
+}
+
+.dashboard-editing [data-widget].dashboard-dragging {
+  opacity: 0.75;
 }

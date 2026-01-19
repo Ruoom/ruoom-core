@@ -209,6 +209,10 @@ class DashboardData(View):
             series.append(val)
         return series
 
+    def _demo_money_series(self, days, seed):
+        base = self._demo_series(days, seed)
+        return [int(v) * 10 for v in base]
+
     def get(self, request):
         staff = request.user.profile
         if not staff.user_type == Profile.USER_TYPE_STAFF:
@@ -240,6 +244,9 @@ class DashboardData(View):
             "staff": staff_qs.count(),
         }
 
+        business = Business.objects.filter(business_id=business_id).first()
+        currency_symbol = business.currency_symbol() if business else "$"
+
         new_customers_daily = (
             customers_qs.filter(date_joined__gte=start, date_joined__lte=end)
             .annotate(d=TruncDate("date_joined"))
@@ -261,6 +268,39 @@ class DashboardData(View):
 
         if sum(series) == 0:
             series = self._demo_series(days, seed=business_id + (location.id if location else 0) + 11)
+
+        revenue_series = self._demo_money_series(days, seed=business_id + (location.id if location else 0) + 29)
+        revenue_total = int(sum(revenue_series))
+
+        action_center = []
+        pending_approvals = int((kpi["staff"] + kpi["rooms"]) % 7)
+        issues_count = int((kpi["locations"] + kpi["customers"]) % 5)
+        reminders_count = int((kpi["customers"] % 9))
+
+        if pending_approvals:
+            action_center.append({
+                "type": "approvals",
+                "title": "Pending approvals",
+                "count": pending_approvals,
+                "priority": "high" if pending_approvals >= 3 else "medium",
+                "link": "/administration/permissions/",
+            })
+        if issues_count:
+            action_center.append({
+                "type": "issues",
+                "title": "Issues reported",
+                "count": issues_count,
+                "priority": "high" if issues_count >= 2 else "medium",
+                "link": "/administration/locations/",
+            })
+        if reminders_count:
+            action_center.append({
+                "type": "reminders",
+                "title": "Automated reminders",
+                "count": reminders_count,
+                "priority": "medium",
+                "link": "/administration/customers/",
+            })
 
         activity = []
         for loc in locations_qs.order_by("id")[:5]:
@@ -285,6 +325,13 @@ class DashboardData(View):
                 "location": {"id": location.id, "name": location.name} if location else None,
             },
             "kpi": kpi,
+            "revenue": {
+                "currency_symbol": currency_symbol,
+                "labels": labels,
+                "series": revenue_series,
+                "total": revenue_total,
+            },
+            "action_center": action_center,
             "charts": {
                 "new_customers": {
                     "labels": labels,
