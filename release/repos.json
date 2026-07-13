@@ -118,10 +118,10 @@
       "repo": "https://github.com/ruoom/digitalproduct-plugin",
       "test_command": "pytest plugins/digitalproducts/tests -q",
       "dependencies": {
-        "required": [],
-        "optional": [
+        "required": [
           "payment"
-        ]
+        ],
+        "optional": []
       },
       "export": {
         "include": [
