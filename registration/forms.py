@@ -7,7 +7,11 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import Group
 
-from registration.utils.authentication import authenticate_with_email, set_user_groups
+from registration.utils.authentication import (
+    authenticate_with_email,
+    get_permission_group_names,
+    set_user_groups,
+)
 
 from django.utils.translation import gettext_lazy as _
 
@@ -123,14 +127,14 @@ class SignupForm(forms.ModelForm):
             user.first_name = first_name
             user.last_name = last_name
             user.user_type = Profile.USER_TYPE_STAFF
-            user.username = email+","+str(business_id)
+            user.username = Profile.username_for_identity(email, business_id)
             # Hard coded business ID for sign up. TBD
             user.save()
             group = Group.objects.filter(name="Profile")
             if group:
                 user.groups.add(group.first())
             user.save()
-            set_user_groups(user, settings.RESTRICTED_PATH_GROUPS + settings.SUPERUSER_ONLY_PATH_GROUPS)
+            set_user_groups(user, get_permission_group_names())
         return user
 
 class SigninForm(forms.Form):

@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import importlib.util
+from importlib import import_module
+from urllib.parse import urlparse
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from pathlib import Path
 from decouple import config
@@ -22,16 +26,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'GENERATE_YOUR_OWN_SECRET'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-import sys
-if os.environ.get('RDS_HOSTNAME', 'localhost') == 'localhost':
+_debug_env = os.environ.get("DEBUG", "").lower()
+if _debug_env in ("true", "1", "yes"):
     DEBUG = True
-elif len(sys.argv) > 2:
-    if "0.0.0.0" in sys.argv[2]:
-        DEBUG = True
+elif _debug_env in ("false", "0", "no"):
+    DEBUG = False
+else:
+    DEBUG = True
+
+# SECURITY WARNING: keep the secret key used in production secret!
+_secret_key = config("SECRET_KEY", default="")
+if _secret_key:
+    SECRET_KEY = _secret_key
+elif DEBUG:
+    SECRET_KEY = "dev-only-insecure-secret-key"
+else:
+    raise ImproperlyConfigured("SECRET_KEY must be set when DEBUG is False.")
         
 ALLOWED_HOSTS = ['*']
 
@@ -56,17 +67,78 @@ THIRD_PARTY_APPS = [
     'sslserver',
     'preventconcurrentlogins',
 ]
-LOCAL_APPS = [
+EMAIL_OTP_APP = 'plugins.email_otp.apps.EmailOTPConfig'
+CORE_LOCAL_APPS = [
     'administration.apps.AdminConfig',
     'registration.apps.RegConfig',
     'customer.apps.CustomerConfig',
-    'plugins.payment',
-    'plugins.digitalproducts',
-    'plugins.booking',
 ]
+
+DEFAULT_PLUGIN_NAMES = (
+    'payment',
+    'digitalproducts',
+    'booking',
+    'appointments',
+    'customforms',
+    'email_otp',
+    'mailerlite',
+    'single_sign_on',
+)
+RUOOM_PLUGIN_NAMES = tuple(
+    name.strip()
+    for name in os.environ.get(
+        'RUOOM_PLUGINS', ','.join(DEFAULT_PLUGIN_NAMES)
+    ).split(',')
+    if name.strip()
+)
+PLUGIN_APP_CONFIGS = {
+    'payment': 'plugins.payment.apps.PaymentConfig',
+    'digitalproducts': 'plugins.digitalproducts.apps.DigitalProductConfig',
+    'booking': 'plugins.booking.apps.BookingConfig',
+    'appointments': 'plugins.appointments.apps.AppointmentsConfig',
+    'customforms': 'plugins.customforms.apps.CustomFormsConfig',
+    'email_otp': EMAIL_OTP_APP,
+    'mailerlite': 'plugins.mailerlite.apps.MailerLiteConfig',
+    'single_sign_on': 'plugins.single_sign_on.apps.SingleSignOnConfig',
+}
+
+
+def _installed_plugin_apps():
+    installed_apps = []
+    for plugin_name in RUOOM_PLUGIN_NAMES:
+        app_config = PLUGIN_APP_CONFIGS.get(plugin_name)
+        if not app_config:
+            raise ImproperlyConfigured(
+                f"Unknown Ruoom plugin '{plugin_name}'. Add it to PLUGIN_APP_CONFIGS."
+            )
+        try:
+            if importlib.util.find_spec(f'plugins.{plugin_name}') is not None:
+                installed_apps.append(app_config)
+        except ModuleNotFoundError:
+            continue
+    return installed_apps
+
+
+LOCAL_APPS = CORE_LOCAL_APPS + _installed_plugin_apps()
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = LOCAL_APPS + DJANGO_APPS + THIRD_PARTY_APPS
+
+
+def _plugin_middleware_paths():
+    middleware_paths = []
+    for app_name in LOCAL_APPS:
+        if not app_name.startswith("plugins."):
+            continue
+        plugin_name = app_name.split(".")[1]
+        try:
+            plugin_module = import_module(f"plugins.{plugin_name}.plugin")
+        except ModuleNotFoundError:
+            continue
+        metadata = getattr(plugin_module, "PLUGIN_METADATA", None)
+        middleware_paths.extend(getattr(metadata, "middleware", ()))
+    return middleware_paths
+
 
 MIDDLEWARE = [
     'registration.middleware.authentication.CookieSameSiteMiddlerTest',
@@ -83,7 +155,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'registration.middleware.authentication.AuthenticationMiddleware',
     'preventconcurrentlogins.middleware.PreventConcurrentLoginsMiddleware'
-]
+] + _plugin_middleware_paths()
 
 ROOT_URLCONF = 'ruoom.urls'
 
@@ -99,7 +171,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'administration.context_processors.studio_image',
-                'administration.context_processors.language_list'
+                'administration.context_processors.language_list',
+                'ruoom.ui_customization.context_processor',
             ],
             'debug': True,
         },
@@ -114,16 +187,31 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 # live db details
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('RDS_DB_NAME', 'Ruoom'),
-        'USER': os.environ.get('RDS_USERNAME', 'ruoom_admin'),
-        'PASSWORD': os.environ.get('RDS_PASSWORD', 'password'), 
-        'HOST': os.environ.get('RDS_HOSTNAME', 'localhost'),
-        'PORT': os.environ.get('RDS_PORT', '5432'),
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+
+if DATABASE_URL:
+    parsed_database_url = urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': parsed_database_url.path.lstrip('/'),
+            'USER': parsed_database_url.username or '',
+            'PASSWORD': parsed_database_url.password or '',
+            'HOST': parsed_database_url.hostname or '',
+            'PORT': str(parsed_database_url.port or '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('RDS_DB_NAME', 'Ruoom'),
+            'USER': os.environ.get('RDS_USERNAME', 'ruoom_admin'),
+            'PASSWORD': os.environ.get('RDS_PASSWORD', 'password'),
+            'HOST': os.environ.get('RDS_HOSTNAME', 'localhost'),
+            'PORT': os.environ.get('RDS_PORT', '5432'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -146,6 +234,9 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+OPTIONAL_SOCIAL_AUTH_BACKENDS = []
+OPTIONAL_SOCIAL_AUTH_PIPELINE = []
 
 SILENCED_SYSTEM_CHECKS = [
     'auth.W004',
@@ -177,14 +268,50 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static_cache")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-STATICFILES_DIRS += load_plugin_statics(BASE_DIR)
 
 # Static and media storage option
-STORAGE = os.environ.get("STORAGE", "")
+STORAGE = os.environ.get("STORAGE", "").upper()
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = (
+    os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    or os.environ.get("AWS_BUCKET_NAME")
+)
+AWS_DEFAULT_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-2")
+AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
+AWS_LOCATION = os.environ.get("AWS_LOCATION", "static")
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": os.environ.get("AWS_S3_CACHE_CONTROL", "max-age=86400")
+}
+AWS_DEFAULT_EXPIRY = int(os.environ.get("AWS_S3_DEFAULT_EXPIRY", 900))
+AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL")
+AWS_QUERYSTRING_AUTH = os.environ.get("AWS_QUERYSTRING_AUTH", "true").lower() == "true"
+
+if STORAGE == "S3":
+    if not AWS_STORAGE_BUCKET_NAME:
+        raise ImproperlyConfigured("STORAGE=S3 requires AWS_STORAGE_BUCKET_NAME or AWS_BUCKET_NAME.")
+
+    if not AWS_S3_CUSTOM_DOMAIN:
+        AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "ruoom.storages.MediaStore"
+
+STORAGES = {
+    "default": {
+        "BACKEND": DEFAULT_FILE_STORAGE,
+    },
+    "staticfiles": {
+        "BACKEND": STATICFILES_STORAGE,
+    },
+}
 
 # set this to True to enable per page permission authentication
 ENABLE_PER_PAGE_PERMISSIONS = True
@@ -194,12 +321,49 @@ FORCE_SUPERUSER_CREATION = True
 ADMIN_URL1 = '/admin/'
 ADMIN_URL2 = '/admin/login/'
 SIGNUP_URL = reverse_lazy('registration:signup')
-LOGIN_URL = reverse_lazy('registration:signin')
+PASSWORD_LOGIN_URL = reverse_lazy('registration:signin')
+EMAIL_OTP_LOGIN_URL = "/otp/signin/"
+USE_EMAIL_OTP_LOGIN = config("USE_EMAIL_OTP_LOGIN", default=EMAIL_OTP_APP in LOCAL_APPS, cast=bool)
+LOGIN_URL = EMAIL_OTP_LOGIN_URL if USE_EMAIL_OTP_LOGIN and EMAIL_OTP_APP in LOCAL_APPS else PASSWORD_LOGIN_URL
 CUSTOMER_LOGIN_URL = reverse_lazy('registration:customer_signin')
 LOGIN_REDIRECT_URL = reverse_lazy('administration:dashboard')
 CUSTOMER_LOGIN_REDIRECT_URL = reverse_lazy('customer:customer-account-settings')
+SSO_TEMP_BUSINESS_ID = 0
+SSO_TOKEN_TTL_SECONDS = 3600
+SSO_DEFAULT_REDIRECT_URL = LOGIN_REDIRECT_URL
+SSO_STAFF_REDIRECT_URL = LOGIN_REDIRECT_URL
+SSO_CUSTOMER_REDIRECT_URL = CUSTOMER_LOGIN_REDIRECT_URL
+SSO_STANDALONE_REDIRECT_URL = CUSTOMER_LOGIN_REDIRECT_URL
+SSO_OAUTH_PATH_KEYWORDS = ("oauth", "sso", "accounts")
+EMAIL_OTP_EXPIRY_MINUTES = 10
+EMAIL_OTP_MAX_VERIFY_ATTEMPTS = 5
+EMAIL_OTP_REQUEST_COOLDOWN_SECONDS = 60
+EMAIL_OTP_SIGNUP_REDIRECT_URL = SIGNUP_URL
 LOCAL_URLS = ['http://localhost', 'http://127.0.0.1']
 SAFE_DOMAINS = []
+
+PUBLIC_URL_EXACT = [
+    "/health/",
+    "/health",
+    "/admin/",
+    "/admin/login/",
+    "/customforms/ajax/check-customform-singlesubmit",
+    EMAIL_OTP_LOGIN_URL,
+    PASSWORD_LOGIN_URL,
+    LOGIN_URL,
+    SIGNUP_URL,
+    CUSTOMER_LOGIN_URL,
+]
+PUBLIC_URL_PATTERNS = [
+    "/accounts/",
+    "/appointments/customer/",
+    "/booking/calendar",
+    "/customforms/webhook/",
+    "/digitalproducts/checkout/",
+]
+STAFF_ONLY_URL_PATTERNS = [
+    "/admin/subscriptions",
+]
 
 COUNTRY_LANGUAGES = {
     "us": "en",
@@ -258,6 +422,12 @@ CSRF_COOKIE_SECURE = True
 # Plugin settings
 ENABLE_PLUGINS = True
 PLUGINS_DIR = os.path.join(BASE_DIR, 'plugins')
+GOOGLE_PLACES_API_KEY = os.environ.get("GOOGLE_PLACES_API_KEY", "")
+BOOKING_CALENDAR_ENABLED = os.environ.get("BOOKING_CALENDAR_ENABLED", "true").lower() != "false"
+BOOKING_EVENT_CARDS_ENABLED = os.environ.get("BOOKING_EVENT_CARDS_ENABLED", "true").lower() != "false"
+ENABLE_LOCATION_MANAGEMENT = os.environ.get("ENABLE_LOCATION_MANAGEMENT", "true").lower() != "false"
+ENABLE_STAFF_PAGE = os.environ.get("ENABLE_STAFF_PAGE", "true").lower() != "false"
+METRICS_API_TOKEN = os.environ.get("METRICS_API_TOKEN", "")
 
 #Automated email sender can be defined here or in database
 EMAIL_HOST = None

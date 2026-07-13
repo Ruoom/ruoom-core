@@ -143,12 +143,13 @@ class UserSignup(TemplateView):
             obj = Business.objects.filter(business_id=user.business_id).first()
             user.language = COUNTRY_LANGUAGES.get(obj.default_country_code, "en") 
 
-            #If this is the first user in the entire database, go ahead and make it a superuser
-            if not User.objects.filter(is_superuser=True).exists():
+            # The first signup is created as a superuser in the form layer.
+            # Persist the matching staff flags here before login.
+            if user.is_superuser:
                 user.is_superuser = True
                 user.is_staff = True
                 user.is_active = True
-                user.user_type == Profile.USER_TYPE_STAFF
+                user.user_type = Profile.USER_TYPE_STAFF
 
             user.save()
             login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])

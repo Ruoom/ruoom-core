@@ -1,0 +1,449 @@
+{% extends "administration/settings.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block settingscontent %}
+<style>
+    .branding-swatch {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+    }
+    .branding-swatch input[type="color"] {
+        border: 1px solid #d2ddec;
+        border-radius: 0.375rem;
+        height: 2.7rem;
+        padding: 0.2rem;
+        width: 3rem;
+    }
+    .branding-preview-frame {
+        background: #fff;
+        border: 1px solid #e3ebf6;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.25rem 0.75rem rgba(18, 38, 63, 0.08);
+        padding: 1rem;
+    }
+    .branding-preview-toggle {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+    .branding-preview-toggle .active {
+        background-color: #6e84a3;
+        border-color: #6e84a3;
+        color: #fff;
+    }
+    .branding-preview-card {
+        border: 1px solid #edf2f9;
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+    .branding-preview-hero {
+        align-items: center;
+        display: flex;
+        font-size: 2rem;
+        height: 7.5rem;
+        justify-content: center;
+    }
+    .logo-preview-box {
+        align-items: center;
+        background: #fff;
+        border: 1px solid #e3ebf6;
+        border-radius: 0.375rem;
+        display: flex;
+        height: 7.5rem;
+        justify-content: center;
+        overflow: hidden;
+        width: 7.5rem;
+    }
+    .logo-preview-box img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    .logo-crop-frame {
+        align-items: center;
+        background: #f9fbfd;
+        border: 1px dashed #d2ddec;
+        border-radius: 0.5rem;
+        display: flex;
+        justify-content: center;
+        min-height: 18rem;
+        overflow: hidden;
+    }
+    .logo-crop-frame img {
+        max-height: 18rem;
+        max-width: 100%;
+        object-fit: contain;
+    }
+</style>
+
+<div class="pt-0">
+    <div class="container-fluid">
+        <div class="platform-settings">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="mb-2">{% trans "Branding" %}</h2>
+                            <p class="text-muted mb-5">{% trans "Global visual identity for customer-facing pages and emails." %}</p>
+
+                            <form action="{% url 'administration:settings-branding' %}" id="brandingSettingForm" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" id="setting_update" name="setting_update" value="branding_settings">
+
+                                <div class="row">
+                                    <div class="col-xl-8 col-lg-7">
+                                        <section class="mb-5">
+                                            <h4>{% trans "Logo" %}</h4>
+                                            <p class="text-muted small">{% trans "Upload your business logo. Used on customer-facing pages." %}</p>
+                                            <div class="d-flex align-items-center">
+                                                <div class="logo-preview-box mr-3">
+                                                    {% if obj and obj.studio_image %}
+                                                        <img id="branding-logo-preview" src="{{ obj.studio_image.url }}" alt="{% trans 'Business logo' %}">
+                                                    {% else %}
+                                                        <img id="branding-logo-preview" src="{% static 'img/ruoom_logo.png' %}" alt="{% trans 'Ruoom logo' %}">
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <button type="button" class="btn btn-outline-primary btn-sm" id="branding-upload-button">{% trans "Upload Logo" %}</button>
+                                                    <input type="file" id="studio_image" name="studio_image" accept="image/*" class="d-none">
+                                                    <input type="hidden" id="studio_image_base64" name="studio_image_base64">
+                                                    {% if obj and obj.studio_image %}
+                                                        <div class="custom-control custom-checkbox mt-3">
+                                                            <input type="checkbox" class="custom-control-input" name="remove_logo" id="remove_logo">
+                                                            <label class="custom-control-label small" for="remove_logo">{% trans "Remove current logo" %}</label>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        <section class="mb-5">
+                                            <h4>{% trans "Typography" %}</h4>
+                                            <p class="text-muted small">{% trans "Use the same fonts across customer-facing pages." %}</p>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="fontHeader">{% trans "Header Font Family" %}</label>
+                                                        <select name="fontHeader" id="fontHeader" class="form-control" data-preview-var="--preview-font-header">
+                                                            <option value="'Inter', sans-serif" {% if font_header == "'Inter', sans-serif" %}selected{% endif %}>Inter</option>
+                                                            <option value="'Roboto', sans-serif" {% if font_header == "'Roboto', sans-serif" %}selected{% endif %}>Roboto</option>
+                                                            <option value="'Open Sans', sans-serif" {% if font_header == "'Open Sans', sans-serif" %}selected{% endif %}>Open Sans</option>
+                                                            <option value="'Lato', sans-serif" {% if font_header == "'Lato', sans-serif" %}selected{% endif %}>Lato</option>
+                                                            <option value="'Montserrat', sans-serif" {% if font_header == "'Montserrat', sans-serif" %}selected{% endif %}>Montserrat</option>
+                                                            <option value="'Poppins', sans-serif" {% if font_header == "'Poppins', sans-serif" %}selected{% endif %}>Poppins</option>
+                                                            <option value="'Nunito', sans-serif" {% if font_header == "'Nunito', sans-serif" %}selected{% endif %}>Nunito</option>
+                                                            <option value="'Playfair Display', serif" {% if font_header == "'Playfair Display', serif" %}selected{% endif %}>Playfair Display</option>
+                                                            <option value="'Merriweather', serif" {% if font_header == "'Merriweather', serif" %}selected{% endif %}>Merriweather</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="fontBody">{% trans "Body Font Family" %}</label>
+                                                        <select name="fontBody" id="fontBody" class="form-control" data-preview-var="--preview-font-body">
+                                                            <option value="'Inter', sans-serif" {% if font_body == "'Inter', sans-serif" %}selected{% endif %}>Inter</option>
+                                                            <option value="'Roboto', sans-serif" {% if font_body == "'Roboto', sans-serif" %}selected{% endif %}>Roboto</option>
+                                                            <option value="'Open Sans', sans-serif" {% if font_body == "'Open Sans', sans-serif" %}selected{% endif %}>Open Sans</option>
+                                                            <option value="'Lato', sans-serif" {% if font_body == "'Lato', sans-serif" %}selected{% endif %}>Lato</option>
+                                                            <option value="'Montserrat', sans-serif" {% if font_body == "'Montserrat', sans-serif" %}selected{% endif %}>Montserrat</option>
+                                                            <option value="'Poppins', sans-serif" {% if font_body == "'Poppins', sans-serif" %}selected{% endif %}>Poppins</option>
+                                                            <option value="'Nunito', sans-serif" {% if font_body == "'Nunito', sans-serif" %}selected{% endif %}>Nunito</option>
+                                                            <option value="'Playfair Display', serif" {% if font_body == "'Playfair Display', serif" %}selected{% endif %}>Playfair Display</option>
+                                                            <option value="'Merriweather', serif" {% if font_body == "'Merriweather', serif" %}selected{% endif %}>Merriweather</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        <section class="mb-4">
+                                            <h4>{% trans "Color Palette" %}</h4>
+                                            <p class="text-muted small">{% trans "Global color tokens applied across customer-facing pages." %}</p>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="headerValue">{% trans "Header color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="headerValue" name="headerValue" value="{{ header_color }}" class="form-control js-brand-color" data-preview-var="--preview-header-color">
+                                                            <input type="color" value="{{ header_color }}" aria-label="{% trans 'Header color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="backgroundValue">{% trans "Background Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="backgroundValue" name="backgroundValue" value="{{ background_color }}" class="form-control js-brand-color" data-preview-var="--preview-bg-color">
+                                                            <input type="color" value="{{ background_color }}" aria-label="{% trans 'Background color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="textValue">{% trans "Text Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="textValue" name="textValue" value="{{ text_color }}" class="form-control js-brand-color" data-preview-var="--preview-text-color">
+                                                            <input type="color" value="{{ text_color }}" aria-label="{% trans 'Text color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="accent2Value">{% trans "Accent Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="accent2Value" name="accent2Value" value="{{ secondary_accent_color }}" class="form-control js-brand-color" data-preview-var="--preview-secondary-accent">
+                                                            <input type="color" value="{{ secondary_accent_color }}" aria-label="{% trans 'Accent color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="buttonValue">{% trans "Button Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="buttonValue" name="buttonValue" value="{{ button_color }}" class="form-control js-brand-color" data-preview-var="--preview-button-color">
+                                                            <input type="color" value="{{ button_color }}" aria-label="{% trans 'Button color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="buttonTextColor">{% trans "Button Text Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="buttonTextColor" name="buttonTextColor" value="{{ button_text_color }}" class="form-control js-brand-color" data-preview-var="--preview-button-text-color">
+                                                            <input type="color" value="{{ button_text_color }}" aria-label="{% trans 'Button text color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="alertValue">{% trans "Highlight Color" %}</label>
+                                                        <div class="branding-swatch">
+                                                            <input type="text" id="alertValue" name="alertValue" value="{{ highlight_color }}" class="form-control js-brand-color" data-preview-var="--preview-highlight-color">
+                                                            <input type="color" value="{{ highlight_color }}" aria-label="{% trans 'Highlight color picker' %}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        <div class="d-flex flex-wrap align-items-center">
+                                            <button type="button" class="btn btn-outline-secondary mr-3 mb-2" id="restoreDefaultColors" data-toggle="modal" data-target="#restoreDefaultsModal">{% trans "Restore Default Colors" %}</button>
+                                            <button type="submit" class="btn btn-primary mb-2" id="save_branding_settings">{% trans "Save changes" %}</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4 col-lg-5 mt-5 mt-lg-0">
+                                        <h3 class="mb-3">{% trans "Live Preview" %}</h3>
+                                        <div class="branding-preview-toggle mb-3">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary active" data-target="preview-account">{% trans "Account" %}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-target="preview-calendar">{% trans "Calendar" %}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-target="preview-card">{% trans "Event Card" %}</button>
+                                        </div>
+
+                                        <div class="branding-preview-frame" id="brandingPreview" style="--preview-header-color: {{ header_color }}; --preview-bg-color: {{ background_color }}; --preview-text-color: {{ text_color }}; --preview-button-color: {{ button_color }}; --preview-button-text-color: {{ button_text_color }}; --preview-secondary-accent: {{ secondary_accent_color }}; --preview-highlight-color: {{ highlight_color }}; --preview-font-header: {{ font_header }}; --preview-font-body: {{ font_body }};">
+                                            <div id="preview-account" class="js-branding-preview-panel">
+                                                <div class="branding-preview-card" style="background-color: var(--preview-bg-color); color: var(--preview-text-color);">
+                                                    <div class="px-3 py-2 font-weight-bold" style="background-color: var(--preview-header-color); font-family: var(--preview-font-header);">{{ business_name|default:"Ruoom" }}</div>
+                                                    <div class="p-4">
+                                                        <h4 style="font-family: var(--preview-font-header);">{% trans "Your Account" %}</h4>
+                                                        <p style="font-family: var(--preview-font-body);">{% trans "Welcome back, Clara." %}</p>
+                                                        <span class="btn btn-sm" style="background-color: var(--preview-button-color); color: var(--preview-button-text-color);">{% trans "Manage RSVP" %}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="preview-calendar" class="js-branding-preview-panel d-none">
+                                                <div class="branding-preview-card" style="background-color: var(--preview-bg-color); color: var(--preview-text-color);">
+                                                    <div class="px-3 py-3 text-center" style="background-color: var(--preview-header-color); font-family: var(--preview-font-header);">
+                                                        <strong>{% trans "Monday" %}</strong><br>
+                                                        <small>{% trans "Feb 3" %}</small>
+                                                    </div>
+                                                    <div class="p-3" style="font-family: var(--preview-font-body);">
+                                                        <h5 style="font-family: var(--preview-font-header);">{% trans "Core Power" %}</h5>
+                                                        <p class="small mb-2">{% trans "8:30 AM | 60 min | Clara Gibson" %}</p>
+                                                        <p class="small font-weight-bold mb-3" style="color: var(--preview-highlight-color);">{% trans "RSVP by Jun 10" %}</p>
+                                                        <span class="btn btn-sm" style="background-color: var(--preview-button-color); color: var(--preview-button-text-color);">{% trans "Book" %}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="preview-card" class="js-branding-preview-panel d-none">
+                                                <div class="branding-preview-card" style="background-color: var(--preview-bg-color); color: var(--preview-text-color);">
+                                                    <div class="branding-preview-hero" style="background-color: var(--preview-header-color);">Calendar</div>
+                                                    <div class="p-3" style="font-family: var(--preview-font-body);">
+                                                        <div class="small font-weight-bold mb-2" style="color: var(--preview-secondary-accent);">{% trans "JUN 15 | 8:30 AM" %}</div>
+                                                        <h5 style="font-family: var(--preview-font-header);">{% trans "Core Power" %}</h5>
+                                                        <p class="small mb-2">{% trans "Clara Gibson" %}</p>
+                                                        <p class="small font-weight-bold mb-3" style="color: var(--preview-highlight-color);">{% trans "RSVP by Jun 10" %}</p>
+                                                        <span class="btn btn-sm" style="background-color: var(--preview-button-color); color: var(--preview-button-text-color);">{% trans "RSVP" %}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="restoreDefaultsModal" tabindex="-1" role="dialog" aria-labelledby="restoreDefaultsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="restoreDefaultsModalLabel">{% trans "Restore default colors?" %}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% trans "This will reset the branding color fields in this form. The change is not saved until you click Save changes." %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-primary" id="confirmRestoreDefaults">{% trans "Restore defaults" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="logoCropModal" tabindex="-1" role="dialog" aria-labelledby="logoCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoCropModalLabel">{% trans "Preview logo" %}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">{% trans "We will save a centered square version for consistent display across customer pages and emails." %}</p>
+                <div class="logo-crop-frame">
+                    <img id="logoCropPreview" alt="{% trans 'Logo preview' %}">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">{% trans "Choose another" %}</button>
+                <button type="button" class="btn btn-primary" id="applyLogoCrop">{% trans "Use this logo" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        $("#branding-tab").addClass("active");
+
+        $(".js-brand-color").each(function() {
+            var textInput = this;
+            var colorInput = $(textInput).siblings("input[type='color']")[0];
+            var previewVar = textInput.dataset.previewVar;
+
+            function applyColor(value) {
+                textInput.value = value;
+                colorInput.value = value;
+                document.getElementById("brandingPreview").style.setProperty(previewVar, value);
+            }
+
+            textInput.addEventListener("input", function() {
+                if (/^#[0-9A-Fa-f]{6}$/.test(textInput.value)) {
+                    applyColor(textInput.value);
+                }
+            });
+            colorInput.addEventListener("input", function() {
+                applyColor(colorInput.value);
+            });
+        });
+
+        $("#fontHeader, #fontBody").on("change", function() {
+            document.getElementById("brandingPreview").style.setProperty(this.dataset.previewVar, this.value);
+        });
+
+        $("#confirmRestoreDefaults").on("click", function() {
+            var defaults = {
+                headerValue: "#EDF1F7",
+                backgroundValue: "#FFFFFF",
+                textValue: "#12263F",
+                accent2Value: "#DD449B",
+                buttonValue: "#EC2660",
+                buttonTextColor: "#FFFFFF",
+                alertValue: "#CFCF5A"
+            };
+
+            Object.keys(defaults).forEach(function(fieldId) {
+                var textInput = document.getElementById(fieldId);
+                if (!textInput) {
+                    return;
+                }
+                var colorInput = $(textInput).siblings("input[type='color']")[0];
+                var value = defaults[fieldId];
+                textInput.value = value;
+                if (colorInput) {
+                    colorInput.value = value;
+                }
+                document.getElementById("brandingPreview").style.setProperty(textInput.dataset.previewVar, value);
+            });
+            $("#restoreDefaultsModal").modal("hide");
+        });
+
+        $(".branding-preview-toggle .btn").on("click", function() {
+            $(".branding-preview-toggle .btn").removeClass("active");
+            $(this).addClass("active");
+            $(".js-branding-preview-panel").addClass("d-none");
+            $("#" + $(this).data("target")).removeClass("d-none");
+        });
+
+        $("#branding-upload-button").on("click", function() {
+            $("#studio_image").trigger("click");
+        });
+
+        $("#studio_image").on("change", function() {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    $("#logoCropPreview").attr("src", event.target.result);
+                    $("#logoCropModal").modal("show");
+                    $("#remove_logo").prop("checked", false);
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        $("#applyLogoCrop").on("click", function() {
+            var sourceImage = document.getElementById("logoCropPreview");
+            if (!sourceImage || !sourceImage.src) {
+                return;
+            }
+            var canvas = document.createElement("canvas");
+            var size = 800;
+            canvas.width = size;
+            canvas.height = size;
+            var context = canvas.getContext("2d");
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, size, size);
+            var sourceSize = Math.min(sourceImage.naturalWidth, sourceImage.naturalHeight);
+            var sourceX = Math.max((sourceImage.naturalWidth - sourceSize) / 2, 0);
+            var sourceY = Math.max((sourceImage.naturalHeight - sourceSize) / 2, 0);
+            context.drawImage(sourceImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, size, size);
+            var dataUrl = canvas.toDataURL("image/png");
+            $("#studio_image_base64").val(dataUrl);
+            $("#branding-logo-preview").attr("src", dataUrl);
+            $("#logoCropModal").modal("hide");
+        });
+
+        $("#remove_logo").on("change", function() {
+            if (this.checked) {
+                $("#branding-logo-preview").attr("src", "{% static 'img/ruoom_logo.png' %}");
+                $("#studio_image").val("");
+                $("#studio_image_base64").val("");
+            }
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+[run]
+branch = True
+source =
+    administration
+    customer
+    registration
+    ruoom
+    plugins.booking
+    plugins.customforms
+
+[report]
+skip_covered = True
+show_missing = True

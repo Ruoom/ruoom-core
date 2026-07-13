@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "core": {
+    "source": ".",
+    "package": "ruoom-core",
+    "version": "1.0.0",
+    "repo": "https://github.com/ruoom/ruoom-core",
+    "test_command": "powershell -ExecutionPolicy Bypass -File scripts/run_tests.ps1 tests/smoke -q",
+    "dependencies": {
+      "required": [],
+      "optional": []
+    },
+    "export": {
+      "include": [
+        "administration",
+        "customer",
+        "locale",
+        "registration",
+        "release",
+        "ruoom",
+        "scripts",
+        "security",
+        "static",
+        "templates",
+        "tests",
+        "manage.py",
+        "README.md",
+        "LICENSE",
+        "requirements.txt",
+        "requirements-test.txt",
+        "pytest.ini",
+        ".coveragerc",
+        "TESTING.md"
+      ],
+      "exclude": [
+        ".git",
+        ".github",
+        ".pytest_cache",
+        ".venv",
+        ".vscode",
+        "media",
+        "plugins",
+        "secret.key"
+      ]
+    }
+  },
+  "plugins": {
+    "appointments": {
+      "source": "plugins/appointments",
+      "package": "appointments-plugin",
+      "version": null,
+      "repo": "https://github.com/ruoom/appointments-plugin",
+      "test_command": "pytest plugins/appointments/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": [
+          "customforms",
+          "payment"
+        ]
+      },
+      "export": {
+        "include": [
+          "plugins/appointments"
+        ],
+        "exclude": [
+          "plugins/appointments/__pycache__",
+          "plugins/appointments/tests/__pycache__"
+        ]
+      }
+    },
+    "booking": {
+      "source": "plugins/booking",
+      "package": "booking-plugin",
+      "version": "1.0.0",
+      "repo": "https://github.com/ruoom/booking-plugin",
+      "test_command": "pytest plugins/booking/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": [
+          "payment",
+          "customforms"
+        ]
+      },
+      "export": {
+        "include": [
+          "plugins/booking"
+        ],
+        "exclude": [
+          "plugins/booking/__pycache__",
+          "plugins/booking/tests/__pycache__"
+        ]
+      }
+    },
+    "customforms": {
+      "source": "plugins/customforms",
+      "package": "customforms-plugin",
+      "version": null,
+      "repo": "https://github.com/ruoom/customforms-plugin",
+      "test_command": "pytest plugins/customforms/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": []
+      },
+      "export": {
+        "include": [
+          "plugins/customforms"
+        ],
+        "exclude": [
+          "plugins/customforms/__pycache__",
+          "plugins/customforms/tests/__pycache__"
+        ]
+      }
+    },
+    "digitalproducts": {
+      "source": "plugins/digitalproducts",
+      "package": "digitalproduct-plugin",
+      "version": "1.1.0",
+      "repo": "https://github.com/ruoom/digitalproduct-plugin",
+      "test_command": "pytest plugins/digitalproducts/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": [
+          "payment"
+        ]
+      },
+      "export": {
+        "include": [
+          "plugins/digitalproducts"
+        ],
+        "exclude": [
+          "plugins/digitalproducts/__pycache__",
+          "plugins/digitalproducts/tests/__pycache__"
+        ]
+      }
+    },
+    "email_otp": {
+      "source": "plugins/email_otp",
+      "package": "email-otp-plugin",
+      "version": "1.0.0",
+      "repo": "https://github.com/ruoom/email-otp-plugin",
+      "test_command": "pytest plugins/email_otp/tests tests/smoke/test_email_otp_plugin.py -q",
+      "dependencies": {
+        "required": [],
+        "optional": []
+      },
+      "export": {
+        "include": [
+          "plugins/email_otp"
+        ],
+        "exclude": [
+          "plugins/email_otp/__pycache__",
+          "plugins/email_otp/tests/__pycache__"
+        ]
+      }
+    },
+    "mailerlite": {
+      "source": "plugins/mailerlite",
+      "package": "mailerlite-plugin",
+      "version": null,
+      "repo": "https://github.com/ruoom/mailerlite-plugin",
+      "test_command": "pytest plugins/mailerlite/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": []
+      },
+      "export": {
+        "include": [
+          "plugins/mailerlite"
+        ],
+        "exclude": [
+          "plugins/mailerlite/__pycache__",
+          "plugins/mailerlite/tests/__pycache__"
+        ]
+      }
+    },
+    "payment": {
+      "source": "plugins/payment",
+      "package": "payment-plugin",
+      "version": "1.2.0",
+      "repo": "https://github.com/ruoom/payment-plugin",
+      "test_command": "pytest plugins/payment/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": []
+      },
+      "export": {
+        "include": [
+          "plugins/payment"
+        ],
+        "exclude": [
+          "plugins/payment/__pycache__",
+          "plugins/payment/tests/__pycache__"
+        ]
+      }
+    },
+    "single_sign_on": {
+      "source": "plugins/single_sign_on",
+      "package": "single-sign-on-plugin",
+      "version": null,
+      "repo": "https://github.com/ruoom/single-sign-on-plugin",
+      "test_command": "pytest plugins/single_sign_on/tests -q",
+      "dependencies": {
+        "required": [],
+        "optional": []
+      },
+      "export": {
+        "include": [
+          "plugins/single_sign_on"
+        ],
+        "exclude": [
+          "plugins/single_sign_on/__pycache__",
+          "plugins/single_sign_on/tests/__pycache__"
+        ]
+      }
+    }
+  }
+}

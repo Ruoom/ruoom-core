@@ -6,7 +6,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from django.template.loader import render_to_string
 
-from django.contrib.auth.models import User
 from django.db.models import Max
 from django.db import models
 from django.utils import timezone
@@ -23,8 +22,6 @@ import chargebee
 from datetime import date
 
 Profile = get_model("registration", "Profile")
-
-User._meta.get_field('username')._unique = False
 
 def waiver_directory_path(instance, filename):
     return 'files/waiver/%s/%s' % (str(instance.location_id), filename)
@@ -43,6 +40,28 @@ class Business(models.Model):
     )  # 0 - no setting, 1 - yoga mat, 2 - bike, 3 - table, 4 - bed, 5 - generic obstruction
     business_id = models.PositiveIntegerField(_("Business ID"),default=1, unique=True)
 
+    NOSHOW_PREPAY_NOTHING = "noshow_prepay_nothing"
+    NOSHOW_PREPAY_FLATFEE = "noshow_prepay_flat"
+    NOSHOW_PREPAY_PERCENTFEE = "noshow_prepay_percent"
+    NOSHOW_PREPAY_FULLREFUND = "noshow_prepay_fullrefund"
+    NOSHOW_PREPAY_CHOICES = (
+        (NOSHOW_PREPAY_NOTHING, _("Do not automatically refund their payment")),
+        (NOSHOW_PREPAY_FLATFEE, _("Automatically refund their payment minus a flat no-show fee")),
+        (NOSHOW_PREPAY_PERCENTFEE, _("Automatically refund their payment minus a percentage fee")),
+        (NOSHOW_PREPAY_FULLREFUND, _("Automatically refund their payment in full without any no-show fee")),
+    )
+
+    NOSHOW_NOTPREPAY_NOTHING = "noshow_notprepay_nothing"
+    NOSHOW_NOTPREPAY_FLATFEE = "noshow_notprepay_flat"
+    NOSHOW_NOTPREPAY_PERCENTFEE = "noshow_notprepay_percent"
+    NOSHOW_NOTPREPAY_FULLCHARGE = "noshow_notprepay_fullcharge"
+    NOSHOW_NOTPREPAY_CHOICES = (
+        (NOSHOW_NOTPREPAY_NOTHING, _("Do not charge any no-show fee to their account")),
+        (NOSHOW_NOTPREPAY_FLATFEE, _("Automatically attempt to charge their payment a flat no-show fee")),
+        (NOSHOW_NOTPREPAY_PERCENTFEE, _("Automatically attempt to charge their payment a percentage no-show fee")),
+        (NOSHOW_NOTPREPAY_FULLCHARGE, _("Automatically attempt to charge their payment in full as a no-show fee")),
+    )
+
     CURRENCY_DOLLAR = "usd"
     CURRENCY_WON = "krw"
 
@@ -60,7 +79,50 @@ class Business(models.Model):
     )  
     default_country_code = models.CharField(_("Default Country Code"),default="us",choices=COUNTRY_CODE_CHOICES, max_length=50, null=True, blank=True)
 
+    EMAIL_PROVIDER_SMTP = "smtp_server"
+    EMAIL_PROVIDER_RESEND = "resend"
+    EMAIL_PROVIDER_CHOICES = (
+        (EMAIL_PROVIDER_SMTP, _("SMTP Server")),
+        (EMAIL_PROVIDER_RESEND, _("Resend")),
+    )
+
     late_cancel_hours = models.PositiveIntegerField(_("Number of Hours Ahead After Which Cancellation is Late"),default=0)
+    noshow_options_prepay = models.CharField(
+        _("When the customer has paid ahead of time and is marked as a no-show during checkin:"),
+        max_length=30,
+        choices=NOSHOW_PREPAY_CHOICES,
+        default=NOSHOW_PREPAY_NOTHING,
+    )
+    noshow_prepay_flatfee = models.DecimalField(
+        _("Flat No-Show Fee when Customer Has Prepaid"),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
+    noshow_prepay_percentfee = models.DecimalField(
+        _("Percentage No-Show Fee when Customer Has Prepaid"),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
+    noshow_options_notprepay = models.CharField(
+        _("When the customer has not yet paid and is marked as a no-show during checkin:"),
+        max_length=30,
+        choices=NOSHOW_NOTPREPAY_CHOICES,
+        default=NOSHOW_NOTPREPAY_NOTHING,
+    )
+    noshow_notprepay_flatfee = models.DecimalField(
+        _("Flat No-Show Fee when Customer Hasn't Prepaid"),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
+    noshow_notprepay_percentfee = models.DecimalField(
+        _("Percentage No-Show Fee when Customer Hasn't Prepaid"),
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
 
     #Embed color settings
     header_color = models.CharField(_("Header Color"),max_length=20, null=True, blank=True)
@@ -68,10 +130,21 @@ class Business(models.Model):
     text_color = models.CharField(_("Text Color"),max_length=20, null=True, blank=True)
     background_color = models.CharField(_("Background Color"),max_length=20, null=True, blank=True)
     button_text_color = models.CharField(_("Button Text Color"),max_length=20, null=True, blank=True)
+    secondary_accent_color = models.CharField(_("Secondary Accent Color"),max_length=20, null=True, blank=True)
+    highlight_color = models.CharField(_("Highlight Color"),max_length=20, null=True, blank=True)
+    font_header = models.CharField(_("Header Font"),max_length=200, null=True, blank=True)
+    font_body = models.CharField(_("Body Font"),max_length=200, null=True, blank=True)
     
     #Contact settings
+    email_provider = models.CharField(
+        _("Email Provider"),
+        max_length=20,
+        choices=EMAIL_PROVIDER_CHOICES,
+        default=EMAIL_PROVIDER_SMTP,
+    )
     email_address = models.CharField(_("Send-From Email Address"),max_length=400, null=True, blank=True)
     application_password = models.CharField(_("Application Password"),max_length=400, null=True, blank=True)
+    resend_api_key = models.CharField(_("Resend API Key"),max_length=400, null=True, blank=True)
     host_address = models.CharField(_("Host Address"),max_length=400, null=True, blank=True)
     host_port = models.CharField(_("Host Port"),max_length=20, null=True, blank=True)
     host_tls = models.BooleanField(_("Host Using TLS"),default=False)
@@ -84,6 +157,12 @@ class Business(models.Model):
     business_owner = models.CharField(_("Business Representative"), max_length=100, null=True, blank=True)
     show_contact = models.BooleanField(_("Show Contact Information to Customers"),default=False)
     time_zone_string = models.CharField(_("Time Zone"),max_length=400, null=True, blank=True)
+    booking_calendar_enabled = models.BooleanField(_("Booking Calendar Enabled"), default=True)
+    booking_event_cards_enabled = models.BooleanField(_("Booking Event Cards Enabled"), default=True)
+    event_registration_confirmation_email_enabled = models.BooleanField(_("Send RSVP Confirmation Email"), default=True)
+    customer_page_org_name = models.CharField(_("Customer Page Org Name"),max_length=200, null=True, blank=True)
+    customer_page_full_name = models.CharField(_("Customer Page Full Name"),max_length=200, null=True, blank=True)
+    customer_page_tagline = models.CharField(_("Customer Page Tagline"),max_length=400, null=True, blank=True)
 
     studio_image = models.ImageField(_("Studio Image"), upload_to=studio_settings_path, blank=True, null=True)
 
@@ -134,6 +213,32 @@ class Business(models.Model):
             return self.button_text_color
         else:
             return "#FFFFFF"
+    def get_secondary_accent_color(self):
+        if self.secondary_accent_color:
+            return self.secondary_accent_color
+        else:
+            return "#DD449B"
+    def get_highlight_color(self):
+        if self.highlight_color:
+            return self.highlight_color
+        else:
+            return "#CFCF5A"
+    def get_font_header(self):
+        if self.font_header:
+            return self.font_header
+        else:
+            return "'Inter', sans-serif"
+    def get_font_body(self):
+        if self.font_body:
+            return self.font_body
+        else:
+            return "'Inter', sans-serif"
+    def get_customer_page_org_name(self):
+        return self.customer_page_org_name or self.name
+    def get_customer_page_full_name(self):
+        return self.customer_page_full_name or self.name
+    def get_customer_page_tagline(self):
+        return self.customer_page_tagline or ""
 
 class DomainToBusinessMapping(models.Model):
     domain = models.CharField(_("Domain"),max_length=500)
@@ -142,6 +247,10 @@ class DomainToBusinessMapping(models.Model):
 
     def __str__(self):
         return str(self.domain) + " <-> " + str(self.business)
+
+def timezone_choices():
+    return [(tz, _(tz)) for tz in pytz.common_timezones]
+
 
 class Location(models.Model):
     CURRENCY_DOLLAR = "usd"
@@ -160,12 +269,6 @@ class Location(models.Model):
         (COUNTRY_CODE_KR, _("South Korea"))
     )  
 
-    TIMEZONES = []
-    for tz in pytz.common_timezones:
-        TIMEZONES.append((tz,_(tz)))
-
-    TIMEZONES = tuple(TIMEZONES)
-
     name = models.CharField(_("Name"),max_length=200)
     country_code = models.CharField(_("Country Code"),default="us",choices=COUNTRY_CODE_CHOICES, max_length=50)
     
@@ -174,7 +277,7 @@ class Location(models.Model):
     state = models.CharField(_("State"),max_length=50, blank=True, null=True)
     ZIPcode = models.CharField(_("ZIP Code"),max_length=20, blank=True, null=True)
     
-    time_zone_string = models.CharField(_("Time Zone"),max_length=32, choices=TIMEZONES)
+    time_zone_string = models.CharField(_("Time Zone"),max_length=32, choices=timezone_choices)
     business_hours_from = models.CharField(_("Opening Business Hours"),max_length=10, default='9am')
     business_hours_to = models.CharField(_("Closing Business Hours"),max_length=10, default='8am')
     

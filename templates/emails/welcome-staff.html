@@ -1,0 +1,18 @@
+{% load i18n %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% trans "Welcome to the team!" %}</title>
+</head>
+<body>
+    <h1>{% trans "Welcome to the team!" %}</h1>
+    <p>{% blocktrans with email=customer_email %}An account has been created for {{ email }}.{% endblocktrans %}</p>
+    <p>{% trans "Use the button below to set your password and finish signing in." %}</p>
+    <p>
+        <a href="{{ password_link }}" style="display:inline-block;padding:12px 18px;background:#EC2660;color:#ffffff;text-decoration:none;border-radius:4px;">
+            {% trans "Set Password" %}
+        </a>
+    </p>
+</body>
+</html>

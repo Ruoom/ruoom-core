@@ -17,8 +17,9 @@ class LocaleMiddleware(MiddlewareMixin):
       if settings.ADMIN_URL1 in request.path or "webhook" in request.path:
         request.LANGUAGE_CODE = "en"
         return
-      if request.user.is_authenticated and request.user.profile.language:
-          translation.activate(request.user.profile.language)
+      profile = getattr(request.user, "profile", None) if getattr(request, "user", None) else None
+      if request.user.is_authenticated and profile and getattr(profile, "language", None):
+          translation.activate(profile.language)
           request.LANGUAGE_CODE = translation.get_language()
       else:
           business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))

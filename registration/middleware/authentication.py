@@ -6,10 +6,36 @@ from django.http import Http404
 from django.http import HttpResponseNotFound
 from django.utils import timezone
 from registration.models import Profile
-from administration.helpers import is_ajax
 from registration.utils.authentication import can_access
 from registration.controller import return_business_id_for_domain
 from django.contrib.auth import login
+from ruoom.plugin_metadata import (
+    get_plugin_public_url_patterns,
+    get_plugin_staff_only_url_patterns,
+)
+
+
+def _path_matches_exact(path, candidates):
+    normalized_path = path.lstrip("/")
+    return any(
+        path == str(candidate) or normalized_path == str(candidate).lstrip("/")
+        for candidate in candidates
+    )
+
+
+def _path_matches_pattern(path, candidates):
+    normalized_path = path.lstrip("/")
+    return any(
+        path.startswith(str(candidate)) or normalized_path.startswith(str(candidate).lstrip("/"))
+        for candidate in candidates
+    )
+
+
+def _is_public_checkout_request(request):
+    if not request.path.startswith("/payment/checkout"):
+        return False
+    return bool(request.GET.get("cart")) or bool(request.POST.get("new_customer_email"))
+
 
 class AuthenticationMiddleware(object):
     """ Authentication middleware to handle following tasks
@@ -19,7 +45,20 @@ class AuthenticationMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response
 
+    def _is_app_staff(self, request):
+        if not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        profile = getattr(request.user, "profile", None)
+        return bool(profile and profile.user_type == Profile.USER_TYPE_STAFF)
+
     def __call__(self, request):
+        # Deployment probes must reach their own lightweight/token checks before
+        # domain registration, login, or first-superuser bootstrap enforcement.
+        if request.path in ("/health/", "/health", "/api/metrics/"):
+            return self.get_response(request)
+
         # Check forward none existing domain
         from administration.models import DomainToBusinessMapping
         request_domain = request.META.get('HTTP_HOST', '')
@@ -36,9 +75,14 @@ class AuthenticationMiddleware(object):
             if not local_domain:
                 return HttpResponseNotFound("Domain not registered.")
 
-        ### Exempt for all ajax request
-        if is_ajax(request):      
-            return self.process_request(request)
+        public_url_patterns = tuple(settings.PUBLIC_URL_PATTERNS) + get_plugin_public_url_patterns()
+        staff_only_patterns = tuple(settings.STAFF_ONLY_URL_PATTERNS) + get_plugin_staff_only_url_patterns()
+
+        is_public_path = (
+            _path_matches_exact(request.path, settings.PUBLIC_URL_EXACT)
+            or _path_matches_pattern(request.path, public_url_patterns)
+            or _is_public_checkout_request(request)
+        )
 
         #Assign business_id if it is not already assigned
         if hasattr(request.user,"profile"):
@@ -50,40 +94,28 @@ class AuthenticationMiddleware(object):
         # Force superuser creation if there are none
         if (settings.FORCE_SUPERUSER_CREATION and
                 Profile.get_count(is_superuser=True) == 0):
-                if request.path != settings.SIGNUP_URL:
+                if not is_public_path and request.path != str(settings.SIGNUP_URL):
                     return redirect(settings.SIGNUP_URL)
                 else:
                     return self.process_request(request)
 
         # Exempt per page permission urls
         elif settings.ENABLE_PER_PAGE_PERMISSIONS:
-            allowed_pages = [
-                settings.ADMIN_URL1,
-                settings.ADMIN_URL2,
-                settings.LOGIN_URL,
-                settings.SIGNUP_URL,
-                settings.CUSTOMER_LOGIN_URL
-            ]
+            if (
+                _path_matches_pattern(request.path, staff_only_patterns)
+                and not self._is_app_staff(request)
+            ):
+                raise Http404
 
-            if "appointments/services" in request.path: #Appointment pages are permitted
-                allowed_pages.append(request.path)
-            elif "booking/calendar" in request.path: #Booking calendar is permitted
-                allowed_pages.append(request.path)
-            elif "digitalproducts/checkout/" in request.path: #Permit customer digital product guest checkout, which will have arguments in the path
-                allowed_pages.append(request.path)
-            elif "payment/checkout" in request.path:
-                if "?cart=" in request.path or request.POST.get('new_customer_email', None): #Posts with guest information can go through
-                    allowed_pages.append(request.path)
-            elif "admin/subscriptions" in request.path:
-                if not request.user.is_staff:
-                    raise Http404
-
-            if not request.user.is_authenticated and request.path not in allowed_pages and 'accounts/' not in request.path:
+            if not request.user.is_authenticated and not is_public_path:
                 return redirect(settings.LOGIN_URL)
             elif request.user.is_authenticated and not request.user.is_superuser:
                 view = resolve(request.path)
                 url_view_name = view.url_name
-                if url_view_name in settings.SUPERUSER_ONLY_PATH_GROUPS:
+                if (
+                    url_view_name in settings.SUPERUSER_ONLY_PATH_GROUPS
+                    and not can_access(request.user, url_view_name)
+                ):
                     raise Http404
                 elif url_view_name in settings.RESTRICTED_PATH_GROUPS and not can_access(request.user, url_view_name):
                     raise Http404

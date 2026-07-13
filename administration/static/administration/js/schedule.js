@@ -11,6 +11,13 @@ function applyBorderStyles() {
 
 $(document).ready(function() {
 
+  if (typeof booking_plugin === "undefined") {
+    booking_plugin = false;
+  }
+  if (typeof appointments_plugin === "undefined") {
+    appointments_plugin = false;
+  }
+
   var calendarDiv = document.getElementById("id_calendar");
 
   showAllDayBar = false
@@ -18,6 +25,10 @@ $(document).ready(function() {
 
   if (booking_plugin) {
     events_list = events_list.concat(list_services());
+  }
+
+  if (appointments_plugin) {
+    events_list = events_list.concat(list_appointments());
   }
   
   var calendar = new FullCalendar.Calendar(calendarDiv, {
@@ -43,12 +54,19 @@ $(document).ready(function() {
     eventClick: function(eventInfo) {
       //Event rendering logic here
 
+      if (appointments_plugin) {
+        appointment_click(eventInfo);
+      }
+
       if (booking_plugin) {
         service_click(eventInfo);
       }
 
     },
     eventRender: function(eventInfo) {
+      if (appointments_plugin) {
+        render_appointment(eventInfo);
+      }
       if (booking_plugin) {
         render_service(eventInfo);
       }

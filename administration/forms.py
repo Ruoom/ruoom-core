@@ -8,7 +8,11 @@ from django import forms
 from django.conf import settings
 from administration.models import Business
 
-from registration.utils.authentication import set_user_groups
+from registration.utils.authentication import (
+    get_permission_group_choices,
+    get_permission_group_names,
+    set_user_groups,
+)
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
@@ -22,14 +26,9 @@ Location = get_model("administration", "Location")
 Room = get_model("administration", "Room")
 Waiver = get_model("administration", "Waiver")
 
-CHOICES = [
-    (key, '{} Page'.format(key.title())) for key in settings.RESTRICTED_PATH_GROUPS
-    if key not in settings.DEFAULT_PATH_GROUPS
-]
-
 class BaseUserForm(forms.ModelForm):
     permissions = forms.MultipleChoiceField(
-        choices=CHOICES,
+        choices=(),
         label='User permissions',
         widget=forms.CheckboxSelectMultiple,
         required=False
@@ -63,6 +62,8 @@ class BaseUserForm(forms.ModelForm):
         for visible in self.visible_fields():
             if not visible.field.label == "User permissions":
                 visible.field.widget.attrs["class"] = "form-control"
+
+        self.fields["permissions"].choices = get_permission_group_choices()
 
         # Add location relation for location fields
         if self.user:
@@ -175,7 +176,9 @@ class BaseUserForm(forms.ModelForm):
         # Handle permission
         permission_group_names = self.cleaned_data["permissions"]
         if staff_user.is_superuser:
-            permission_group_names += settings.SUPERUSER_ONLY_PATH_GROUPS
+            permission_group_names = list(
+                get_permission_group_names(include_default=False)
+            )
 
         # Add default group
         permission_group_names += settings.DEFAULT_PATH_GROUPS

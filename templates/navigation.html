@@ -98,19 +98,30 @@
       <h4 class="mt-3 text-white">{% trans "Admin Pages" %}</h4>
       <!-- <- Navigation -->
       <ul class="navbar-nav mb-md-4">
+         {% if staff_page_enabled %}
          <li class="nav-item" id="staff-page">
             <a style="display:{% display_if_has_access user=request.user permission_group='staff' %}"  class="nav-link {{staffpage}}" href="{% url 'administration:staff'%}">
             <i class="fe fe-user"></i>{% trans "Staff" %}
             </a>
          </li>
+         {% endif %}
          {% if 'payment' in plugins %}
             {% include 'payment/partials/purchases_nav.html' %}
          {% endif %}
+         {% for item in plugin_navigation_items %}
+         <li class="nav-item" id="plugin-{{ item.url_name|slugify }}-page">
+            <a style="display: {% display_if_has_access user=request.user permission_group=item.permission_group %}" class="nav-link {% if item.url_name == 'customforms:form_list' %}{{customforms}}{% endif %}" href="{% url item.url_name %}">
+               {% if item.icon_class %}<i class="{{ item.icon_class }}"></i>{% endif %}{% trans item.label %}
+            </a>
+         </li>
+         {% endfor %}
+         {% if location_management_enabled %}
          <li class="nav-item" id="ruoom-planner-page">
             <a style="display: {% display_if_has_access user=request.user permission_group='locations' %}"  class="nav-link {{locations}}" href="{% url 'administration:locations'%}">
                <i class="fe fe-map-pin"></i>{% trans "Locations" %}
             </a>
          </li>
+         {% endif %}
          <li class="nav-item" id="permissions-page">
             <a style="display: {% display_if_has_access user=request.user permission_group='admin' %}"  class="nav-link {{permissions}}" href="{% url 'administration:admin'%}">
             <i class="fe fe-lock"></i>{% trans "Permissions" %}

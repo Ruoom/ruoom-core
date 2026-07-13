@@ -10,8 +10,8 @@ from registration.controller import return_business_id_for_domain
 UserModel = get_user_model()
 
 class DomainPasswordResetForm(PasswordResetForm):
-    
-      def save(
+
+    def save(
         self,
         domain_override=None,
         subject_template_name="registration/password_reset_subject.txt",
@@ -32,6 +32,8 @@ class DomainPasswordResetForm(PasswordResetForm):
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
         profile = Profile.objects.filter(business_id=business_id, email=email)
         user = UserModel.objects.filter(profile__in=profile).first()
+        if user is None:
+            return
 
         # Load email fill in tempalte
         if not domain_override:
@@ -62,4 +64,3 @@ class DomainPasswordResetForm(PasswordResetForm):
             email,
             html_email_template_name=html_email_template_name,
         )
-    

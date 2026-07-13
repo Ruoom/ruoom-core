@@ -5,6 +5,13 @@ from django.conf import settings
 from django.db.models import Q
 from registration.models import Profile
 from registration.controller import return_business_id_for_domain
+from administration.feature_toggles import is_staff_page_enabled
+from administration.location_management import is_location_management_enabled
+from ruoom.plugin_metadata import (
+    get_enabled_plugin_names,
+    get_plugin_navigation_items,
+    get_plugin_settings_tabs,
+)
 
 def studio_image(request):
     """Load user profile image to template content as static."""
@@ -31,18 +38,20 @@ def studio_image(request):
     studio_settings = Business.objects.filter(
         business_id=profile.business_id
     ).first()
-    
+
     #Check installed plugins based on what's in folder
-    try:
-        plugins = os.listdir(settings.PLUGINS_DIR)
-        context["plugins"] = plugins
-        if 'digitalproducts' in plugins or 'store' in plugins:
-            context["store_plugins"] = True
-        
-        if not studio_settings:
-            return context
-    except:
-        print("No plugins installed")
+    plugins = get_enabled_plugin_names()
+    context["plugins"] = plugins
+    context["plugin_navigation_items"] = get_plugin_navigation_items()
+    context["plugin_settings_tabs"] = get_plugin_settings_tabs()
+    context["staff_page_enabled"] = is_staff_page_enabled()
+    context["location_management_enabled"] = is_location_management_enabled()
+    context["GOOGLE_PLACES_API_KEY"] = getattr(settings, "GOOGLE_PLACES_API_KEY", "")
+    if 'digitalproducts' in plugins or 'store' in plugins:
+        context["store_plugins"] = True
+
+    if not studio_settings:
+        return context
 
     #Country code
     context["country_code"] = studio_settings.default_country_code
@@ -59,7 +68,7 @@ def studio_image(request):
         image_path = None
     storage_class = settings.DEFAULT_FILE_STORAGE
     media_url = getattr(settings, "MEDIA_URL", None)
-    if (storage_class == "django.core.files.storage.FileSystemStorage" 
+    if (storage_class == "django.core.files.storage.FileSystemStorage"
         and media_url):
         # Check if image file exist
         if not os.path.exists(image_path):
@@ -76,4 +85,3 @@ def studio_image(request):
 def language_list(request):
     languages = Profile.LANGUAGES
     return { "languages": languages}
-    

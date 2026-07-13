@@ -1,5 +1,8 @@
 from time import time as t_time
+import base64
+import binascii
 import json
+import re
 from http import HTTPStatus
 from datetime import datetime
 import pytz
@@ -21,6 +24,7 @@ from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.contrib import messages
+from django.core.files.base import ContentFile
 from django.utils.translation import pgettext, gettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -40,6 +44,7 @@ from .models import Business, Location
 
 from ruoom.settings import COUNTRY_LANGUAGES
 import os
+from ruoom.plugin_metadata import is_plugin_enabled
 
 Profile = get_model("registration", "Profile")
 Location = get_model("administration", "Location")
@@ -126,16 +131,12 @@ class Dashboard(TemplateView):
 
         # Prepare bar chart data for todays classes
         staff = request.user.profile
+        classes_queries = Q(business_id=request.user.profile.business_id)
 
         # Load location filter
         location = None
         if staff.default_location and location_id is None:
             location = Location.objects.get(pk=int(staff.default_location.id))
-        if location is None and location_id is None:
-             # Prepare classes
-            classes_queries = Q(
-                business_id=request.user.profile.business_id
-            )
 
         if location is None:
             # Load location filter
@@ -375,8 +376,7 @@ class Schedule(TemplateView):
                 'business_id': business_id,
             }
      
-            plugins = os.listdir(settings.PLUGINS_DIR)
-            if 'booking' in plugins:
+            if is_plugin_enabled('booking'):
                 from plugins.booking import forms as booking_forms
                 from plugins.booking.models import ServiceType, Service
                 args["ctype_form"] = booking_forms.CreateClassTypeForm(business_id=business_id)
@@ -385,6 +385,21 @@ class Schedule(TemplateView):
                 args["class_update_form"] = booking_forms.UpdateClassForm(business_id=business_id)
                 args["class_types"] = ServiceType.objects.filter(business_id=business_id)
                 args["classes"] = Service.objects.filter(business_id=business_id)
+
+            if is_plugin_enabled('appointments'):
+                from plugins.appointments import forms as appointments_forms
+                from plugins.appointments.models import AppointmentType, BookedAppointment
+                args["apptype_form"] = appointments_forms.CreateAppointmentTypeForm(
+                    business_id=business_id
+                )
+                args["appointment_types"] = AppointmentType.objects.filter(
+                    business_id=business_id,
+                    location=location,
+                )
+                args["booked_appointments"] = BookedAppointment.objects.filter(
+                    business_id=business_id,
+                    location=location,
+                )
 
             return render(request, self.template_name, args)
 
@@ -417,7 +432,7 @@ class StaffPage(TemplateView):
         elif is_ajax(request):
             response = {}
             staff_id = request.POST.get('staff_id')
-            staff_instance = get_object_or_404(Staff, id=staff_id)
+            staff_instance = get_object_or_404(Profile, id=staff_id)
             staff_form = UpdateStaffForm(
                 request.POST or None, instance=staff_instance)
             if staff_form.is_valid():
@@ -588,7 +603,7 @@ class Admin(TemplateView):
             if request.GET.get('TYPE') == 'delete_user' and is_ajax(request):
                 print("Deleting Staff User!")
                 staff_id = request.GET.get('staff_id')
-                staff_obj = get_object_or_404(Staff, pk=staff_id)
+                staff_obj = get_object_or_404(Profile, pk=staff_id)
                 if staff_obj:
                     staff_obj.delete()
                     response = {
@@ -655,7 +670,7 @@ class Admin(TemplateView):
         elif 'update_user' in request.POST:
             user_id = request.POST.get('user_id')
             if user_id:
-                staff_obj = get_object_or_404(Staff, pk=user_id)
+                staff_obj = get_object_or_404(Profile, pk=user_id)
                 update_form = UpdateUserForm(
                     request.POST,
                     user=request.user,
@@ -712,6 +727,253 @@ def settingsContact(request):
     else:
         return HttpResponseRedirect('/unsuccess/')
 
+def settingsBranding(request):
+    template_name = 'administration/settings-branding.html'
+    settings = Settings()
+    url = "administration:settings-branding"
+    if request.method == 'GET':
+        return settings.get(request=request,template_name=template_name)
+    if request.method == 'POST':
+        return settings.post(request=request,url=url)
+    else:
+        return HttpResponseRedirect('/unsuccess/')
+
+def settingsCommunications(request):
+    template_name = 'administration/settings-communications.html'
+    settings = Settings()
+    url = "administration:settings-communications"
+    if request.method == 'GET':
+        return settings.get(request=request,template_name=template_name)
+    if request.method == 'POST':
+        return settings.post(request=request,url=url)
+    else:
+        return HttpResponseRedirect('/unsuccess/')
+
+def _font_name(css_value):
+    match = re.search(r"['\"](.+?)['\"]", css_value or "")
+    return match.group(1) if match else css_value
+
+def _decode_base64_image(encoded_file):
+    if not encoded_file or ";base64," not in encoded_file:
+        return None
+    header, payload = encoded_file.split(";base64,", 1)
+    extension = "png"
+    if "/" in header:
+        extension = header.rsplit("/", 1)[-1].replace("jpeg", "jpg") or "png"
+    try:
+        return ContentFile(base64.b64decode(payload), name=f"business-logo.{extension}")
+    except (TypeError, ValueError, binascii.Error):
+        return None
+
+def _get_site_url(request):
+    return request.build_absolute_uri("/")[:-1]
+
+def _email_preview_context(base_context, request):
+    context = dict(base_context)
+    context["site_url"] = _get_site_url(request)
+    return context
+
+def _preview_mock_business(context):
+    class MockBusiness:
+        pass
+
+    mock_business = MockBusiness()
+    mock_business.name = context.get("business_name", "Acme Studio")
+    mock_business.business_website = context.get("business_website", "")
+    mock_business.contact_email = context.get("business_email", "")
+    mock_business.contact_phone = ""
+    mock_business.business_address = ""
+    mock_business.studio_image = None
+    defaults = {
+        "header_color": "#EDF1F7",
+        "button_color": "#EC2660",
+        "secondary_accent_color": "#DD449B",
+        "text_color": "#12263F",
+        "background_color": "#FFFFFF",
+        "button_text_color": "#FFFFFF",
+        "highlight_color": "#CFCF5A",
+        "font_header": "'Inter', sans-serif",
+        "font_body": "'Inter', sans-serif",
+    }
+    for key, default in defaults.items():
+        value = context.get(key, default)
+        setattr(mock_business, key, value)
+        setattr(mock_business, f"get_{key}", lambda v=value: v)
+    return mock_business
+
+def _apply_real_business_to_context(context, business):
+    if not business:
+        return context
+    context["business_name"] = business.name
+    context["business_website"] = business.business_website or ""
+    context["business_email"] = business.contact_email or ""
+    context["customer_logo"] = None
+    context["business_logo"] = None
+    context["business_logo_url"] = None
+    if business.studio_image:
+        from ruoom.automated_email_system import _resolve_business_logo_url
+        logo_url = _resolve_business_logo_url(business)
+        context["customer_logo"] = logo_url
+        context["business_logo"] = logo_url
+        context["business_logo_url"] = logo_url
+
+    context.setdefault("branding", {})
+    context["branding"].update({
+        "header_color": business.get_header_color(),
+        "button_color": business.get_button_color(),
+        "button_text_color": business.get_button_text_color(),
+        "secondary_accent_color": business.get_secondary_accent_color(),
+        "text_color": business.get_text_color(),
+        "background_color": business.get_background_color(),
+        "highlight_color": business.get_highlight_color(),
+        "font_header": business.get_font_header(),
+        "font_body": business.get_font_body(),
+        "font_header_name": _font_name(business.get_font_header()),
+        "font_body_name": _font_name(business.get_font_body()),
+    })
+    return context
+
+EMAIL_PREVIEW_REGISTRY = {
+    "create_password": {
+        "label": _("Create Password"),
+        "template": "emails/create-password.html",
+        "description": _("Sent to new customers to set their account password."),
+        "subject": _("Create your password"),
+        "context_fn": lambda req: _email_preview_context({
+            "Customer": {"localized_name": "Jane Smith"},
+            "password_link": f"{_get_site_url(req)}/registration/create-password/abc123/",
+            "business_name": "Acme Studio",
+            "business_website": "https://example.com",
+            "business_email": "hello@example.com",
+            "customer_logo": None,
+        }, req),
+    },
+    "reset_password": {
+        "label": _("Reset Password"),
+        "template": "emails/reset-password.html",
+        "description": _("Sent when a customer requests a password reset."),
+        "subject": _("Reset your password"),
+        "context_fn": lambda req: _email_preview_context({
+            "Customer": {"localized_name": "Jane Smith"},
+            "password_link": f"{_get_site_url(req)}/registration/reset-password/abc123/",
+            "business_name": "Acme Studio",
+            "business_website": "https://example.com",
+            "business_email": "hello@example.com",
+            "customer_logo": None,
+        }, req),
+    },
+    "transaction_receipt": {
+        "label": _("Transaction Receipt"),
+        "template": "emails/transaction-receipt.html",
+        "description": _("Sent after a successful purchase."),
+        "subject": _("Your receipt"),
+        "context_fn": lambda req: _email_preview_context({
+            "customer_name": "Jane Smith",
+            "business_name": "Acme Studio",
+            "business_website": "https://example.com",
+            "business_email": "hello@example.com",
+            "business_logo": None,
+            "product_name": ["<tr><td>Monthly Membership</td><td>$50.00</td></tr>"],
+            "subtotal": "50.00",
+            "sales_tax": "4.13",
+            "total_charged": "54.13",
+            "pay_later": False,
+            "business_id": 1,
+            "credits_used": None,
+            "balance_used": None,
+            "registered_services": [],
+        }, req),
+    },
+    "otp_code": {
+        "label": _("OTP Sign-In Code"),
+        "template": "email_otp/emails/code.html",
+        "description": _("Sent when a user requests a one-time sign-in code."),
+        "subject": _("Your Sign-In Code"),
+        "context_fn": lambda req: _email_preview_context({
+            "otp_code": "483 291",
+            "expiry_minutes": 10,
+        }, req),
+    },
+    "welcome_staff": {
+        "label": _("Welcome Staff"),
+        "template": "emails/welcome-staff.html",
+        "description": _("Sent to new staff members with a password setup link."),
+        "subject": _("Welcome to the team!"),
+        "context_fn": lambda req: _email_preview_context({
+            "Customer": {"first_name": "Jane", "email": "jane@example.com"},
+            "password_link": f"{_get_site_url(req)}/accounts/reset/abc123/token/",
+            "customer_email": "jane@example.com",
+        }, req),
+    },
+    "rsvp_confirmation": {
+        "label": _("RSVP Confirmation"),
+        "template": "emails/event_registration_confirmation.html",
+        "description": _("Sent to guests after they successfully RSVP to an event."),
+        "subject": _("RSVP confirmation"),
+        "context_fn": lambda req: _email_preview_context({
+            "event": {
+                "service_name": "Yoga Flow Class",
+                "display_date": "Saturday, Jun 21",
+                "display_time": "10:00 AM",
+                "human_timezone": "CT",
+                "location_name": "Studio A",
+            },
+            "registration": {
+                "guest_name": "Jane Smith",
+                "guest_email": "jane@example.com",
+            },
+            "google_calendar_url": f"{_get_site_url(req)}/calendar/add",
+            "manage_url": f"{_get_site_url(req)}/booking/events/1/?guest_email=jane@example.com",
+            "events_url": f"{_get_site_url(req)}/booking/events/",
+        }, req),
+    },
+}
+
+def _render_email_preview(request, template_key):
+    entry = EMAIL_PREVIEW_REGISTRY.get(template_key)
+    if not entry:
+        raise Http404(f"No preview registered for '{template_key}'")
+
+    from ruoom.automated_email_system import (
+        _inject_business_header_into_full_html,
+        _is_full_html_document,
+        _wrap_email_with_footer,
+    )
+
+    business = Business.objects.filter(business_id=request.user.profile.business_id).first()
+    context = entry["context_fn"](request)
+    context = _apply_real_business_to_context(context, business)
+    html = render_to_string(entry["template"], context)
+    preview_business = business or _preview_mock_business(context)
+    if _is_full_html_document(html):
+        wrapped_html = _inject_business_header_into_full_html(
+            html,
+            preview_business,
+            logo_url=context.get("business_logo"),
+        )
+    else:
+        wrapped_html = _wrap_email_with_footer(html, preview_business)
+
+    subject = str(entry.get("subject", ""))
+    if preview_business and preview_business.name:
+        subject = f"{preview_business.name}: {subject}"
+    return wrapped_html, subject
+
+def email_preview_render(request, template_key):
+    if not request.user.is_superuser:
+        return HttpResponse("Superuser access required.", status=403)
+    wrapped_html, subject = _render_email_preview(request, template_key)
+    return HttpResponse(wrapped_html)
+
+def email_preview_html(request, template_key):
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "Superuser access required."}, status=403)
+    try:
+        wrapped_html, subject = _render_email_preview(request, template_key)
+    except Http404:
+        return JsonResponse({"error": f"Unknown template '{template_key}'"}, status=404)
+    return JsonResponse({"html": wrapped_html, "subject": subject})
+
 class Settings(TemplateView):
     ruoom_security = RuoomSecurity()
 
@@ -730,6 +992,17 @@ class Settings(TemplateView):
         current_domain = request.META.get('HTTP_HOST', '')
         self.context["domain"] = current_domain
         self.context["business_id"] = request.user.profile.business_id
+        if template_name == "administration/settings-communications.html" and request.user.is_superuser:
+            self.context["email_templates"] = [
+                {
+                    "key": key,
+                    "label": entry["label"],
+                    "description": entry["description"],
+                    "html_url": reverse_lazy("administration:email_preview_html", args=[key]),
+                    "render_url": reverse_lazy("administration:email_preview_render", args=[key]),
+                }
+                for key, entry in EMAIL_PREVIEW_REGISTRY.items()
+            ]
 
         return render(request, template_name, self.context)
 
@@ -752,10 +1025,17 @@ class Settings(TemplateView):
         if setting_update == "colours_settings":
             self.set_colors(request_dict=request, studio_settings_obj=obj)
 
+        elif setting_update == "branding_settings":
+            self.set_branding_information(request_dict=request, studio_settings_obj=obj)
         elif setting_update == "email_settings":
             self.set_email_information(request_dict=request, studio_settings_obj=obj)
         elif setting_update == "business_settings":
             self.set_business_information(request_dict=request, studio_settings_obj=obj)
+        elif setting_update == "send_test_email":
+            self._send_test_email(request, obj)
+            return redirect(reverse_lazy(url))
+        elif setting_update == "booking_settings":
+            self.set_booking_settings(request_dict=request, studio_settings_obj=obj)
 
         messages.info(
             request,
@@ -784,6 +1064,8 @@ class Settings(TemplateView):
         self.context["text_color"] = studio_setting_obj.get_text_color()
         self.context["background_color"] = studio_setting_obj.get_background_color()
         self.context["button_text_color"] = studio_setting_obj.get_button_text_color()
+        self.context["secondary_accent_color"] = studio_setting_obj.get_secondary_accent_color()
+        self.context["highlight_color"] = studio_setting_obj.get_highlight_color()
 
     def set_email_information_to_context(self,studio_setting_obj):
         """
@@ -800,17 +1082,25 @@ class Settings(TemplateView):
         Args:
             studio_setting_obj (type = Business object): Business model object
         """
+        self.context["email_provider"] = studio_setting_obj.email_provider
         self.context["email_address"] = studio_setting_obj.email_address
         if studio_setting_obj.application_password:
             try:
                 self.context["application_password"] = self.ruoom_security.decrypt_message(encrypted_message=studio_setting_obj.application_password)
-            except:
+            except (TypeError, ValueError):
                 self.context["application_password"] = studio_setting_obj.application_password
         else:
             self.context["application_password"] = studio_setting_obj.application_password
         self.context["host_address"] = studio_setting_obj.host_address
         self.context["host_port"] = studio_setting_obj.host_port
         self.context["host_tls"] = studio_setting_obj.host_tls
+        if studio_setting_obj.resend_api_key:
+            try:
+                self.context["resend_api_key"] = self.ruoom_security.decrypt_message(encrypted_message=studio_setting_obj.resend_api_key)
+            except (TypeError, ValueError):
+                self.context["resend_api_key"] = studio_setting_obj.resend_api_key
+        else:
+            self.context["resend_api_key"] = studio_setting_obj.resend_api_key
 
     def set_business_information_to_context(self,studio_setting_obj):
         """
@@ -857,6 +1147,13 @@ class Settings(TemplateView):
         else:
             self.context["business_owner"] = ""
 
+        font_header = studio_setting_obj.get_font_header()
+        font_body = studio_setting_obj.get_font_body()
+        self.context["font_header"] = font_header
+        self.context["font_body"] = font_body
+        self.context["font_header_name"] = _font_name(font_header)
+        self.context["font_body_name"] = _font_name(font_body)
+
     def set_email_information(self, request_dict, studio_settings_obj):
         """
         this method will set email inforamtion under the "Business"
@@ -871,25 +1168,53 @@ class Settings(TemplateView):
             request_dict (type = request dict ): its the request information which comes with every request
             studio_settings_obj (type = Business object):  Business model object
         """
-        email_address, application_password, host_address, host_port, host_tls = (
+        email_provider, email_address, application_password, host_address, host_port, host_tls, resend_api_key = (
+            request_dict.POST.get("email_provider"),
             request_dict.POST.get("email_address"),
             request_dict.POST.get("application_password"),
             request_dict.POST.get("host_address"),
             request_dict.POST.get("host_port"),
             request_dict.POST.get("host_tls"),
+            request_dict.POST.get("resend_api_key"),
         )
+        if email_provider in (studio_settings_obj.EMAIL_PROVIDER_SMTP, studio_settings_obj.EMAIL_PROVIDER_RESEND):
+            studio_settings_obj.email_provider = email_provider
         studio_settings_obj.email_address = email_address
-        # studio_settings_obj.application_password = application_password
-        studio_settings_obj.application_password = self.ruoom_security.process_encryption(
+        if application_password:
+            studio_settings_obj.application_password = self.ruoom_security.process_encryption(
                 encryption_value=application_password
             )
+        elif application_password == "":
+            studio_settings_obj.application_password = ""
         studio_settings_obj.host_address = host_address
         studio_settings_obj.host_port = host_port
         if host_tls == "on":
             studio_settings_obj.host_tls = True
         else:
             studio_settings_obj.host_tls = False
+        if resend_api_key:
+            studio_settings_obj.resend_api_key = self.ruoom_security.process_encryption(
+                encryption_value=resend_api_key
+            )
+        elif resend_api_key == "":
+            studio_settings_obj.resend_api_key = ""
         studio_settings_obj.save()
+
+    def _send_test_email(self, request, studio_settings_obj):
+        response = automated_email_send(
+            recipient_email=[request.user.email],
+            subject=_("Test email from Ruoom"),
+            text_content=_("This is a test email to confirm your email delivery settings are working correctly."),
+            business_id=studio_settings_obj.business_id,
+        )
+        if isinstance(response, JsonResponse):
+            data = json.loads(response.content)
+            if data.get("message") == "success":
+                messages.success(request, _("Test email sent successfully to %s.") % request.user.email)
+            else:
+                messages.error(request, _("Failed to send test email: %s") % data.get("message", _("Unknown error")))
+        else:
+            messages.error(request, _("Failed to send test email."))
 
     def set_business_information(self, request_dict, studio_settings_obj):
         """
@@ -955,6 +1280,45 @@ class Settings(TemplateView):
         studio_settings_obj.text_color = text_value
         studio_settings_obj.background_color = background_value
         studio_settings_obj.button_text_color = button_text_color
+        if "accent2Value" in request_dict.POST:
+            studio_settings_obj.secondary_accent_color = request_dict.POST.get("accent2Value")
+        if "alertValue" in request_dict.POST:
+            studio_settings_obj.highlight_color = request_dict.POST.get("alertValue")
+        studio_settings_obj.save()
+
+    def set_branding_information(self, request_dict, studio_settings_obj):
+        """
+        Save the customer-facing brand identity shared by core and plugins.
+        """
+        studio_settings_obj.header_color = request_dict.POST.get("headerValue")
+        studio_settings_obj.button_color = request_dict.POST.get("buttonValue")
+        studio_settings_obj.text_color = request_dict.POST.get("textValue")
+        studio_settings_obj.background_color = request_dict.POST.get("backgroundValue")
+        studio_settings_obj.button_text_color = request_dict.POST.get("buttonTextColor")
+        studio_settings_obj.secondary_accent_color = request_dict.POST.get("accent2Value")
+        studio_settings_obj.highlight_color = request_dict.POST.get("alertValue")
+        studio_settings_obj.font_header = request_dict.POST.get("fontHeader")
+        studio_settings_obj.font_body = request_dict.POST.get("fontBody")
+        if request_dict.POST.get("remove_logo") == "on":
+            studio_settings_obj.studio_image = None
+        elif request_dict.POST.get("studio_image_base64"):
+            cropped_logo = _decode_base64_image(request_dict.POST.get("studio_image_base64"))
+            if cropped_logo:
+                studio_settings_obj.studio_image = cropped_logo
+        elif request_dict.FILES.get("studio_image"):
+            studio_settings_obj.studio_image = request_dict.FILES.get("studio_image")
+        studio_settings_obj.save()
+
+    def set_booking_settings(self, request_dict, studio_settings_obj):
+        studio_settings_obj.booking_calendar_enabled = (
+            request_dict.POST.get("booking_calendar_enabled") == "on"
+        )
+        studio_settings_obj.booking_event_cards_enabled = (
+            request_dict.POST.get("booking_event_cards_enabled") == "on"
+        )
+        studio_settings_obj.event_registration_confirmation_email_enabled = (
+            request_dict.POST.get("event_registration_confirmation_email_enabled") == "on"
+        )
         studio_settings_obj.save()
 
 class CustomersSearch(View):

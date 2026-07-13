@@ -78,10 +78,14 @@ class Profile(User):
 
     is_teacher = models.BooleanField(verbose_name=_("Is This User a Service Provider?"),default=False)
     message_consent = models.BooleanField(verbose_name=_("May we communicate with you via mobile messages regarding your registrations?"),default=False)
+    personal_data_erased = models.BooleanField(_("Personal Data Erased"), default=False)
+    personal_data_erased_at = models.DateTimeField(_("Personal Data Erased At"), null=True, blank=True)
     business_id = models.PositiveIntegerField(_("Business ID"), default=1)
     staff_at_locations = models.ManyToManyField('administration.Location', verbose_name=_("Staff At Locations"), related_name='staff_at_locations', blank=True)
     msa_signed = models.BooleanField(verbose_name=_("Has this user signed the Master Service Agreement?"),default=False)
     default_location = models.ForeignKey('administration.Location', verbose_name=_("Default Location"),on_delete=models.CASCADE, blank=True, null=True)
+    google_sync_enabled = models.BooleanField(default=False)
+    google_credentials_json = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.localized_name()
@@ -155,8 +159,12 @@ class Profile(User):
 
     def save(self, *args, **kwargs):
         if not self.username:
-            self.username = self.email+","+str(self.business_id)
+            self.username = self.username_for_identity(self.email, self.business_id)
         super(Profile, self).save(*args, **kwargs)
+
+    @staticmethod
+    def username_for_identity(email, business_id):
+        return f"{(email or '').strip()}+{business_id}"
 
     @classmethod
     def get_count(cls, **kwargs):

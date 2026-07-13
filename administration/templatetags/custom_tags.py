@@ -7,12 +7,18 @@ from decimal import Decimal
 import pytz
 import datetime
 from administration.models import Business
+from administration.feature_toggles import is_staff_page_enabled
+from administration.location_management import is_location_management_enabled
 
 register = template.Library()
 FEET_PER_METER = 3.28084
 
 @register.simple_tag
 def display_if_has_access( user, permission_group):
+    if permission_group == "staff" and not is_staff_page_enabled():
+        return 'none'
+    if permission_group == "locations" and not is_location_management_enabled():
+        return 'none'
     if can_access(user, permission_group):
         return 'block'
     return 'none'

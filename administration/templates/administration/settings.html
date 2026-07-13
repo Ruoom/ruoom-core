@@ -27,21 +27,25 @@
                 <ul class="nav nav-tabs nav-overflow header-tabs">
                   <li class="nav-item">
                     <a href="{% url 'administration:settings-contact'%}" id="contact-tab" class="nav-link">
-                        <span class="fe fe-mail mr-1"></span>
-                        {% trans "Contact" %}
+                        <span class="fe fe-settings mr-1"></span>
+                        {% trans "General" %}
                     </a>
                   </li>
-                  {% if 'payment' in plugins %}
-                    {% include "payment/partials/settings_nav.html" %}
-                  {% endif %}
-
-                  {% if 'booking' in plugins %}
-                    {% include "booking/partials/settings_nav.html" %}
-                  {% endif %}
-
-                  {% if 'messaging' in plugins %}
-                    {% include "registration/partials/settings_nav.html" %}
-                  {% endif %}
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-branding' %}" id="branding-tab" class="nav-link">
+                        <span class="fe fe-image mr-1"></span>
+                        {% trans "Branding" %}
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'administration:settings-communications' %}" id="communications-tab" class="nav-link">
+                        <span class="fe fe-mail mr-1"></span>
+                        {% trans "Communications" %}
+                    </a>
+                  </li>
+                  {% for settings_tab in plugin_settings_tabs %}
+                    {% include settings_tab.template_name with settings_tab=settings_tab %}
+                  {% endfor %}
                 </ul>
               </div>
             </div>

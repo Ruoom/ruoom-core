@@ -1,26 +1,27 @@
 import os
-import importlib
 from django.urls import include, path
 import logging
+from ruoom.plugin_metadata import get_enabled_plugin_names, get_plugins_dir, load_plugin_metadata
 
 def load_plugin_urls():
     urlpatterns = []
-    plugins_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'plugins')
 
     try:
-        for plugin_name in os.listdir(plugins_dir):
-            plugin_path = os.path.join(plugins_dir, plugin_name)
-            if os.path.isdir(plugin_path) and plugin_name != 'disabled':
-                try:
-                    # Append the URL patterns with an explicit namespace so {% url 'plugin:view' %} works
-                    # The included module must define app_name = plugin_name
-                    urlpatterns += path(
-                        plugin_name + '/',
-                        include('plugins.' + plugin_name + '.urls', namespace=plugin_name),
-                    ),
-                    logging.info(f"Loaded URLs for plugin: {plugin_name}")
-                except (ImportError, AttributeError) as e:
-                    logging.error(f"Error loading URLs for plugin {plugin_name}: {e}")
+        for plugin_name in get_enabled_plugin_names():
+            try:
+                metadata = load_plugin_metadata(plugin_name)
+                url_prefix = metadata.url_prefix if metadata else plugin_name + '/'
+                url_namespace = metadata.url_namespace if metadata else plugin_name
+
+                # Append the URL patterns with an explicit namespace so {% url 'plugin:view' %} works
+                # The included module must define app_name = plugin_name
+                urlpatterns += path(
+                    url_prefix,
+                    include('plugins.' + plugin_name + '.urls', namespace=url_namespace),
+                ),
+                logging.info(f"Loaded URLs for plugin: {plugin_name}")
+            except (ImportError, AttributeError) as e:
+                logging.error(f"Error loading URLs for plugin {plugin_name}: {e}")
     except:
         logging.info("No plugins installed")
 
@@ -28,11 +29,11 @@ def load_plugin_urls():
 
 def load_plugin_statics(BASE_DIR):
     staticfiles_dirs = []
-    plugins_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'plugins')
+    plugins_dir = get_plugins_dir()
     try:
-        for plugin_name in os.listdir(plugins_dir):
-            plugin_path = os.path.join(plugins_dir, plugin_name)
-            if os.path.isdir(plugin_path+"\\static") and plugin_name != 'disabled':
+        for plugin_name in get_enabled_plugin_names():
+            plugin_path = plugins_dir + "\\" + plugin_name
+            if os.path.isdir(plugin_path+"\\static"):
                 try:
                     # Append the static files directory
                     staticfiles_dirs.append(os.path.join(BASE_DIR, plugin_path+"\\static"))
@@ -44,4 +45,4 @@ def load_plugin_statics(BASE_DIR):
         print("No plugins installed")
 
     return staticfiles_dirs
-            
+

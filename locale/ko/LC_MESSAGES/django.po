@@ -11014,4 +11014,697 @@ msgstr "비밀번호 재설정"
 #~ msgstr "영수증 다운로드"
 
 #~ msgid "If you need any help, please don't hesistate to reach out to us at "
+
+#: quick-rsvp foldback
+msgid "Branding"
+msgstr "브랜딩"
+
+#: quick-rsvp foldback
+msgid "Global visual identity for customer-facing pages and emails."
+msgstr "고객용 페이지와 이메일에 적용되는 공통 시각 아이덴티티입니다."
+
+#: quick-rsvp foldback
+msgid "Logo"
+msgstr "로고"
+
+#: quick-rsvp foldback
+msgid "Upload your business logo. Used on customer-facing pages."
+msgstr "사업체 로고를 업로드하세요. 고객용 페이지에 사용됩니다."
+
+#: quick-rsvp foldback
+msgid "Upload Logo"
+msgstr "로고 업로드"
+
+#: quick-rsvp foldback
+msgid "Business logo"
+msgstr "사업체 로고"
+
+#: quick-rsvp foldback
+msgid "Ruoom logo"
+msgstr "Ruoom 로고"
+
+#: quick-rsvp foldback
+msgid "Remove current logo"
+msgstr "현재 로고 제거"
+
+#: quick-rsvp foldback
+msgid "Typography"
+msgstr "타이포그래피"
+
+#: quick-rsvp foldback
+msgid "Use the same fonts across customer-facing pages."
+msgstr "고객용 페이지 전체에서 같은 글꼴을 사용합니다."
+
+#: quick-rsvp foldback
+msgid "Header Font"
+msgstr "헤더 글꼴"
+
+#: quick-rsvp foldback
+msgid "Header Font Family"
+msgstr "헤더 글꼴 패밀리"
+
+#: quick-rsvp foldback
+msgid "Body Font"
+msgstr "본문 글꼴"
+
+#: quick-rsvp foldback
+msgid "Body Font Family"
+msgstr "본문 글꼴 패밀리"
+
+#: quick-rsvp foldback
+msgid "Color Palette"
+msgstr "색상 팔레트"
+
+#: quick-rsvp foldback
+msgid "Global color tokens applied across customer-facing pages."
+msgstr "고객용 페이지 전체에 적용되는 공통 색상 토큰입니다."
+
+#: quick-rsvp foldback
+msgid "Accent Color"
+msgstr "강조 색상"
+
+#: quick-rsvp foldback
+msgid "Secondary Accent Color"
+msgstr "보조 강조 색상"
+
+#: quick-rsvp foldback
+msgid "Highlight Color"
+msgstr "하이라이트 색상"
+
+#: quick-rsvp foldback
+msgid "Header color picker"
+msgstr "헤더 색상 선택기"
+
+#: quick-rsvp foldback
+msgid "Background color picker"
+msgstr "배경색 선택기"
+
+#: quick-rsvp foldback
+msgid "Text color picker"
+msgstr "글자색 선택기"
+
+#: quick-rsvp foldback
+msgid "Accent color picker"
+msgstr "강조 색상 선택기"
+
+#: quick-rsvp foldback
+msgid "Button color picker"
+msgstr "버튼 색상 선택기"
+
+#: quick-rsvp foldback
+msgid "Button text color picker"
+msgstr "버튼 글자색 선택기"
+
+#: quick-rsvp foldback
+msgid "Highlight color picker"
+msgstr "하이라이트 색상 선택기"
+
+#: quick-rsvp foldback
+msgid "Live Preview"
+msgstr "실시간 미리보기"
+
+#: quick-rsvp foldback
+msgid "Your Account"
+msgstr "내 계정"
+
+#: quick-rsvp foldback
+msgid "Welcome back, Clara."
+msgstr "다시 오신 것을 환영합니다, Clara님."
+
+#: quick-rsvp foldback
+msgid "Manage RSVP"
+msgstr "RSVP 관리"
+
+#: quick-rsvp foldback
+msgid "Manage your RSVP"
+msgstr "RSVP 관리"
+
+#: quick-rsvp foldback
+msgid "Calendar"
+msgstr "일정"
+
+#: quick-rsvp foldback
+msgid "Event Card"
+msgstr "이벤트 카드"
+
+#: quick-rsvp foldback
+msgid "Restore Default Colors"
+msgstr "기본 색상 복원"
+
+#: quick-rsvp foldback
+msgid "Restore default colors?"
+msgstr "기본 색상을 복원할까요?"
+
+#: quick-rsvp foldback
+msgid "Restore defaults"
+msgstr "기본값 복원"
+
+#: quick-rsvp foldback
+msgid "This will reset the branding color fields in this form. The change is not saved until you click Save changes."
+msgstr "이 양식의 브랜딩 색상 필드가 기본값으로 재설정됩니다. 변경 사항은 변경 사항 저장을 클릭해야 저장됩니다."
+
+#: quick-rsvp foldback
+msgid "Preview logo"
+msgstr "로고 미리보기"
+
+#: quick-rsvp foldback
+msgid "Logo preview"
+msgstr "로고 미리보기"
+
+#: quick-rsvp foldback
+msgid "Choose another"
+msgstr "다른 항목 선택"
+
+#: quick-rsvp foldback
+msgid "Use this logo"
+msgstr "이 로고 사용"
+
+#: quick-rsvp foldback
+msgid "We will save a centered square version for consistent display across customer pages and emails."
+msgstr "고객 페이지와 이메일에서 일관되게 보이도록 가운데 정렬된 정사각형 버전으로 저장합니다."
+
+#: quick-rsvp foldback
+msgid "General"
+msgstr "일반"
+
+#: quick-rsvp foldback
+msgid "Communications"
+msgstr "커뮤니케이션"
+
+#: quick-rsvp foldback
+msgid "Embed Booking Calendar"
+msgstr "예약 일정 임베드"
+
+#: quick-rsvp foldback
+msgid "MailerLite"
+msgstr "MailerLite"
+
+#: quick-rsvp foldback
+msgid "Payment Processing"
+msgstr "결제 절차"
+
+#: quick-rsvp foldback
+msgid "Forms"
+msgstr "양식"
+
+#: quick-rsvp foldback
+msgid "Save changes"
+msgstr "변경 사항 저장"
+
+#: quick-rsvp foldback
+msgid "Email Provider"
+msgstr "이메일 제공업체"
+
+#: quick-rsvp foldback
+msgid "Email delivery and notification identity."
+msgstr "이메일 전송 및 알림 발신자 정보입니다."
+
+#: quick-rsvp foldback
+msgid "SMTP Server"
+msgstr "SMTP 서버"
+
+#: quick-rsvp foldback
+msgid "Resend"
+msgstr "Resend"
+
+#: quick-rsvp foldback
+msgid "Resend API Key"
+msgstr "Resend API 키"
+
+#: quick-rsvp foldback
+msgid "Note: Connect your Resend account and verify your Send-From email address before sending. Unverified addresses will be rejected."
+msgstr "참고: 전송 전에 Resend 계정을 연결하고 발신 이메일 주소를 인증하세요. 인증되지 않은 주소는 거부됩니다."
+
+#: quick-rsvp foldback
+msgid "Need help? See our help center"
+msgstr "도움이 필요하신가요? 도움말 센터를 확인하세요"
+
+#: quick-rsvp foldback
+msgid "Send test email"
+msgstr "테스트 이메일 보내기"
+
+#: quick-rsvp foldback
+msgid "Email Templates"
+msgstr "이메일 템플릿"
+
+#: quick-rsvp foldback
+msgid "Preview all transactional emails sent by the platform. These are rendered with sample data."
+msgstr "플랫폼에서 발송되는 모든 트랜잭션 이메일을 미리 봅니다. 샘플 데이터로 렌더링됩니다."
+
+#: quick-rsvp foldback
+msgid "Select a template to preview it."
+msgstr "미리 볼 템플릿을 선택하세요."
+
+#: quick-rsvp foldback
+msgid "Open in new tab"
+msgstr "새 탭에서 열기"
+
+#: quick-rsvp foldback
+msgid "Subject:"
+msgstr "제목:"
+
+#: quick-rsvp foldback
+msgid "Loading..."
+msgstr "불러오는 중..."
+
+#: quick-rsvp foldback
+msgid "Unknown error"
+msgstr "알 수 없는 오류"
+
+#: quick-rsvp foldback
+msgid "Test email from Ruoom"
+msgstr "Ruoom 테스트 이메일"
+
+#: quick-rsvp foldback
+msgid "This is a test email to confirm your email delivery settings are working correctly."
+msgstr "이 이메일은 이메일 전송 설정이 올바르게 작동하는지 확인하기 위한 테스트 이메일입니다."
+
+#: quick-rsvp foldback
+#, python-format
+msgid "Test email sent successfully to %s."
+msgstr "%s로 테스트 이메일을 성공적으로 보냈습니다."
+
+#: quick-rsvp foldback
+msgid "Failed to send test email."
+msgstr "테스트 이메일을 보내지 못했습니다."
+
+#: quick-rsvp foldback
+#, python-format
+msgid "Failed to send test email: %s"
+msgstr "테스트 이메일 전송 실패: %s"
+
+#: quick-rsvp foldback
+msgid "Create your password"
+msgstr "비밀번호 만들기"
+
+#: quick-rsvp foldback
+msgid "Reset your password"
+msgstr "비밀번호 재설정"
+
+#: quick-rsvp foldback
+msgid "Your receipt"
+msgstr "영수증"
+
+#: quick-rsvp foldback
+msgid "OTP Sign-In Code"
+msgstr "OTP 로그인 코드"
+
+#: quick-rsvp foldback
+msgid "Welcome Staff"
+msgstr "직원 환영"
+
+#: quick-rsvp foldback
+msgid "RSVP Confirmation"
+msgstr "RSVP 확인"
+
+#: quick-rsvp foldback
+msgid "Sent to new customers to set their account password."
+msgstr "신규 고객이 계정 비밀번호를 설정할 수 있도록 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Sent when a customer requests a password reset."
+msgstr "고객이 비밀번호 재설정을 요청할 때 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Sent after a successful purchase."
+msgstr "구매가 성공한 후 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Sent when a user requests a one-time sign-in code."
+msgstr "사용자가 일회용 로그인 코드를 요청할 때 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Sent to new staff members with a password setup link."
+msgstr "신규 직원에게 비밀번호 설정 링크와 함께 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Sent to guests after they successfully RSVP to an event."
+msgstr "게스트가 이벤트 RSVP를 완료한 후 발송됩니다."
+
+#: quick-rsvp foldback
+msgid "Booking Plugin"
+msgstr "예약 플러그인"
+
+#: quick-rsvp foldback
+msgid "Customer-facing booking, registration, event page, and embed settings."
+msgstr "고객용 예약, 등록, 이벤트 페이지 및 임베드 설정입니다."
+
+#: quick-rsvp foldback
+msgid "Booking Pages"
+msgstr "예약 페이지"
+
+#: quick-rsvp foldback
+msgid "Enable or disable customer-facing booking views."
+msgstr "고객용 예약 화면을 켜거나 끕니다."
+
+#: quick-rsvp foldback
+msgid "Enable booking calendar view"
+msgstr "예약 일정 보기 사용"
+
+#: quick-rsvp foldback
+msgid "Enable event card / RSVP view"
+msgstr "이벤트 카드 / RSVP 보기 사용"
+
+#: quick-rsvp foldback
+msgid "Send RSVP confirmation emails"
+msgstr "RSVP 확인 이메일 보내기"
+
+#: quick-rsvp foldback
+msgid "How to embed Customer pages?"
+msgstr "고객 페이지를 어떻게 임베드하나요?"
+
+#: quick-rsvp foldback
+msgid "event card / RSVP page:"
+msgstr "이벤트 카드 / RSVP 페이지:"
+
+#: quick-rsvp foldback
+msgid "Enter sign-in code"
+msgstr "로그인 코드 입력"
+
+#: quick-rsvp foldback
+msgid "Enter your email and we will send you a sign-in code."
+msgstr "이메일을 입력하면 로그인 코드를 보내드립니다."
+
+#: quick-rsvp foldback
+msgid "Send code"
+msgstr "코드 보내기"
+
+#: quick-rsvp foldback
+msgid "Use password instead"
+msgstr "비밀번호로 로그인"
+
+#: quick-rsvp foldback
+msgid "Request a new code"
+msgstr "새 코드 요청"
+
+#: quick-rsvp foldback
+msgid "Sign-in code"
+msgstr "로그인 코드"
+
+#: quick-rsvp foldback
+msgid "Digit 1"
+msgstr "첫 번째 숫자"
+
+#: quick-rsvp foldback
+msgid "Digit 2"
+msgstr "두 번째 숫자"
+
+#: quick-rsvp foldback
+msgid "Digit 3"
+msgstr "세 번째 숫자"
+
+#: quick-rsvp foldback
+msgid "Digit 4"
+msgstr "네 번째 숫자"
+
+#: quick-rsvp foldback
+msgid "Digit 5"
+msgstr "다섯 번째 숫자"
+
+#: quick-rsvp foldback
+msgid "Digit 6"
+msgstr "여섯 번째 숫자"
+
+#: quick-rsvp foldback
+#, python-format
+msgid "We sent a code to %(email)s."
+msgstr "%(email)s로 코드를 보냈습니다."
+
+#: quick-rsvp foldback
+msgid "Please enter the code from your email."
+msgstr "이메일로 받은 코드를 입력해 주세요."
+
+#: quick-rsvp foldback
+msgid "Invalid or expired code. Please try again."
+msgstr "코드가 올바르지 않거나 만료되었습니다. 다시 시도해 주세요."
+
+#: quick-rsvp foldback
+msgid "Please enter your email address."
+msgstr "이메일 주소를 입력해 주세요."
+
+#: quick-rsvp foldback
+msgid "A sign-in code was sent recently. Please wait before requesting another code."
+msgstr "최근에 로그인 코드가 발송되었습니다. 새 코드를 요청하기 전에 잠시 기다려 주세요."
+
+#: quick-rsvp foldback
+msgid "We could not send a sign-in code right now. Please contact an administrator."
+msgstr "현재 로그인 코드를 보낼 수 없습니다. 관리자에게 문의해 주세요."
+
+#: quick-rsvp foldback
+msgid "Events"
+msgstr "이벤트"
+
+#: quick-rsvp foldback
+msgid "Events navigation"
+msgstr "이벤트 내비게이션"
+
+#: quick-rsvp foldback
+msgid "Upcoming Events"
+msgstr "예정된 이벤트"
+
+#: quick-rsvp foldback
+msgid "Upcoming events"
+msgstr "예정된 이벤트"
+
+#: quick-rsvp foldback
+msgid "Past Events"
+msgstr "지난 이벤트"
+
+#: quick-rsvp foldback
+msgid "Past events"
+msgstr "지난 이벤트"
+
+#: quick-rsvp foldback
+msgid "Browse available events, save your spot, and manage your registration from the same guest-friendly RSVP experience."
+msgstr "가능한 이벤트를 둘러보고 자리를 예약하며, 게스트 친화적인 RSVP 화면에서 등록을 관리하세요."
+
+#: quick-rsvp foldback
+msgid "No upcoming events are available right now."
+msgstr "현재 예정된 이벤트가 없습니다."
+
+#: quick-rsvp foldback
+msgid "RSVP"
+msgstr "RSVP"
+
+#: quick-rsvp foldback
+msgid "RSVP by"
+msgstr "RSVP 마감"
+
+#: quick-rsvp foldback
+msgid "RSVP by Jun 10"
+msgstr "6월 10일까지 RSVP"
+
+#: quick-rsvp foldback
+msgid "Save your spot"
+msgstr "자리 예약하기"
+
+#: quick-rsvp foldback
+msgid "Confirm RSVP"
+msgstr "RSVP 확인"
+
+#: quick-rsvp foldback
+msgid "Please fix these RSVP questions."
+msgstr "다음 RSVP 질문을 수정해 주세요."
+
+#: quick-rsvp foldback
+msgid "Update my existing RSVP if this email already has one"
+msgstr "이 이메일로 된 기존 RSVP가 있으면 업데이트합니다"
+
+#: quick-rsvp foldback
+msgid "RSVP is closed for this event."
+msgstr "이 이벤트의 RSVP가 마감되었습니다."
+
+#: quick-rsvp foldback
+msgid "Location coming soon"
+msgstr "위치가 곧 안내됩니다"
+
+#: quick-rsvp foldback
+msgid "Spots"
+msgstr "자리"
+
+#: quick-rsvp foldback
+msgid "available"
+msgstr "가능"
+
+#: quick-rsvp foldback
+msgid "When"
+msgstr "일시"
+
+#: quick-rsvp foldback
+msgid "Where"
+msgstr "위치"
+
+#: quick-rsvp foldback
+msgid "All events"
+msgstr "모든 이벤트"
+
+#: quick-rsvp foldback
+msgid "Back to event"
+msgstr "이벤트로 돌아가기"
+
+#: quick-rsvp foldback
+msgid "Back to events"
+msgstr "이벤트 목록으로 돌아가기"
+
+#: quick-rsvp foldback
+msgid "Cancel RSVP"
+msgstr "RSVP 취소"
+
+#: quick-rsvp foldback
+msgid "Confirmed"
+msgstr "확정됨"
+
+#: quick-rsvp foldback
+msgid "RSVP Confirmed"
+msgstr "RSVP 확정됨"
+
+#: quick-rsvp foldback
+msgid "Your RSVP is confirmed."
+msgstr "RSVP가 확정되었습니다."
+
+#: quick-rsvp foldback
+msgid "Your RSVP has been cancelled."
+msgstr "RSVP가 취소되었습니다."
+
+#: quick-rsvp foldback
+msgid "Request RSVP Link"
+msgstr "RSVP 링크 요청"
+
+#: quick-rsvp foldback
+msgid "Enter the email you used to RSVP and we will send a secure management link if a matching upcoming registration exists."
+msgstr "RSVP에 사용한 이메일을 입력하면 일치하는 예정 등록이 있을 때 안전한 관리 링크를 보내드립니다."
+
+#: quick-rsvp foldback
+msgid "Any upcoming event"
+msgstr "예정된 이벤트 전체"
+
+#: quick-rsvp foldback
+msgid "Send link"
+msgstr "링크 보내기"
+
+#: quick-rsvp foldback
+#, python-format
+msgid "An RSVP already exists for %(email)s."
+msgstr "%(email)s에 대한 RSVP가 이미 있습니다."
+
+#: quick-rsvp foldback
+msgid "Name and email are required."
+msgstr "이름과 이메일은 필수입니다."
+
+#: quick-rsvp foldback
+msgid "This event is full."
+msgstr "이 이벤트는 정원이 찼습니다."
+
+#: quick-rsvp foldback
+msgid "Paid RSVP checkout is not configured yet. Please contact the organizer."
+msgstr "유료 RSVP 결제가 아직 설정되지 않았습니다. 주최자에게 문의해 주세요."
+
+#: quick-rsvp foldback
+msgid "Please fix the highlighted RSVP questions."
+msgstr "표시된 RSVP 질문을 수정해 주세요."
+
+#: quick-rsvp foldback
+msgid "No payment found."
+msgstr "결제 내역을 찾을 수 없습니다."
+
+#: quick-rsvp foldback
+msgid "If we find a matching upcoming RSVP, we'll send you a link to view, change, or cancel your RSVP."
+msgstr "일치하는 예정 RSVP를 찾으면 RSVP를 확인, 변경 또는 취소할 수 있는 링크를 보내드립니다."
+
+#: quick-rsvp foldback
+msgid "Use this link to manage your RSVP: %(manage_url)s"
+msgstr "이 링크로 RSVP를 관리하세요: %(manage_url)s"
+
+#: quick-rsvp foldback
+msgid "RSVP confirmation"
+msgstr "RSVP 확인"
+
+#: quick-rsvp foldback
+msgid "Booking calendar is not enabled."
+msgstr "예약 일정이 활성화되어 있지 않습니다."
+
+#: quick-rsvp foldback
+msgid "Event cards are not enabled."
+msgstr "이벤트 카드가 활성화되어 있지 않습니다."
+
+#: quick-rsvp foldback
+#, python-format
+msgid "Your RSVP for %(event)s is confirmed. Manage your RSVP: %(manage_url)s"
+msgstr "%(event)s RSVP가 확정되었습니다. RSVP 관리: %(manage_url)s"
+
+#: quick-rsvp foldback
+msgid "Booking Calendar Enabled"
+msgstr "예약 일정 사용"
+
+#: quick-rsvp foldback
+msgid "Booking Event Cards Enabled"
+msgstr "이벤트 카드 사용"
+
+#: quick-rsvp foldback
+msgid "Send RSVP Confirmation Email"
+msgstr "RSVP 확인 이메일 보내기"
+
+#: quick-rsvp foldback
+msgid "Customer Page Org Name"
+msgstr "고객 페이지 조직명"
+
+#: quick-rsvp foldback
+msgid "Customer Page Full Name"
+msgstr "고객 페이지 전체 이름"
+
+#: quick-rsvp foldback
+msgid "Customer Page Tagline"
+msgstr "고객 페이지 태그라인"
+
+#: quick-rsvp foldback
+msgid "Email OTP"
+msgstr "이메일 OTP"
+
+#: quick-rsvp foldback
+msgid "Email OTPs"
+msgstr "이메일 OTP"
+
+#: quick-rsvp foldback
+msgid "OTP Code Hash"
+msgstr "OTP 코드 해시"
+
+#: quick-rsvp foldback
+msgid "Expires At"
+msgstr "만료 시간"
+
+#: quick-rsvp foldback
+msgid "Used"
+msgstr "사용됨"
+
+#: quick-rsvp foldback
+msgid "Verification Attempts"
+msgstr "인증 시도 횟수"
+
+#: quick-rsvp foldback
+msgid "Your Sign-In Code"
+msgstr "로그인 코드"
+
+#: quick-rsvp foldback
+msgid "Welcome to the team!"
+msgstr "팀에 오신 것을 환영합니다!"
+
+#: quick-rsvp foldback
+msgid "8:30 AM | 60 min | Clara Gibson"
+msgstr "오전 8:30 | 60분 | Clara Gibson"
+
+#: quick-rsvp foldback
+msgid "JUN 15 | 8:30 AM"
+msgstr "6월 15일 | 오전 8:30"
+
+#: quick-rsvp foldback
+msgid "Flat No-Show Fee when Customer Hasn't Prepaid"
+msgstr "고객이 선결제하지 않은 경우의 고정 노쇼 수수료"
+
+#: quick-rsvp foldback
+msgid "No account found. Please complete registration."
+msgstr "계정을 찾을 수 없습니다. 등록을 완료해 주세요."
+
+#: quick-rsvp foldback
+msgid "Your account has been deactivated. Please contact an administrator."
+msgstr "계정이 비활성화되었습니다. 관리자에게 문의해 주세요."
 #~ msgstr "도움이 필요하시다면 부담없이 연락해주세요: "

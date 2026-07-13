@@ -4,8 +4,12 @@
 .git
 .github
 env/*
+.venv/
+.pytest_cache/
+.pytest-tmp*/
 .vscode/
 .idea/
-media
+media/*
+!media/sample.csv
 .git
 __pycache__/

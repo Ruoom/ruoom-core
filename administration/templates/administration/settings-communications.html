@@ -1,0 +1,272 @@
+{% extends "administration/settings.html" %}
+{% load i18n %}
+
+{% block settingscontent %}
+<div class="pt-0">
+    <div class="container-fluid">
+        <div class="platform-settings">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body mw-1600">
+                            <h2 class="mb-2">{% trans "Communications" %}</h2>
+                            <p class="text-muted mb-4">{% trans "Email delivery and notification identity." %}</p>
+
+                            <form action="{% url 'administration:settings-communications' %}" id="emailSettingForm" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" id="setting_update" name="setting_update" value="email_settings">
+
+                                <div class="form-group">
+                                    <label>{% trans "Email Provider" %}</label>
+                                    <div class="d-flex flex-wrap" style="gap:24px; margin-top:4px;">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" name="email_provider" id="email_provider_smtp" value="smtp_server" {% if email_provider == "smtp_server" %}checked{% endif %}>
+                                            <label class="custom-control-label" for="email_provider_smtp">{% trans "SMTP Server" %}</label>
+                                        </div>
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" name="email_provider" id="email_provider_resend" value="resend" {% if email_provider == "resend" %}checked{% endif %}>
+                                            <label class="custom-control-label" for="email_provider_resend">{% trans "Resend" %}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="email_address">{% trans "Send-From Email Address" %}</label>
+                                            <input type="email" id="email_address" name="email_address" value="{{ email_address|default_if_none:'' }}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="smtp-fields" class="row" style="{% if email_provider == 'resend' %}display:none;{% endif %}">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="application_password">{% trans "Application Password" %}</label>
+                                            <input type="password" id="application_password" name="application_password" value="{{ application_password|default_if_none:'' }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-sm-0">
+                                            <label for="host_address">{% trans "Host Address" %}</label>
+                                            <input type="text" id="host_address" name="host_address" value="{{ host_address|default_if_none:'' }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="host_port">{% trans "Host Port" %}</label>
+                                            <input type="text" id="host_port" name="host_port" value="{{ host_port|default_if_none:'' }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 mt-4 pt-sm-3">
+                                        <div class="custom-control custom-checkbox table-checkbox mb-2">
+                                            <input type="checkbox" class="custom-control-input" name="host_tls" id="host_tls" {% if host_tls %}checked{% endif %}>
+                                            <label class="custom-control-label" for="host_tls">{% trans "Host Using TLS?" %}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="resend-fields" class="row" style="{% if email_provider != 'resend' %}display:none;{% endif %}">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="resend_api_key">{% trans "Resend API Key" %}</label>
+                                            <input type="password" id="resend_api_key" name="resend_api_key" value="{{ resend_api_key|default_if_none:'' }}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <p class="text-muted small mb-0">
+                                            {% trans "Note: Connect your Resend account and verify your Send-From email address before sending. Unverified addresses will be rejected." %}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <a href="{% url 'administration:helpEmail' %}" target="_blank">{% trans "Need help? See our help center" %}</a>
+                                </div>
+
+                                <div class="d-flex flex-wrap" style="gap:12px;">
+                                    <button type="submit" class="btn btn-primary mt-4" id="save_email_information">{% trans "Save changes" %}</button>
+                                    <button type="button" class="btn btn-outline-secondary mt-4" id="send_test_email_btn">{% trans "Send test email" %}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if request.user.is_superuser and email_templates %}
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h2 class="mb-1">{% trans "Email Templates" %}</h2>
+                            <p class="text-muted mb-4 small">
+                                {% trans "Preview all transactional emails sent by the platform. These are rendered with sample data." %}
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-3 pr-md-0 mb-4 mb-md-0" style="border-right:1px solid #e3ebf6;">
+                                    <ul id="email-template-list" style="margin:0; padding:0; list-style:none;">
+                                        {% for tmpl in email_templates %}
+                                        <li style="border-bottom:1px solid #f1f4f9;">
+                                            <button type="button"
+                                                    data-key="{{ tmpl.key }}"
+                                                    class="email-tmpl-btn"
+                                                    style="width:100%; text-align:left; background:transparent; border:none; padding:10px 14px; cursor:pointer; font-size:13px; color:#1D1E4D;">
+                                                {{ tmpl.label }}
+                                            </button>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                <div class="col-md-9 pl-md-4">
+                                    <div id="preview-header" class="mb-3" style="display:none; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                                        <div>
+                                            <h5 class="mb-1" id="preview-label"></h5>
+                                            <p class="text-muted mb-0 small" id="preview-description"></p>
+                                        </div>
+                                        <a id="preview-new-tab" href="#" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <span class="fe fe-external-link mr-1"></span>{% trans "Open in new tab" %}
+                                        </a>
+                                    </div>
+
+                                    <div id="preview-email-header" class="mb-3" style="display:none; background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:12px 16px;">
+                                        <span class="text-muted font-weight-bold">{% trans "Subject:" %}</span>
+                                        <span id="preview-subject" class="font-weight-bold"></span>
+                                    </div>
+
+                                    <div id="preview-frame-wrap" style="display:none; border:1px solid #d2ddec; border-radius:8px; overflow:hidden; background:#ffffff;">
+                                        <iframe id="preview-frame" srcdoc="" style="width:100%; height:700px; border:none; display:block;" sandbox="allow-same-origin"></iframe>
+                                    </div>
+
+                                    <div id="preview-placeholder" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:480px; border:1px dashed #d2ddec; border-radius:8px; color:#95aac9;">
+                                        <span class="fe fe-mail" style="font-size:2.5rem; opacity:0.3; margin-bottom:12px;"></span>
+                                        <p style="font-size:15px; margin:0;">{% trans "Select a template to preview it." %}</p>
+                                    </div>
+
+                                    <div id="preview-loading" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:480px;">
+                                        <div class="spinner-border text-primary" role="status" style="width:2rem; height:2rem;">
+                                            <span class="sr-only">{% trans "Loading..." %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if request.user.is_superuser and email_templates %}
+<script id="email-preview-data" type="application/json">
+[
+    {% for tmpl in email_templates %}
+    {
+        "key": "{{ tmpl.key|escapejs }}",
+        "label": "{{ tmpl.label|escapejs }}",
+        "description": "{{ tmpl.description|escapejs }}",
+        "htmlUrl": "{{ tmpl.html_url }}",
+        "renderUrl": "{{ tmpl.render_url }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+<script>
+    (function () {
+        var dataEl = document.getElementById("email-preview-data");
+        var emailTemplates = JSON.parse(dataEl.textContent);
+        var activeKey = null;
+
+        function hide(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function show(id, displayValue) {
+            document.getElementById(id).style.display = displayValue || "block";
+        }
+
+        function showLoading() {
+            hide("preview-placeholder");
+            hide("preview-frame-wrap");
+            hide("preview-header");
+            hide("preview-email-header");
+            show("preview-loading", "flex");
+        }
+
+        function showFrame(templateData, html, subject) {
+            hide("preview-loading");
+            hide("preview-placeholder");
+            document.getElementById("preview-label").textContent = templateData.label;
+            document.getElementById("preview-description").textContent = templateData.description;
+            document.getElementById("preview-new-tab").href = templateData.renderUrl;
+            document.getElementById("preview-subject").textContent = subject || "";
+            show("preview-email-header", "block");
+            show("preview-header", "flex");
+            document.getElementById("preview-frame").srcdoc = html;
+            show("preview-frame-wrap", "block");
+        }
+
+        function loadTemplate(key) {
+            if (key === activeKey) {
+                return;
+            }
+            activeKey = key;
+            var templateData = emailTemplates.find(function (item) { return item.key === key; });
+            if (!templateData) {
+                return;
+            }
+
+            document.querySelectorAll(".email-tmpl-btn").forEach(function (button) {
+                var isActive = button.dataset.key === key;
+                button.style.background = isActive ? "#e8f1fb" : "transparent";
+                button.style.color = isActive ? "#2C7BE5" : "#1D1E4D";
+                button.style.fontWeight = isActive ? "600" : "normal";
+            });
+
+            showLoading();
+            fetch(templateData.htmlUrl, { credentials: "same-origin" })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data.html) {
+                        showFrame(templateData, data.html, data.subject);
+                    } else {
+                        hide("preview-loading");
+                        show("preview-placeholder", "flex");
+                    }
+                })
+                .catch(function () {
+                    hide("preview-loading");
+                    show("preview-placeholder", "flex");
+                });
+        }
+
+        document.querySelectorAll(".email-tmpl-btn").forEach(function (button) {
+            button.addEventListener("click", function () {
+                loadTemplate(button.dataset.key);
+            });
+        });
+    })();
+</script>
+{% endif %}
+
+<script>
+    function toggleProviderFields() {
+        var checked = document.querySelector('input[name="email_provider"]:checked');
+        var provider = checked ? checked.value : "smtp_server";
+        document.getElementById("smtp-fields").style.display = provider === "resend" ? "none" : "flex";
+        document.getElementById("resend-fields").style.display = provider === "resend" ? "flex" : "none";
+    }
+
+    document.querySelectorAll('input[name="email_provider"]').forEach(function (radio) {
+        radio.addEventListener("change", toggleProviderFields);
+    });
+    toggleProviderFields();
+
+    document.getElementById("send_test_email_btn").addEventListener("click", function() {
+        document.getElementById("setting_update").value = "send_test_email";
+        document.getElementById("emailSettingForm").submit();
+    });
+
+    $("#communications-tab").addClass("active");
+</script>
+{% endblock %}

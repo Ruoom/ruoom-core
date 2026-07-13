@@ -47,6 +47,11 @@
 <script>booking_plugin = true</script>
 {% include "booking/partials/schedule_services_initialize.html" %}
 {% endif %}
+
+{% if "appointments" in plugins %}
+<script>appointments_plugin = true</script>
+{% include "appointments/partials/schedule_appointments_initialize.html" %}
+{% endif %}
 <script src="{% static 'administration/js/schedule.js' %}"></script>
 <script src="{% static 'administration/js/utils.js' %}"></script>
 
@@ -106,6 +111,10 @@
                         {% if "booking" in plugins %}
                             {% include "booking/partials/schedule_services_buttons.html" %}
                         {% endif %}
+
+                        {% if "appointments" in plugins %}
+                            {% include "appointments/partials/schedule_appointments_buttons.html" %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -144,21 +153,19 @@
         {% include "booking/partials/schedule_services.html" %}
     {% endif %}
 
-</div>
-
-<div>
-    {% if messages %}
-        {% for message in messages %}
-        {% if message.tags == 'info' %}
-
-            <ul class="messages" align="center" style="color: red;" id="tr_info_message">
-                {{ message }}
-            </ul>
-            {% endif %}
-
-        {% endfor %}
+    {% if "appointments" in plugins %}
+        {% include "appointments/partials/schedule_appointments.html" %}
     {% endif %}
+
 </div>
+
+{% if messages %}
+    <div class="d-none" aria-hidden="true">
+        {% for message in messages %}
+            <span class="messages" data-message-tags="{{ message.tags|default:'' }}">{{ message }}</span>
+        {% endfor %}
+    </div>
+{% endif %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>

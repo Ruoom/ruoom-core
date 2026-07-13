@@ -16,6 +16,7 @@ from django.template.loader import render_to_string
 
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from registration.privacy import erase_profile_personal_data
 
 Profile = get_model("registration","Profile")
 Location = get_model("administration", "Location")
@@ -157,6 +158,18 @@ class CustomerAccountSettings(TemplateView):
         return request.user
 
     def post(self, request):
+        if "erase_personal_data" in request.POST:
+            customer_required = request.GET.get("customer") or request.session.get("admin_customer_control")
+            if not request.user.is_superuser or not customer_required:
+                return redirect("customer:customer-account-settings")
+            profile = Profile.objects.filter(
+                business_id=request.user.profile.business_id,
+                id=customer_required,
+            ).first()
+            if profile:
+                erase_profile_personal_data(profile, erased_by=request.user.profile)
+            return self.get(request)
+
         account_setting_user_obj = self.get_current_user(request=request)
 
         if "personal_info" in request.POST:
@@ -237,4 +250,4 @@ def sort_times(times):
     # Convert the sorted datetime objects back to the original string format
     sorted_time_strings = [time.strftime(time_format) for time in sorted_times]
 
-    return sorted_time_strings   
+    return sorted_time_strings

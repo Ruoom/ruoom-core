@@ -2,6 +2,8 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from . import views
+from .feature_toggles import is_staff_page_enabled
+from .location_management import is_location_management_enabled
 
 app_name = 'administration'
 urlpatterns = [
@@ -10,11 +12,13 @@ urlpatterns = [
     path('customers/', views.CustomerPage.as_view(), name='customers'),
     path('customers/modify/option', views.CustomerOptions.as_view(), name='customers_nav_bar'),
     path('schedule/', views.Schedule.as_view(), name='schedule'),
-    path('staff/', views.StaffPage.as_view(), name='staff'),
-    path('locations/', views.Locations.as_view(), name='locations'),
     path('permissions/', views.Admin.as_view(), name='admin'),
     path('settings/', views.Settings.as_view(), name='settings'),
     path('settings/contact/', views.settingsContact, name='settings-contact'),
+    path('settings/branding/', views.settingsBranding, name='settings-branding'),
+    path('settings/communications/', views.settingsCommunications, name='settings-communications'),
+    path('email-preview/<str:template_key>/', views.email_preview_render, name='email_preview_render'),
+    path('email-preview/<str:template_key>/html/', views.email_preview_html, name='email_preview_html'),
     
     path('customers/search/', views.CustomersSearch.as_view(), name='customersearch'),
     path('profile/search/', views.ProfileSearch.as_view(), name='profilesearch'),
@@ -26,10 +30,19 @@ urlpatterns = [
     path('help/embed/', views.HelpEmbed.as_view(), name='helpEmbed'),
     path('help/email/', views.HelpEmail.as_view(), name='helpEmail'),
     
-    path('staff/list/', views.StaffPage.as_view(), name='staff-list'),
-
     path('langselect/', (views.LanguageSelect.as_view()), name='language-select'),
     path('media/<str:path>', views.download_media, name='download_media'),
     path('export_profile', views.ExportProfile.as_view(), name='export_profile'),
     path('nolocation', views.no_location, name='no_location'),
 ]
+
+if is_staff_page_enabled():
+    urlpatterns += [
+        path('staff/', views.StaffPage.as_view(), name='staff'),
+        path('staff/list/', views.StaffPage.as_view(), name='staff-list'),
+    ]
+
+if is_location_management_enabled():
+    urlpatterns += [
+        path('locations/', views.Locations.as_view(), name='locations'),
+    ]

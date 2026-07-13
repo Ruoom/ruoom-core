@@ -9,6 +9,20 @@
     <div class="{% if admin_customer == 'true' %}{% else %}container-fluid custom-row-full{% endif %}">
         
         <div class="mw-1000">
+            {% if admin_customer == 'true' and request.user.is_superuser and not object.personal_data_erased %}
+            <div class="card border-danger">
+                <div class="card-body p-4">
+                    <h2>{% trans "Privacy Erasure" %}</h2>
+                    <p>{% trans "Erase this customer's personal data while preserving operational records." %}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="erase_personal_data" value="1" class="btn btn-danger">
+                            {% trans "Erase personal data" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Personal Info Card -->
             <div class="card">
