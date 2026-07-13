@@ -18,7 +18,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from pathlib import Path
 from decouple import config
-from ruoom.utils import load_plugin_statics
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
