@@ -85,8 +85,8 @@ DEFAULT_PLUGIN_NAMES = (
 )
 RUOOM_PLUGIN_NAMES = tuple(
     name.strip()
-    for name in os.environ.get(
-        'RUOOM_PLUGINS', ','.join(DEFAULT_PLUGIN_NAMES)
+    for name in config(
+        'RUOOM_PLUGINS', default=','.join(DEFAULT_PLUGIN_NAMES)
     ).split(',')
     if name.strip()
 )
@@ -186,7 +186,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 # live db details
-DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+DATABASE_URL = config('DATABASE_URL', default='').strip()
 
 if DATABASE_URL:
     parsed_database_url = urlparse(DATABASE_URL)
