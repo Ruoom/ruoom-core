@@ -411,8 +411,6 @@ INTERNAL_IPS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
-SECRET_FILE_NAME =  "secret.key"
-
 FIRST_TIME_PASS = "rl9HYY*ou0R4sWh&w3D6E#5*oC#" #To be reset immediately upon first sign in. platform cannot be used with this password
 
 SESSION_COOKIE_SECURE = True

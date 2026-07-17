@@ -1,4 +1,5 @@
 *.pyc
+secret.key
 *.swp
 .env
 .git
