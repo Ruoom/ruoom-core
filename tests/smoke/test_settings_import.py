@@ -8,8 +8,8 @@ from django.conf import settings
 def test_test_settings_imports_core_apps():
     assert settings.ROOT_URLCONF == "ruoom.urls"
     assert "administration.apps.AdminConfig" in settings.INSTALLED_APPS
-    assert "plugins.booking" in settings.INSTALLED_APPS
-    assert "plugins.customforms" in settings.INSTALLED_APPS
+    assert "plugins.booking.apps.BookingConfig" in settings.INSTALLED_APPS
+    assert "plugins.customforms.apps.CustomFormsConfig" in settings.INSTALLED_APPS
 
 
 def test_test_settings_use_sqlite_and_filesystem_storage():
