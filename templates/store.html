@@ -34,15 +34,6 @@
               <option value="{{loc.id}}"> {{loc.name}}</option>
             {% endfor %}
           </select>
-        {% else %}
-          <div class="alert alert-light border py-2 px-3 mb-3" role="status">
-            {% if digitalproducts == "active" %}
-              {% trans "No locations configured. Digital products can be sold without a location." %}
-            {% else %}
-              {% trans "No locations configured." %}
-            {% endif %}
-            <a class="ml-2" href="{% url 'administration:locations' %}">{% trans "Add a location" %}</a>
-          </div>
         {% endif %}
 
         <div class="row align-items-center">
