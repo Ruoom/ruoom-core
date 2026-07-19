@@ -21,6 +21,10 @@ from registration.utils.authentication import (
     get_permission_group_names,
     verify_no_superuser_exists,
 )
+from ruoom.automated_email_system import (
+    _absolutize_html_urls,
+    _business_app_base_url,
+)
 from ruoom.storages import MediaStore
 from ruoom.utils import load_plugin_statics, load_plugin_urls
 from tests.factories import create_business, create_location, create_profile
@@ -246,3 +250,35 @@ def test_load_plugin_statics_collects_existing_static_dirs(monkeypatch):
 def test_media_store_configuration_is_stable():
     assert MediaStore.location == "media"
     assert MediaStore.file_overwrite is False
+    assert MediaStore.default_acl == "private"
+    assert MediaStore.querystring_auth is True
+
+
+def test_business_app_base_url_prefers_mapped_application_domain():
+    business = create_business(business_id=61, business_website="https://marketing.example.com")
+    DomainToBusinessMapping.objects.create(domain="shop.example.com", business=business)
+
+    assert _business_app_base_url(business) == "https://shop.example.com"
+
+
+def test_business_app_base_url_uses_http_for_localhost():
+    business = create_business(business_id=62)
+    DomainToBusinessMapping.objects.create(domain="localhost:8000", business=business)
+
+    assert _business_app_base_url(business) == "http://localhost:8000"
+
+
+def test_email_relative_links_and_images_are_made_absolute():
+    business = create_business(business_id=63)
+    DomainToBusinessMapping.objects.create(domain="shop.example.com", business=business)
+    html = (
+        '<a href="/customer/purchases/">Purchases</a>'
+        '<img src="/media/branding/logo.png">'
+        '<a href="mailto:owner@example.com">Email</a>'
+    )
+
+    result = _absolutize_html_urls(html, business)
+
+    assert 'href="https://shop.example.com/customer/purchases/"' in result
+    assert 'src="https://shop.example.com/media/branding/logo.png"' in result
+    assert 'href="mailto:owner@example.com"' in result

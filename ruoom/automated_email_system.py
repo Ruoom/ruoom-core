@@ -1,9 +1,11 @@
 import logging
 import re
+from urllib.parse import urljoin, urlparse
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
 from administration.models import Business
@@ -11,6 +13,56 @@ from security.key_lock import RuoomSecurity
 
 
 logger = logging.getLogger(__name__)
+
+
+def _business_app_base_url(business):
+    if not business:
+        return ""
+
+    domain = ""
+    try:
+        domain = business.domain_mapping.domain or ""
+    except (AttributeError, ObjectDoesNotExist):
+        pass
+    if not domain:
+        domain = getattr(business, "business_website", "") or ""
+    if not domain:
+        return ""
+
+    domain = str(domain).strip().rstrip("/")
+    if "://" not in domain:
+        hostname = domain.split(":", 1)[0].lower()
+        scheme = "http" if hostname in {"localhost", "127.0.0.1", "[::1]"} else "https"
+        domain = f"{scheme}://{domain}"
+    return domain
+
+
+def _absolutize_html_urls(html_content, business):
+    base_url = _business_app_base_url(business)
+    if not html_content or not base_url:
+        return html_content
+
+    ignored_schemes = {"cid", "data", "javascript", "mailto", "tel"}
+
+    def replace_url(match):
+        value = match.group("url").strip()
+        parsed = urlparse(value)
+        if (
+            not value
+            or value.startswith(("#", "//"))
+            or parsed.scheme.lower() in ignored_schemes
+            or parsed.scheme
+        ):
+            return match.group(0)
+        absolute_url = urljoin(base_url + "/", value)
+        return f'{match.group("prefix")}{absolute_url}{match.group("quote")}'
+
+    return re.sub(
+        r'(?P<prefix>\b(?:href|src)\s*=\s*(?P<quote>["\']))(?P<url>.*?)(?P=quote)',
+        replace_url,
+        html_content,
+        flags=re.IGNORECASE,
+    )
 
 
 def _is_full_html_document(html_content):
@@ -35,15 +87,7 @@ def _resolve_business_logo_url(business, logo_url=None):
     if logo_url.startswith(("http://", "https://", "data:")):
         return logo_url
 
-    base_url = ""
-    if business:
-        business_website = getattr(business, "business_website", "") or ""
-        if business_website:
-            base_url = business_website.rstrip("/")
-        else:
-            domain_mapping = getattr(business, "domain_mapping", None)
-            if domain_mapping and getattr(domain_mapping, "domain", None):
-                base_url = f"https://{domain_mapping.domain}".rstrip("/")
+    base_url = _business_app_base_url(business)
 
     if base_url:
         if not logo_url.startswith("/"):
@@ -226,6 +270,8 @@ def automated_email_send(
         wrapped_html = _inject_business_header_into_full_html(text_content, business)
     else:
         wrapped_html = _wrap_email_with_footer(f'<p style="font-size:16px;">{text_content}</p>', business)
+
+    wrapped_html = _absolutize_html_urls(wrapped_html, business)
 
     message = EmailMultiAlternatives(subject, text_content, from_email, recipient_email, connection=backend)
     message.attach_alternative(wrapped_html, "text/html")

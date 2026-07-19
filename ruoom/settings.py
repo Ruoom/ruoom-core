@@ -288,9 +288,12 @@ AWS_LOCATION = os.environ.get("AWS_LOCATION", "static")
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": os.environ.get("AWS_S3_CACHE_CONTROL", "max-age=86400")
 }
-AWS_DEFAULT_EXPIRY = int(os.environ.get("AWS_S3_DEFAULT_EXPIRY", 900))
+AWS_QUERYSTRING_EXPIRE = int(os.environ.get("AWS_QUERYSTRING_EXPIRE", 300))
 AWS_DEFAULT_ACL = os.environ.get("AWS_DEFAULT_ACL")
 AWS_QUERYSTRING_AUTH = os.environ.get("AWS_QUERYSTRING_AUTH", "true").lower() == "true"
+DIGITALPRODUCT_DOWNLOAD_LINK_MAX_AGE_SECONDS = int(
+    os.environ.get("DIGITALPRODUCT_DOWNLOAD_LINK_MAX_AGE_SECONDS", 86400)
+)
 
 if STORAGE == "S3":
     if not AWS_STORAGE_BUCKET_NAME:

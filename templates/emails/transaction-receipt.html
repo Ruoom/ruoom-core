@@ -471,8 +471,7 @@
                                                                                                             <span style='color: #1D1E4D; font-size:16px; display:block;'>{{dp.name}}</span>
                                                                                                             {% if dp.link %}
                                                                                                             <div>
-                                                                                                                <span style='color: #1D1E4D; font-size:15px;'>{% trans "URL to Access Content:" %}</span>
-                                                                                                                <span style='color: #1D1E4D; font-size:15px; font-weight:600;'>{{dp.link}}</span>
+                                                                                                                <a href="{{dp.link}}" target="_blank" style='color: #43c3ef; font-size:15px; font-weight:600;'>{% trans "Access your content" %}</a>
                                                                                                             </div>
                                                                                                             {% endif %}
                                                                                                             {% if dp.pass %}
