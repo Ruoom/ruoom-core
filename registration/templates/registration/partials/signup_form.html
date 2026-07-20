@@ -45,26 +45,14 @@
 <form action="{{ signup_url }}" method="POST" >
         {% csrf_token %}
 
-      <!-- First Name -->
-      <div class="form-group">
-
-          {{ signup_form.first_name }}
-
-          {% for error in signup_form.first_name.errors %}
-                  <p style="color: red">{{ error }}</p>
-          {% endfor %}
-      </div>
-
-
-      <!-- Last Name -->
-      <div class="form-group">
-
-          {{ signup_form.last_name }}
-
-          {% for error in signup_form.last_name.errors %}
-                  <p style="color: red">{{ error }}</p>
-          {% endfor %}
-      </div>
+      {% get_current_language as LANGUAGE_CODE %}
+      {% if LANGUAGE_CODE == "ko" %}
+        {% include "registration/partials/signup_name_field.html" with field=signup_form.last_name label="Last name" %}
+        {% include "registration/partials/signup_name_field.html" with field=signup_form.first_name label="First name" %}
+      {% else %}
+        {% include "registration/partials/signup_name_field.html" with field=signup_form.first_name label="First name" %}
+        {% include "registration/partials/signup_name_field.html" with field=signup_form.last_name label="Last name" %}
+      {% endif %}
 
       <!-- Email address -->
       <div class="form-group">

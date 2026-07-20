@@ -1,8 +1,10 @@
 import pytest
 from django.conf import settings
 from django.urls import reverse
+from django.utils import translation
 
 from registration.forms import SignupForm
+from administration.models import Business
 from registration.models import Profile
 from tests.factories import create_business, create_profile
 
@@ -147,6 +149,19 @@ def test_signup_form_uses_separate_first_and_last_name_fields():
     assert list(form.fields)[:2] == ["first_name", "last_name"]
     assert form.fields["first_name"].widget.attrs["placeholder"] == "First name"
     assert form.fields["last_name"].widget.attrs["placeholder"] == "Last name"
+
+
+def test_signup_renders_korean_name_order_with_translatable_labels(client):
+    create_business(default_country_code=Business.COUNTRY_CODE_KR)
+
+    with translation.override("ko"):
+        response = client.get(reverse("registration:signup"), HTTP_HOST="localhost")
+
+    content = response.content.decode()
+    assert response.status_code == 200
+    assert content.index('for="id_last_name"') < content.index('for="id_first_name"')
+    assert "Last name" in content
+    assert "First name" in content
 
 
 def test_signup_post_saves_separate_first_and_last_names(client):

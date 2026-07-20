@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<div class="form-group">
+    <label for="{{ field.id_for_label }}" class="sr-only">{% trans label %}</label>
+    {{ field }}
+
+    {% for error in field.errors %}
+        <p style="color: red">{{ error }}</p>
+    {% endfor %}
+</div>
