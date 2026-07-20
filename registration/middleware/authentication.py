@@ -8,6 +8,7 @@ from django.utils import timezone
 from registration.models import Profile
 from registration.utils.authentication import can_access
 from registration.controller import return_business_id_for_domain
+from administration.domain_bootstrap import normalize_domain
 from django.contrib.auth import login
 from ruoom.plugin_metadata import (
     get_plugin_public_url_patterns,
@@ -61,19 +62,20 @@ class AuthenticationMiddleware(object):
 
         # Check forward none existing domain
         from administration.models import DomainToBusinessMapping
-        request_domain = request.META.get('HTTP_HOST', '')
-        domain_object = DomainToBusinessMapping.objects.filter(
-            domain__icontains=request_domain.lower()
-        ).first()
+        request_domain = normalize_domain(request.META.get('HTTP_HOST', ''))
+        domain_object = next(
+            (
+                mapping
+                for mapping in DomainToBusinessMapping.objects.all()
+                if normalize_domain(mapping.domain) == request_domain
+            ),
+            None,
+        )
 
-        if not domain_object and "localhost" not in request_domain:
-            local_domain = False
-            for url in settings.LOCAL_URLS:
-                if request_domain in url or url in request_domain:
-                    local_domain = True
-                    break
-            if not local_domain:
-                return HttpResponseNotFound("Domain not registered.")
+        if not domain_object and not any(
+            request_domain == normalize_domain(url) for url in settings.LOCAL_URLS
+        ):
+            return HttpResponseNotFound("Domain not registered.")
 
         public_url_patterns = tuple(settings.PUBLIC_URL_PATTERNS) + get_plugin_public_url_patterns()
         staff_only_patterns = tuple(settings.STAFF_ONLY_URL_PATTERNS) + get_plugin_staff_only_url_patterns()

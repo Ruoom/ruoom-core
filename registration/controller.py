@@ -1,5 +1,6 @@
 from administration.models import Business, DomainToBusinessMapping
 from administration.management.commands import create_view_groups
+from administration.domain_bootstrap import normalize_domain
 from django.conf import settings
 import chargebee
 
@@ -12,8 +13,10 @@ def return_business_id_for_domain(request_domain):
         #Also create user groups since this is the first data in the db
         create_view_groups.Command.handle(0)
         
+    normalized_domain = normalize_domain(request_domain)
+
     for url in settings.LOCAL_URLS:
-        if request_domain in url or url in request_domain:
+        if normalized_domain == normalize_domain(url):
             return 1
 
     try: #try to import domain to business mapping
@@ -21,7 +24,7 @@ def return_business_id_for_domain(request_domain):
 
         mappings = DomainToBusinessMapping.objects.all()
         for mapping in mappings:
-            if request_domain in mapping.domain:
+            if normalized_domain == normalize_domain(mapping.domain):
                 return mapping.business.business_id
         
         return 1

@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.contrib.auth.models import Group
+from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.test import RequestFactory, override_settings
 
@@ -11,7 +12,8 @@ from administration.location_management import (
     get_default_location_for_business,
     is_location_management_enabled,
 )
-from administration.models import DaysOfOperation, DomainToBusinessMapping, Location
+from administration.domain_bootstrap import normalize_domain
+from administration.models import Business, DaysOfOperation, DomainToBusinessMapping, Location
 from registration.controller import return_business_id_for_domain
 from registration.utils.authentication import (
     anonymous_required,
@@ -82,6 +84,27 @@ def test_return_business_id_for_domain_uses_domain_mapping(settings):
 
     assert return_business_id_for_domain("events.example.com") == 22
     assert return_business_id_for_domain("unknown.example.com") == 1
+
+
+def test_bootstrap_business_domain_registers_and_updates_business_one_url():
+    call_command(
+        "bootstrap_business_domain",
+        url="https://first.example.com:443/path",
+    )
+
+    business = Business.objects.get(business_id=1)
+    assert business.name == "ruoom_default"
+    assert DomainToBusinessMapping.objects.get(business=business).domain == "first.example.com"
+
+    call_command("bootstrap_business_domain", url="second.example.com")
+
+    assert DomainToBusinessMapping.objects.filter(business=business).count() == 1
+    assert DomainToBusinessMapping.objects.get(business=business).domain == "second.example.com"
+
+
+def test_normalize_domain_accepts_urls_and_request_hosts():
+    assert normalize_domain("HTTPS://Example.com:443/path") == "example.com"
+    assert normalize_domain("Example.com:8000") == "example.com"
 
 
 def test_custom_auth_backend_authenticates_matching_user_password():
