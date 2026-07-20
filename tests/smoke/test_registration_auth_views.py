@@ -2,6 +2,7 @@ import pytest
 from django.conf import settings
 from django.urls import reverse
 
+from registration.forms import SignupForm
 from registration.models import Profile
 from tests.factories import create_business, create_profile
 
@@ -138,6 +139,37 @@ def test_signup_post_bootstraps_first_superuser(client):
     assert user.is_staff is True
     assert user.is_active is True
     assert user.user_type == Profile.USER_TYPE_STAFF
+
+
+def test_signup_form_uses_separate_first_and_last_name_fields():
+    form = SignupForm()
+
+    assert list(form.fields)[:2] == ["first_name", "last_name"]
+    assert form.fields["first_name"].widget.attrs["placeholder"] == "First name"
+    assert form.fields["last_name"].widget.attrs["placeholder"] == "Last name"
+
+
+def test_signup_post_saves_separate_first_and_last_names(client):
+    create_business()
+
+    response = client.post(
+        reverse("registration:signup"),
+        {
+            "first_name": "First",
+            "last_name": "Owner",
+            "email": "separate-owner@example.com",
+            "phone": "+12125552368",
+            "password": "secret123",
+            "password_2": "secret123",
+            "message_consent": "on",
+        },
+        HTTP_HOST="localhost",
+    )
+
+    user = Profile.objects.get(email="separate-owner@example.com", business_id=1)
+    assert response.status_code == 302
+    assert user.first_name == "First"
+    assert user.last_name == "Owner"
 
 
 def test_signup_post_duplicate_email_re_renders_form(client):

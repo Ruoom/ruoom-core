@@ -72,7 +72,7 @@ class SignupForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['first_name', 'email', 'password', 'phone','message_consent']
+        fields = ['first_name', 'last_name', 'email', 'password', 'phone','message_consent']
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -90,8 +90,10 @@ class SignupForm(forms.ModelForm):
                 visible.field.widget.attrs['placeholder'] = _("Phone Number (Optional)")
             if 'Email' in visible.field.label:
                 visible.field.widget.attrs['placeholder'] = _("Email Address")
-            if 'First name' in visible.field.label:
-                visible.field.widget.attrs['placeholder'] = _("Name")
+            if visible.name == 'first_name':
+                visible.field.widget.attrs['placeholder'] = _("First name")
+            if visible.name == 'last_name':
+                visible.field.widget.attrs['placeholder'] = _("Last name")
 
     def clean(self):
         super(SignupForm, self).clean()
@@ -106,13 +108,18 @@ class SignupForm(forms.ModelForm):
             self.add_error('email', _("A user with this email already exists"))
             return False
         del self.cleaned_data['password_2']
-        full_name = self.cleaned_data['first_name'].strip()
+        first_name = self.cleaned_data['first_name'].strip()
+        last_name = self.cleaned_data.get('last_name', '').strip()
 
         if not Business.objects.filter(business_id=business_id):
             Business.objects.create(business_id=business_id)
 
         language_code = Business.objects.filter(business_id=business_id).first().default_language()
-        first_name, last_name = parse_fullname(full_name, language_code)
+        if not last_name:
+            first_name, last_name = parse_fullname(first_name, language_code)
+
+        self.cleaned_data['first_name'] = first_name
+        self.cleaned_data['last_name'] = last_name
         
         user = Profile(**self.cleaned_data)
         user.set_password(self.cleaned_data['password'])
