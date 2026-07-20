@@ -21,5 +21,17 @@ Then run the following commands:
 python manage.py migrate
 ```
 
-* Now you are ready to create an initial account at localhost:8000
+For the first deployed business, set `RUOOM_BUSINESS_1_URL` to the public URL
+for business 1, then register it after migrations:
+
+```
+python manage.py bootstrap_business_domain
+```
+
+The command is safe to run repeatedly. Changing `RUOOM_BUSINESS_1_URL` and
+running the command again updates business 1's domain mapping. The business
+name can be completed after signing in for the first time. If the setting is
+empty, the command does nothing.
+
+Now you are ready to create an initial account at the configured URL.
 
