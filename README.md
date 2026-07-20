@@ -10,7 +10,7 @@ A [Django](https://docs.djangoproject.com) project.
 
 ## Conventions
 
-- replace `.sample` with your actual environment file.
+- Copy `.env.example` to `.env` and replace deployment-specific values.
 
 ## Initialization
 
@@ -18,6 +18,7 @@ To set up the database, initialize PostgreSQL with a database called "Ruoom", a 
 Then run the following commands:
 
 ```
+Copy-Item .env.example .env
 python manage.py migrate
 ```
 
