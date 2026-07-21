@@ -143,10 +143,10 @@ MIDDLEWARE = [
     'registration.middleware.authentication.CookieSameSiteMiddlerTest',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'administration.middleware.language.LocaleMiddleware',
@@ -318,17 +318,11 @@ if STORAGE == "S3":
             "STORAGE=S3 requires AWS_S3_BUCKET_NAME, AWS_STORAGE_BUCKET_NAME, or AWS_BUCKET_NAME."
         )
 
-    if not AWS_S3_CUSTOM_DOMAIN and not AWS_S3_ENDPOINT_URL:
-        AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-
-    # Railway Buckets are private and use a custom S3-compatible endpoint.
-    # Leave URL generation to S3Boto3Storage so static files receive the same
-    # endpoint, addressing style, and signed access as other bucket objects.
-    if AWS_S3_CUSTOM_DOMAIN:
-        STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
-    else:
-        STATIC_URL = "/static/"
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    # Static assets can contain relative font and image URLs, which cannot
+    # inherit signatures from a private S3 stylesheet URL. Keep static files
+    # same-origin through WhiteNoise and reserve S3 for uploaded/private files.
+    STATIC_URL = "/static/"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
     DEFAULT_FILE_STORAGE = "ruoom.storages.MediaStore"
 
 STORAGES = {

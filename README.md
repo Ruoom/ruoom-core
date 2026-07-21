@@ -46,5 +46,6 @@ For a Railway Bucket, set `STORAGE=S3`, `AWS_S3_BUCKET_NAME`,
 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION=auto`,
 `AWS_ENDPOINT_URL=https://storage.railway.app`, and
 `AWS_S3_URL_STYLE=virtual`. The application accepts both Railway's variable
-names and the equivalent django-storages names.
+names and the equivalent django-storages names. Uploaded files use the private
+bucket, while public static assets remain same-origin through WhiteNoise.
 

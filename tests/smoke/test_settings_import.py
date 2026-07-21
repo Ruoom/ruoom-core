@@ -33,9 +33,9 @@ def test_ruoom_settings_enable_s3_storage_from_environment():
         (
             "import ruoom.settings as s; "
             "assert s.DEFAULT_FILE_STORAGE == 'ruoom.storages.MediaStore'; "
-            "assert s.STATICFILES_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage'; "
+            "assert s.STATICFILES_STORAGE == 'whitenoise.storage.CompressedStaticFilesStorage'; "
             "assert s.AWS_STORAGE_BUCKET_NAME == 'ruoom-test-bucket'; "
-            "assert s.STATIC_URL == 'https://ruoom-test-bucket.s3.amazonaws.com/static/'; "
+            "assert s.STATIC_URL == '/static/'; "
             "assert s.STORAGES['default']['BACKEND'] == 'ruoom.storages.MediaStore'"
         ),
     ]
@@ -67,7 +67,7 @@ def test_ruoom_settings_support_railway_bucket_endpoint_from_environment():
             "assert s.AWS_S3_REGION_NAME == 'auto'; "
             "assert s.AWS_S3_ADDRESSING_STYLE == 'virtual'; "
             "assert s.STATIC_URL == '/static/'; "
-            "assert s.STATICFILES_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage'"
+            "assert s.STATICFILES_STORAGE == 'whitenoise.storage.CompressedStaticFilesStorage'"
         ),
     ]
 
