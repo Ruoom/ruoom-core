@@ -45,6 +45,37 @@ def test_ruoom_settings_enable_s3_storage_from_environment():
     assert result.returncode == 0, result.stderr
 
 
+def test_ruoom_settings_support_railway_bucket_endpoint_from_environment():
+    env = os.environ.copy()
+    env.update(
+        {
+            "DEBUG": "true",
+            "STORAGE": "S3",
+            "AWS_S3_BUCKET_NAME": "ruoom-railway-bucket",
+            "AWS_ENDPOINT_URL": "https://storage.railway.app",
+            "AWS_S3_URL_STYLE": "virtual",
+            "AWS_DEFAULT_REGION": "auto",
+        }
+    )
+    command = [
+        sys.executable,
+        "-c",
+        (
+            "import ruoom.settings as s; "
+            "assert s.AWS_STORAGE_BUCKET_NAME == 'ruoom-railway-bucket'; "
+            "assert s.AWS_S3_ENDPOINT_URL == 'https://storage.railway.app'; "
+            "assert s.AWS_S3_REGION_NAME == 'auto'; "
+            "assert s.AWS_S3_ADDRESSING_STYLE == 'virtual'; "
+            "assert s.STATIC_URL == '/static/'; "
+            "assert s.STATICFILES_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage'"
+        ),
+    ]
+
+    result = subprocess.run(command, env=env, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0, result.stderr
+
+
 def test_ruoom_settings_default_debug_true_when_environment_missing():
     env = os.environ.copy()
     env.pop("DEBUG", None)

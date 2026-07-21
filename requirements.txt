@@ -33,3 +33,4 @@ regex==2025.11.3
 requests==2.32.5
 timeago==1.0.10
 whitenoise==6.11.0
+gunicorn==23.0.0

@@ -36,3 +36,15 @@ empty, the command does nothing.
 
 Now you are ready to create an initial account at the configured URL.
 
+## Railway deployment
+
+Railway deployments use the checked-in `Dockerfile`, `start.sh`, and
+`railway.json`. The startup script runs migrations, registers the business
+domain, collects static files, and then starts Gunicorn.
+
+For a Railway Bucket, set `STORAGE=S3`, `AWS_S3_BUCKET_NAME`,
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION=auto`,
+`AWS_ENDPOINT_URL=https://storage.railway.app`, and
+`AWS_S3_URL_STYLE=virtual`. The application accepts both Railway's variable
+names and the equivalent django-storages names.
+

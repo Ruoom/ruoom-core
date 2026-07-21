@@ -280,10 +280,26 @@ STORAGE = os.environ.get("STORAGE", "").upper()
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = (
-    os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    os.environ.get("AWS_S3_BUCKET_NAME")
+    or os.environ.get("AWS_STORAGE_BUCKET_NAME")
     or os.environ.get("AWS_BUCKET_NAME")
 )
 AWS_DEFAULT_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-2")
+# Railway Buckets expose these names. django-storages uses the AWS_S3_*
+# equivalents, so keep both conventions supported at the application boundary.
+AWS_S3_ENDPOINT_URL = (
+    os.environ.get("AWS_S3_ENDPOINT_URL")
+    or os.environ.get("AWS_ENDPOINT_URL")
+)
+AWS_S3_REGION_NAME = (
+    os.environ.get("AWS_S3_REGION_NAME")
+    or AWS_DEFAULT_REGION
+)
+AWS_S3_ADDRESSING_STYLE = (
+    os.environ.get("AWS_S3_ADDRESSING_STYLE")
+    or os.environ.get("AWS_S3_URL_STYLE")
+    or "virtual"
+)
 AWS_S3_CUSTOM_DOMAIN = os.environ.get("AWS_S3_CUSTOM_DOMAIN")
 AWS_LOCATION = os.environ.get("AWS_LOCATION", "static")
 AWS_S3_OBJECT_PARAMETERS = {
@@ -298,12 +314,20 @@ DIGITALPRODUCT_DOWNLOAD_LINK_MAX_AGE_SECONDS = int(
 
 if STORAGE == "S3":
     if not AWS_STORAGE_BUCKET_NAME:
-        raise ImproperlyConfigured("STORAGE=S3 requires AWS_STORAGE_BUCKET_NAME or AWS_BUCKET_NAME.")
+        raise ImproperlyConfigured(
+            "STORAGE=S3 requires AWS_S3_BUCKET_NAME, AWS_STORAGE_BUCKET_NAME, or AWS_BUCKET_NAME."
+        )
 
-    if not AWS_S3_CUSTOM_DOMAIN:
+    if not AWS_S3_CUSTOM_DOMAIN and not AWS_S3_ENDPOINT_URL:
         AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+    # Railway Buckets are private and use a custom S3-compatible endpoint.
+    # Leave URL generation to S3Boto3Storage so static files receive the same
+    # endpoint, addressing style, and signed access as other bucket objects.
+    if AWS_S3_CUSTOM_DOMAIN:
+        STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+    else:
+        STATIC_URL = "/static/"
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     DEFAULT_FILE_STORAGE = "ruoom.storages.MediaStore"
 
@@ -344,6 +368,38 @@ EMAIL_OTP_REQUEST_COOLDOWN_SECONDS = 60
 EMAIL_OTP_SIGNUP_REDIRECT_URL = SIGNUP_URL
 LOCAL_URLS = ['http://localhost', 'http://127.0.0.1']
 RUOOM_BUSINESS_1_URL = config("RUOOM_BUSINESS_1_URL", default="").strip()
+
+
+def _origin_from_url(value):
+    value = str(value or '').strip()
+    if not value:
+        return ''
+    try:
+        parsed = urlparse(value if '://' in value else f'//{value}')
+        if not parsed.hostname:
+            return ''
+        scheme = parsed.scheme or (
+            'http' if parsed.hostname in {'localhost', '127.0.0.1', '::1'} else 'https'
+        )
+        return f'{scheme}://{parsed.netloc}'
+    except ValueError:
+        return ''
+
+
+_csrf_trusted_origins = [
+    origin
+    for origin in (
+        _origin_from_url(RUOOM_BUSINESS_1_URL),
+        _origin_from_url(os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')),
+    )
+    if origin
+]
+_csrf_trusted_origins.extend(
+    origin.strip()
+    for origin in config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+    if origin.strip()
+)
+CSRF_TRUSTED_ORIGINS = tuple(dict.fromkeys(_csrf_trusted_origins))
 SAFE_DOMAINS = []
 
 PUBLIC_URL_EXACT = [
