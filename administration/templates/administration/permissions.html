@@ -378,9 +378,6 @@
 
 <script>
   $(document).ready(function() {
-      if (!tour.ended() && is_msa_signed != false){
-          tour.start()
-      };
       $("#id_is_superuser").click(() => {
             if ($("#id_is_superuser").is(":checked") == true){
                 $("#Id_Permissions>li>label>input").each((index, item) => {

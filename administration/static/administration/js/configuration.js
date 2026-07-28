@@ -31,8 +31,4 @@ $(document).ready(function () {
           });
     });
 
-$(document).ready(function() {
-    if (!tour.ended() != false){
-        tour.start()
-    }
-})
+});

@@ -148,9 +148,6 @@
 
 <script>
     $(document).ready(function() {
-        if (!tour.ended() && is_msa_signed != false){
-            tour.start()
-        };
         $("#dropdownMenuLink+div>a").on("click", (e) =>{
         window.location.href = "/administration/dashboard/?location_id=" + $(e.target).attr("value");
         })

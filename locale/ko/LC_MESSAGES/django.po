@@ -1196,10 +1196,6 @@ msgstr "쿠폰 개수"
 msgid "Staff At Locations"
 msgstr "직원 위치"
 
-#: .\administration\models.py:527
-msgid "Has this user signed the Master Service Agreement?"
-msgstr "해당 유저가 마스터 서비스이용 동의서에 서명 했나요?"
-
 #
 #: .\administration\models.py:530
 msgid "Stripe ID"
@@ -3372,12 +3368,6 @@ msgstr "환영합니다, "
 #: .\administration\templates\administration\dashboard.html:153
 msgid "This is what's happening today,"
 msgstr "오늘의 새로운 소식입니다,"
-
-#: .\administration\templates\administration\dashboard-marketing-K.html:161
-#: .\administration\templates\administration\dashboard-marketing.html:160
-#: .\administration\templates\administration\dashboard.html:157
-msgid "Start a tour"
-msgstr "투어 시작"
 
 #: .\administration\templates\administration\dashboard-marketing-K.html:216
 #: .\administration\templates\administration\dashboard-marketing.html:208
@@ -7115,8 +7105,6 @@ msgstr "트위터"
 msgid "Google"
 msgstr "구글"
 
-# Javascript Tour Guide Text
-# Homepage title
 #: .\customer\templates\customer\customer-payment.html:313
 msgid "Homepage"
 msgstr "홈페이지"
@@ -10664,61 +10652,9 @@ msgstr "직원 급여"
 msgid "Reports"
 msgstr "리포트"
 
-#: .\templates\navigation.html:270
-msgid "Platform Tour"
-msgstr "플랫폼 투어"
-
 #: .\templates\navigation.html:273
 msgid "Help Center"
 msgstr "도움 센터"
-
-#: .\templates\navigation.html:298
-msgid "MASTER SAAS AND SERVICE AGREEMENT"
-msgstr "마스터 SAAS 및 서비스 계약"
-
-#: .\templates\navigation.html:300
-msgid ""
-"Please sign our Master Service Agreement before continuing to access the "
-"platform."
-msgstr ""
-"플랫폼에 접속하려면 마스터 서비스 계약서(Master Service Agreement)를 읽고 서"
-"명해주세요."
-
-#: .\templates\navigation.html:306
-msgid ""
-"Error loading MSA. Please refer to https://www.ruoomsoftware.com/master-"
-"service-agreement/"
-msgstr ""
-"MSA 로드 실패. 다음의 링크를 참조해주세요: https://www.ruoomsoftware.com/"
-"master-service-agreement/"
-
-#: .\templates\navigation.html:312
-msgid "I acknowledge that Ruoom® is "
-msgstr "나는 Ruoom®이 "
-
-#: .\templates\navigation.html:312
-msgid "not"
-msgstr "HIPAA 기준에 부합하지 않으며"
-
-#: .\templates\navigation.html:312
-msgid ""
-" HIPAA compliant and this, and other Ruoom® Software tools, should not be "
-"used to store sensitive patient data."
-msgstr ""
-" Ruoom® Software의 다른 도구들이 환자의 민감한 데이터를 보관하는데 이용되어서"
-"는 안된다는 것을 이해하고 있습니다."
-
-#: .\templates\navigation.html:317
-msgid "I have read and I acknowledge the "
-msgstr "모두 확인했으며 동의합니다 "
-
-#: .\templates\navigation.html:318
-msgid "Master Service Agreement"
-msgstr "마스터 서비스 이용 약관"
-
-#: .\templates\navigation.html:326
-msgid "Acknowledge and Submit"
-msgstr "이해했으며 동의합니다"
 
 #: .\templates\navigation.html:336
 msgid "Please Create a Password For Your New Ruoom® Platform"
