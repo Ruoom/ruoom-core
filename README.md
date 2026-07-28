@@ -14,13 +14,25 @@ A [Django](https://docs.djangoproject.com) project.
 
 ## Initialization
 
-To set up the database, initialize PostgreSQL with a database called "Ruoom", a user called "ruoom_admin" and password "password".
-Then run the following commands:
+By default, Core uses SQLite at `db.sqlite3`, so a local installation does not
+need a separate database service. To use PostgreSQL or another explicitly
+configured backend, set `DATABASE_URL` in `.env` using a supported URL scheme.
+For example:
+
+```
+DATABASE_URL=postgresql://ruoom_admin:password@localhost:5432/Ruoom
+```
+
+Then run:
 
 ```
 Copy-Item .env.example .env
 python manage.py migrate
 ```
+
+SQLite is convenient for local development and disposable deployments. Use a
+durable PostgreSQL database for production applications with important data or
+multiple application instances.
 
 For the first deployed business, set `RUOOM_BUSINESS_1_URL` to the public URL
 for business 1, then register it after migrations:

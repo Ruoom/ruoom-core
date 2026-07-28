@@ -17,6 +17,44 @@ def test_test_settings_use_sqlite_and_filesystem_storage():
     assert settings.DEFAULT_FILE_STORAGE == "django.core.files.storage.FileSystemStorage"
 
 
+def test_ruoom_settings_default_to_sqlite_without_database_url():
+    env = os.environ.copy()
+    env.pop("DATABASE_URL", None)
+    command = [
+        sys.executable,
+        "-c",
+        (
+            "import os; import ruoom.settings as s; "
+            "db = s.DATABASES['default']; "
+            "assert db['ENGINE'] == 'django.db.backends.sqlite3'; "
+            "assert os.path.basename(db['NAME']) == 'db.sqlite3'"
+        ),
+    ]
+
+    result = subprocess.run(command, env=env, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_ruoom_settings_support_sqlite_database_url():
+    env = os.environ.copy()
+    env["DATABASE_URL"] = "sqlite:////tmp/ruoom-test.sqlite3"
+    command = [
+        sys.executable,
+        "-c",
+        (
+            "import ruoom.settings as s; "
+            "db = s.DATABASES['default']; "
+            "assert db['ENGINE'] == 'django.db.backends.sqlite3'; "
+            "assert db['NAME'] == '/tmp/ruoom-test.sqlite3'"
+        ),
+    ]
+
+    result = subprocess.run(command, env=env, capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0, result.stderr
+
+
 def test_ruoom_settings_enable_s3_storage_from_environment():
     env = os.environ.copy()
     env.update(

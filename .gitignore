@@ -12,5 +12,6 @@ env/*
 .idea/
 media/*
 !media/sample.csv
+db.sqlite3
 .git
 __pycache__/

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import importlib.util
 from importlib import import_module
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from pathlib import Path
@@ -185,33 +185,61 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-# live db details
+#
+# Core uses SQLite by default so a fresh checkout can run without a separate
+# database service. Set DATABASE_URL to select another backend explicitly.
 DATABASE_URL = config('DATABASE_URL', default='').strip()
 
-if DATABASE_URL:
-    parsed_database_url = urlparse(DATABASE_URL)
-    DATABASES = {
-        'default': {
+
+def _database_from_url(database_url):
+    parsed_database_url = urlparse(database_url)
+    scheme = parsed_database_url.scheme.lower()
+
+    if scheme in ('sqlite', 'sqlite3'):
+        if parsed_database_url.netloc not in ('', 'localhost'):
+            raise ImproperlyConfigured(
+                'SQLite DATABASE_URL must not specify a remote host.'
+            )
+
+        sqlite_path = unquote(parsed_database_url.path)
+        if sqlite_path == '/:memory:':
+            sqlite_name = ':memory:'
+        elif sqlite_path.startswith('//'):
+            sqlite_name = sqlite_path[1:]
+        else:
+            sqlite_name = sqlite_path.lstrip('/')
+        if not sqlite_name:
+            raise ImproperlyConfigured(
+                'SQLite DATABASE_URL must include a database filename.'
+            )
+        return {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': sqlite_name,
+        }
+
+    if scheme in ('postgres', 'postgresql'):
+        return {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': parsed_database_url.path.lstrip('/'),
-            'USER': parsed_database_url.username or '',
-            'PASSWORD': parsed_database_url.password or '',
+            'NAME': unquote(parsed_database_url.path.lstrip('/')),
+            'USER': unquote(parsed_database_url.username or ''),
+            'PASSWORD': unquote(parsed_database_url.password or ''),
             'HOST': parsed_database_url.hostname or '',
             'PORT': str(parsed_database_url.port or '5432'),
         }
+
+    raise ImproperlyConfigured(
+        'DATABASE_URL must use sqlite:// or postgresql://.'
+    )
+
+
+DATABASES = {
+    'default': _database_from_url(DATABASE_URL)
+    if DATABASE_URL
+    else {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('RDS_DB_NAME', 'Ruoom'),
-            'USER': os.environ.get('RDS_USERNAME', 'ruoom_admin'),
-            'PASSWORD': os.environ.get('RDS_PASSWORD', 'password'),
-            'HOST': os.environ.get('RDS_HOSTNAME', 'localhost'),
-            'PORT': os.environ.get('RDS_PORT', '5432'),
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
