@@ -33,6 +33,11 @@ def _path_matches_pattern(path, candidates):
 
 
 def _is_public_checkout_request(request):
+    if request.path.startswith("/payment/stripe-intent/"):
+        return bool(
+            request.POST.get("new_customer_email")
+            and request.POST.get("guest_cart_id")
+        )
     if not request.path.startswith("/payment/checkout"):
         return False
     return bool(request.GET.get("cart")) or bool(request.POST.get("new_customer_email"))
