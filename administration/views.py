@@ -18,7 +18,8 @@ from django.http import (
     JsonResponse
 )
 from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse_lazy
+from django.apps import apps
+from django.urls import NoReverseMatch, reverse, reverse_lazy
 
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -66,7 +67,7 @@ def new_password_email_send(recipient_email,subject,customer_name,password_link,
         'password_link': password_link
     }
 
-    html_content = render_to_string("../templates/emails/create-password.html", context)
+    html_content = render_to_string("emails/create-password.html", context)
 
     automated_email_send(recipient_email,subject,html_content,business_id)
 
@@ -77,7 +78,7 @@ def reset_password_email_send(recipient_email,subject,customer,password_link,bus
         'Customer': customer, 
         'password_link': password_link
     }
-    html_content = render_to_string("../templates/emails/reset-password.html", context)
+    html_content = render_to_string("emails/reset-password.html", context)
 
     automated_email_send(recipient_email,subject,html_content,business_id)
 
@@ -85,7 +86,7 @@ def reset_password_email_send(recipient_email,subject,customer,password_link,bus
 
 def swap_request_email_send(recipient_email, subject, swap_request, shift_details, request, business_id=None):
 
-    current_domain = 'http://{0}{1}'.format(request.get_host(),"/administration/download_swap_request_pdf")
+    current_domain = request.build_absolute_uri(reverse("administration:dashboard"))
 
     context = {
         'swap_request': swap_request, 
@@ -95,7 +96,7 @@ def swap_request_email_send(recipient_email, subject, swap_request, shift_detail
         "message":subject
     }
 
-    html_content = render_to_string("../templates/emails/staff-swap-request.html", context)
+    html_content = render_to_string("emails/staff-swap-request.html", context)
 
     automated_email_send([recipient_email],subject,html_content,business_id)
 
@@ -121,6 +122,15 @@ def download_media(request, path):
             return response
 
     raise Http404
+
+
+def purchases_redirect(request):
+    """Keep legacy purchase-notification links pointed at the purchase ledger."""
+    try:
+        target = reverse("payment:purchases")
+    except NoReverseMatch:
+        target = reverse("administration:dashboard")
+    return redirect(target)
 
 class Dashboard(TemplateView):
     template_name = 'administration/dashboard.html'
@@ -447,7 +457,7 @@ class Help(TemplateView):
 
     def get(self, request):
         context = {
-            "password_reset_link": request.META.get('HTTP_HOST', '')+"/accounts/password_reset"
+            "password_reset_link": request.build_absolute_uri("/accounts/password_reset/")
         }
         return render(request, self.template_name, context)
 
@@ -653,8 +663,13 @@ class Admin(TemplateView):
                 new_user.language = COUNTRY_LANGUAGES.get(obj.default_language(), "en")
                 new_user.save()
 
-                current_domain = request.META.get('HTTP_HOST', '')
-                response = reset_password_email_send([new_user.email],_("Ruoom - New Account Creation & Set New Password"),new_user,current_domain+"/accounts/password_reset")
+                password_reset_link = request.build_absolute_uri("/accounts/password_reset/")
+                response = reset_password_email_send(
+                    [new_user.email],
+                    _("Ruoom - New Account Creation & Set New Password"),
+                    new_user,
+                    password_reset_link,
+                )
 
                 return redirect('administration:admin')
             else:
@@ -697,9 +712,13 @@ class Admin(TemplateView):
         elif 'reset_password' in request.POST:
             staff_reset_id = request.POST.get('reset-id')
             staff_to_reset = Profile.objects.get(id=staff_reset_id)
-            current_domain = request.META.get('HTTP_HOST', '')
-
-            response = reset_password_email_send([staff_to_reset.email],_("Ruoom - Reset Password Request"),staff_to_reset,current_domain+"/accounts/password_reset")
+            password_reset_link = request.build_absolute_uri("/accounts/password_reset/")
+            response = reset_password_email_send(
+                [staff_to_reset.email],
+                _("Ruoom - Reset Password Request"),
+                staff_to_reset,
+                password_reset_link,
+            )
 
             return redirect('administration:admin')
 
@@ -841,7 +860,7 @@ EMAIL_PREVIEW_REGISTRY = {
         "subject": _("Create your password"),
         "context_fn": lambda req: _email_preview_context({
             "Customer": {"localized_name": "Jane Smith"},
-            "password_link": f"{_get_site_url(req)}/registration/create-password/abc123/",
+            "password_link": f"{_get_site_url(req)}/registration/newpassword/",
             "business_name": "Acme Studio",
             "business_website": "https://example.com",
             "business_email": "hello@example.com",
@@ -855,43 +874,11 @@ EMAIL_PREVIEW_REGISTRY = {
         "subject": _("Reset your password"),
         "context_fn": lambda req: _email_preview_context({
             "Customer": {"localized_name": "Jane Smith"},
-            "password_link": f"{_get_site_url(req)}/registration/reset-password/abc123/",
+            "password_link": f"{_get_site_url(req)}/accounts/password_reset/",
             "business_name": "Acme Studio",
             "business_website": "https://example.com",
             "business_email": "hello@example.com",
             "customer_logo": None,
-        }, req),
-    },
-    "transaction_receipt": {
-        "label": _("Transaction Receipt"),
-        "template": "emails/transaction-receipt.html",
-        "description": _("Sent after a successful purchase."),
-        "subject": _("Your receipt"),
-        "context_fn": lambda req: _email_preview_context({
-            "customer_name": "Jane Smith",
-            "business_name": "Acme Studio",
-            "business_website": "https://example.com",
-            "business_email": "hello@example.com",
-            "business_logo": None,
-            "product_name": ["<tr><td>Monthly Membership</td><td>$50.00</td></tr>"],
-            "subtotal": "50.00",
-            "sales_tax": "4.13",
-            "total_charged": "54.13",
-            "pay_later": False,
-            "business_id": 1,
-            "credits_used": None,
-            "balance_used": None,
-            "registered_services": [],
-        }, req),
-    },
-    "otp_code": {
-        "label": _("OTP Sign-In Code"),
-        "template": "email_otp/emails/code.html",
-        "description": _("Sent when a user requests a one-time sign-in code."),
-        "subject": _("Your Sign-In Code"),
-        "context_fn": lambda req: _email_preview_context({
-            "otp_code": "483 291",
-            "expiry_minutes": 10,
         }, req),
     },
     "welcome_staff": {
@@ -901,7 +888,7 @@ EMAIL_PREVIEW_REGISTRY = {
         "subject": _("Welcome to the team!"),
         "context_fn": lambda req: _email_preview_context({
             "Customer": {"first_name": "Jane", "email": "jane@example.com"},
-            "password_link": f"{_get_site_url(req)}/accounts/reset/abc123/token/",
+            "password_link": f"{_get_site_url(req)}/accounts/password_reset/",
             "customer_email": "jane@example.com",
         }, req),
     },
@@ -927,6 +914,105 @@ EMAIL_PREVIEW_REGISTRY = {
             "events_url": f"{_get_site_url(req)}/booking/events/",
         }, req),
     },
+}
+
+
+def _preview_payment_purchases_url(request):
+    try:
+        path = reverse("payment:purchases")
+    except NoReverseMatch:
+        path = "/payment/purchases/"
+    return f"{_get_site_url(request)}{path}"
+
+
+if apps.is_installed("plugins.payment"):
+    EMAIL_PREVIEW_REGISTRY.update({
+        "transaction_receipt": {
+            "label": _("Transaction Receipt"),
+            "template": "emails/transaction-receipt.html",
+            "description": _("Sent after a successful purchase."),
+            "subject": _("Your receipt"),
+            "context_fn": lambda req: _email_preview_context({
+                "customer_name": "Jane Smith",
+                "business_name": "Acme Studio",
+                "business_website": "https://example.com",
+                "business_email": "hello@example.com",
+                "business_logo": None,
+                "product_name": ["1 x Monthly Membership"],
+                "subtotal": "50.00",
+                "sales_tax": "4.13",
+                "total_charged": "54.13",
+                "pay_later": False,
+                "business_id": 1,
+                "credits_used": None,
+                "balance_used": None,
+                "registered_services": [],
+            }, req),
+        },
+        "gift_card": {
+            "label": _("Gift Card"),
+            "template": "emails/send-gift-card.html",
+            "description": _("Sent when a gift card is delivered to a customer."),
+            "subject": _("You received a gift card"),
+            "context_fn": lambda req: _email_preview_context({
+                "Customer_name": "Jane Smith",
+                "gift_name": "Monthly Membership",
+                "gift_price": "$50.00",
+                "business_name": "Acme Studio",
+                "business_website": "https://example.com",
+                "business_email": "hello@example.com",
+            }, req),
+        },
+    })
+
+if apps.is_installed("plugins.digitalproducts"):
+    EMAIL_PREVIEW_REGISTRY["digital_product_purchase"] = {
+        "label": _("Digital Product Purchase"),
+        "template": "emails/digital-good-alert.html",
+        "description": _("Sent to staff when a digital product is purchased."),
+        "subject": _("New digital product purchase"),
+        "context_fn": lambda req: _email_preview_context({
+            "user_name": "Store Team",
+            "customer_name": "Jane Smith",
+            "customer_email": "jane@example.com",
+            "digitalgood_list": [
+                '<tr><td class="email-product-name">Starter Package</td></tr>',
+            ],
+            "purchases_url": _preview_payment_purchases_url(req),
+        }, req),
+    }
+
+if apps.is_installed("plugins.email_otp"):
+    EMAIL_PREVIEW_REGISTRY["otp_code"] = {
+        "label": _("OTP Sign-In Code"),
+        "template": "email_otp/emails/code.html",
+        "description": _("Sent when a user requests a one-time sign-in code."),
+        "subject": _("Your Sign-In Code"),
+        "context_fn": lambda req: _email_preview_context({
+            "otp_code": "483 291",
+            "expiry_minutes": 10,
+        }, req),
+    }
+
+EMAIL_PREVIEW_REGISTRY["staff_swap_request"] = {
+    "label": _("Staff Shift Request"),
+    "template": "emails/staff-swap-request.html",
+    "description": _("Sent when a staff member asks someone else to cover a shift."),
+    "subject": _("Shift coverage request"),
+    "context_fn": lambda req: _email_preview_context({
+        "swap_request": {"requesting_staff": {"first_name": "Alex"}},
+        "shift_details": {
+            "user_name": "Jane",
+            "shift_name": "Front desk",
+            "shift_time": "Saturday, 10:00 AM",
+            "shift_duration": "2 hours",
+            "shift_location": "Studio A",
+            "email": "manager@example.com",
+        },
+        "timestamp": datetime.now(),
+        "current_domain": f"{_get_site_url(req)}{reverse_lazy('administration:dashboard')}",
+        "message": "Can you cover this shift?",
+    }, req),
 }
 
 def _render_email_preview(request, template_key):

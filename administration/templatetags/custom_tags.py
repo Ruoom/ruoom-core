@@ -85,7 +85,9 @@ def set_timezone(time_str, timezone):
 @register.simple_tag
 def localized_currency_format(num, business_id):
     business_obj = Business.objects.filter(business_id=business_id).first()
-    currency = business_obj.currency()
+    # Email previews intentionally use sample data before a real business is
+    # loaded. Fall back to dollars instead of making the entire preview fail.
+    currency = business_obj.currency() if business_obj else Business.CURRENCY_DOLLAR
 
     if num == "":
         return dict(Business.CURRENCY_TYPE_CHOICES)[currency]
@@ -105,7 +107,7 @@ def localized_currency_format(num, business_id):
 @register.simple_tag
 def currency_symbol(business_id):
     business_obj = Business.objects.filter(business_id=business_id).first()
-    currency = business_obj.currency()
+    currency = business_obj.currency() if business_obj else Business.CURRENCY_DOLLAR
     return dict(Business.CURRENCY_TYPE_CHOICES)[currency]
 
 @register.filter(name="trim")

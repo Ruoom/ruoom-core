@@ -9,6 +9,9 @@ app_name = 'administration'
 urlpatterns = [
     path('', RedirectView.as_view(url='dashboard/')),
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
+    # Compatibility targets for notification links from older plugin releases.
+    path('purchases/', views.purchases_redirect, name='purchases'),
+    path('purchases', views.purchases_redirect, name='purchases_no_slash'),
     path('customers/', views.CustomerPage.as_view(), name='customers'),
     path('customers/modify/option', views.CustomerOptions.as_view(), name='customers_nav_bar'),
     path('schedule/', views.Schedule.as_view(), name='schedule'),
