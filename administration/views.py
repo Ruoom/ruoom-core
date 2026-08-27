@@ -2,6 +2,7 @@ from time import time as t_time
 import base64
 import binascii
 import json
+import logging
 import re
 from http import HTTPStatus
 from datetime import datetime
@@ -9,6 +10,7 @@ import pytz
 import csv
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.template import TemplateDoesNotExist
 from django.db.models import Q
 from django.http import (
     HttpResponseRedirect,
@@ -50,6 +52,8 @@ from ruoom.plugin_metadata import is_plugin_enabled
 Profile = get_model("registration", "Profile")
 Location = get_model("administration", "Location")
 DaysOfOperation = get_model("administration", "DaysOfOperation")
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1058,6 +1062,18 @@ def email_preview_html(request, template_key):
         wrapped_html, subject = _render_email_preview(request, template_key)
     except Http404:
         return JsonResponse({"error": f"Unknown template '{template_key}'"}, status=404)
+    except TemplateDoesNotExist:
+        logger.exception("Email preview template is missing: %s", template_key)
+        return JsonResponse(
+            {"error": f"The {template_key} email template is not installed."},
+            status=500,
+        )
+    except Exception:
+        logger.exception("Email preview failed: %s", template_key)
+        return JsonResponse(
+            {"error": "This email preview could not be rendered."},
+            status=500,
+        )
     return JsonResponse({"html": wrapped_html, "subject": subject})
 
 class Settings(TemplateView):

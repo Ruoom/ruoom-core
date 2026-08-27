@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 def health_check(request):
+    """Unauthenticated liveness endpoint for deployment monitoring."""
     return JsonResponse({"status": "ok"})
 
 
@@ -85,8 +86,8 @@ def _get_cgroup_cpu_limit():
         if os.path.exists(cpu_max):
             with open(cpu_max, "r", encoding="utf-8") as cpu_file:
                 content = cpu_file.read().strip()
-            if content != "max":
-                parts = content.split()
+            parts = content.split()
+            if parts and parts[0] != "max":
                 quota = int(parts[0])
                 period = int(parts[1]) if len(parts) > 1 else 100000
         elif os.path.exists(cpu_quota_v1) and os.path.exists(cpu_period_v1):
@@ -134,6 +135,9 @@ def api_metrics(request):
     """Token-protected deployment/resource metrics endpoint."""
     from django.conf import settings
     from django.db import connection
+
+    if request.method != "GET":
+        return HttpResponseNotAllowed(["GET"])
 
     expected_token = getattr(settings, "METRICS_API_TOKEN", None)
     if not expected_token:

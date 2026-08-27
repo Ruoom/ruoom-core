@@ -26,16 +26,29 @@ Location = get_model("administration", "Location")
 Room = get_model("administration", "Room")
 Waiver = get_model("administration", "Waiver")
 
+
+class TableCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    """Render checkbox groups with the project's shared checkbox treatment."""
+
+    template_name = 'administration/widgets/table_checkbox_select.html'
+    option_template_name = 'administration/widgets/table_checkbox_option.html'
+
+    def create_option(self, *args, **kwargs):
+        option = super().create_option(*args, **kwargs)
+        option['attrs']['class'] = 'custom-control-input'
+        return option
+
+
 class BaseUserForm(forms.ModelForm):
     permissions = forms.MultipleChoiceField(
         choices=(),
         label='User permissions',
-        widget=forms.CheckboxSelectMultiple,
+        widget=TableCheckboxSelectMultiple,
         required=False
     )
     locations = forms.ModelChoiceField(
         queryset=Location.objects.none(),
-        widget=forms.CheckboxSelectMultiple,
+        widget=TableCheckboxSelectMultiple,
         required=False
     ) 
 
@@ -60,7 +73,9 @@ class BaseUserForm(forms.ModelForm):
 
         # Add form control for all fields except user permission
         for visible in self.visible_fields():
-            if not visible.field.label == "User permissions":
+            if isinstance(visible.field.widget, forms.CheckboxInput):
+                visible.field.widget.attrs["class"] = "custom-control-input"
+            elif not visible.field.label == "User permissions":
                 visible.field.widget.attrs["class"] = "form-control"
 
         self.fields["permissions"].choices = get_permission_group_choices()

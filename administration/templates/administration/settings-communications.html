@@ -146,6 +146,10 @@
                                             <span class="sr-only">{% trans "Loading..." %}</span>
                                         </div>
                                     </div>
+
+                                    <div id="preview-error" style="display:none; align-items:center; justify-content:center; min-height:160px; margin-top:16px; border:1px solid #f5c6cb; border-radius:8px; background:#fff5f5; color:#842029; padding:20px; text-align:center;">
+                                        <span id="preview-error-message"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +194,18 @@
             hide("preview-frame-wrap");
             hide("preview-header");
             hide("preview-email-header");
+            hide("preview-error");
             show("preview-loading", "flex");
+        }
+
+        function showPreviewError(message) {
+            hide("preview-loading");
+            hide("preview-frame-wrap");
+            hide("preview-header");
+            hide("preview-email-header");
+            hide("preview-placeholder");
+            document.getElementById("preview-error-message").textContent = message || "Unable to load this email preview.";
+            show("preview-error", "flex");
         }
 
         function showFrame(templateData, html, subject) {
@@ -225,18 +240,23 @@
 
             showLoading();
             fetch(templateData.htmlUrl, { credentials: "same-origin" })
-                .then(function (response) { return response.json(); })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok) {
+                            throw new Error(data.error || "Unable to load this email preview.");
+                        }
+                        return data;
+                    });
+                })
                 .then(function (data) {
                     if (data.html) {
                         showFrame(templateData, data.html, data.subject);
                     } else {
-                        hide("preview-loading");
-                        show("preview-placeholder", "flex");
+                        showPreviewError(data.error);
                     }
                 })
-                .catch(function () {
-                    hide("preview-loading");
-                    show("preview-placeholder", "flex");
+                .catch(function (error) {
+                    showPreviewError(error.message);
                 });
         }
 
