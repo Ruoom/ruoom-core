@@ -1,50 +1,21 @@
 {% load i18n %}
-<!doctype html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "RSVP Confirmation" %}</title>
-</head>
-<body style="margin:0;padding:0;background-color:{{ branding.background_color|default:'#f4f7f9' }};font-family:{{ branding.font_body|default:'Arial' }}, Arial, sans-serif;color:{{ branding.text_color|default:'#12263F' }};">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <td align="center" style="padding:24px 16px;">
-                <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-                    <tr>
-                        <td style="padding:32px 28px 24px;text-align:center;">
-                            <div style="font-size:20px;font-weight:700;margin-bottom:6px;color:{{ branding.text_color|default:'#12263F' }};">{{ event.service_name }}</div>
-                            <div style="color:#888;font-size:14px;">{% trans "Your RSVP is confirmed." %}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:0 28px 28px;">
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fafafa;border:1px solid #eee;border-radius:4px;">
-                                <tr>
-                                    <td style="padding:18px;">
-                                        <p><strong>{% trans "Event" %}:</strong> {{ event.service_name }}</p>
-                                        <p><strong>{% trans "When" %}:</strong> {{ event.display_date }} | {{ event.display_time }} {{ event.human_timezone }}</p>
-                                        {% if event.location_name %}
-                                            <p><strong>{% trans "Where" %}:</strong> {{ event.location_name }}</p>
-                                        {% elif event.location %}
-                                            <p><strong>{% trans "Where" %}:</strong> {{ event.location }}</p>
-                                        {% endif %}
-                                        <p><strong>{% trans "RSVP'd" %}:</strong> {{ registration.guest_name }}</p>
-                                        <p><strong>{% trans "Email" %}:</strong> {{ registration.guest_email }}</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding:0 28px 28px;">
-                            <a href="{{ manage_url }}" style="display:block;padding:13px 24px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:700;text-transform:uppercase;text-align:center;background:{{ branding.button_color|default:'#EC2660' }};color:{{ branding.button_text_color|default:'#FFFFFF' }};">{% trans "Manage or Cancel RSVP" %}</a>
-                            <a href="{{ events_url }}" style="display:block;margin-top:10px;padding:13px 24px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:700;text-transform:uppercase;text-align:center;border:2px solid #ddd;color:{{ branding.text_color|default:'#12263F' }};">{% trans "Back to Events" %}</a>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+
+<p class="email-eyebrow">{% trans "RSVP confirmed" %}</p>
+<h1>{{ event.service_name }}</h1>
+<p class="email-lead">{% blocktrans with name=registration.guest_name %}You’re on the list, {{ name }}. Here are the details for your visit.{% endblocktrans %}</p>
+
+<div class="email-section email-panel">
+    <table role="presentation" class="email-detail-table" cellpadding="0" cellspacing="0" border="0">
+        <tr><td class="email-label">{% trans "Date" %}</td><td class="email-value">{{ event.display_date }}</td></tr>
+        <tr><td class="email-label">{% trans "Time" %}</td><td class="email-value">{{ event.display_time }} {{ event.human_timezone }}</td></tr>
+        {% if event.location_name %}<tr><td class="email-label">{% trans "Location" %}</td><td class="email-value">{{ event.location_name }}</td></tr>
+        {% elif event.location %}<tr><td class="email-label">{% trans "Location" %}</td><td class="email-value">{{ event.location }}</td></tr>{% endif %}
+        <tr><td class="email-label">{% trans "Guest" %}</td><td class="email-value">{{ registration.guest_name }}</td></tr>
+        <tr><td class="email-label">{% trans "Email" %}</td><td class="email-value">{{ registration.guest_email }}</td></tr>
     </table>
-</body>
-</html>
+</div>
+
+<div class="email-section">
+    {% if manage_url %}<a href="{{ manage_url }}" class="email-button">{% trans "Manage RSVP" %}</a>{% endif %}
+    {% if events_url %}<span style="display:inline-block;width:8px;">&nbsp;</span><a href="{{ events_url }}" class="email-button-secondary">{% trans "View all events" %}</a>{% endif %}
+</div>

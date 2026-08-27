@@ -14,6 +14,11 @@ class LocaleMiddleware(MiddlewareMixin):
     """
 
     def process_request(self, request):
+      # Health probes must remain independent of tenant/domain bootstrap and
+      # database availability so deployment monitoring can check startup.
+      if request.path in ("/health/", "/health", "/api/metrics/"):
+          request.LANGUAGE_CODE = "en"
+          return
       if settings.ADMIN_URL1 in request.path or "webhook" in request.path:
         request.LANGUAGE_CODE = "en"
         return

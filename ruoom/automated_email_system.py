@@ -1,5 +1,6 @@
 import logging
 import re
+from email.utils import formataddr
 from urllib.parse import urljoin, urlparse
 
 from django.conf import settings
@@ -72,6 +73,12 @@ def _is_full_html_document(html_content):
     return "<html" in lower and "<body" in lower
 
 
+def _contains_html_markup(content):
+    if not content:
+        return False
+    return bool(re.search(r"<[a-z][^>]*>", content, flags=re.IGNORECASE))
+
+
 def _resolve_business_logo_url(business, logo_url=None):
     if hasattr(logo_url, "url"):
         logo_url = logo_url.url
@@ -102,22 +109,24 @@ def _inject_business_header_into_full_html(html_content, business, logo_url=None
     if 'id="ruoom-business-header"' in html_content or "id='ruoom-business-header'" in html_content:
         return html_content
 
-    header_color = business.get_header_color() if business else "#EDF1F7"
     button_color = business.get_button_color() if business else "#EC2660"
+    text_color = business.get_text_color() if business else "#12263F"
     business_name = business.name if business else ""
     effective_logo_url = _resolve_business_logo_url(business, logo_url=logo_url)
 
     if effective_logo_url:
         header_html = (
-            f'<div id="ruoom-business-header" style="padding:20px;background-color:{header_color};'
-            f'text-align:center;border-bottom:1px solid #e3ebf6;"><img src="{effective_logo_url}" '
-            f'alt="{business_name}" style="max-height:60px;max-width:220px;display:inline-block;"></div>'
+            f'<div id="ruoom-business-header" style="max-width:600px;margin:0 auto;padding:24px 20px;'
+            f'border-top:4px solid {button_color};border-bottom:1px solid #E7EAF0;text-align:left;">'
+            f'<img src="{effective_logo_url}" alt="{business_name}" '
+            f'style="max-height:48px;max-width:180px;display:block;"></div>'
         )
     elif business_name:
         header_html = (
-            f'<div id="ruoom-business-header" style="padding:20px;background:linear-gradient(135deg,'
-            f'{header_color} 0%,{button_color} 100%);text-align:center;color:#ffffff;'
-            f'font-family:Arial,sans-serif;font-size:22px;font-weight:700;">{business_name}</div>'
+            f'<div id="ruoom-business-header" style="max-width:600px;margin:0 auto;padding:24px 20px;'
+            f'border-top:4px solid {button_color};border-bottom:1px solid #E7EAF0;text-align:left;'
+            f'color:{text_color};font-family:Arial,sans-serif;font-size:20px;font-weight:700;'
+            f'letter-spacing:-0.2px;">{business_name}</div>'
         )
     else:
         return html_content
@@ -140,6 +149,8 @@ def _wrap_email_with_footer(html_content, business):
     text_color = business.get_text_color() if business else "#12263F"
     background_color = business.get_background_color() if business else "#FFFFFF"
     button_text_color = business.get_button_text_color() if business else "#FFFFFF"
+    font_header = business.get_font_header() if business else "Arial, sans-serif"
+    font_body = business.get_font_body() if business else "Arial, sans-serif"
 
     footer_parts = []
     if business:
@@ -163,35 +174,76 @@ def _wrap_email_with_footer(html_content, business):
         if business.business_address:
             footer_parts.append(f"<span style='color:{text_color};'>{business.business_address}</span>")
 
-    footer_html = ""
+    footer_html = "<span>Sent securely by Ruoom</span>"
     if footer_parts:
-        footer_html = (
-            f'<div style="margin-top:40px;padding:20px;border-top:3px solid {button_color};'
-            f'font-size:12px;text-align:center;background-color:#f8f9fa;color:{text_color};">'
-            f'{"<br>".join(footer_parts)}</div>'
-        )
+        footer_html = "<br>".join(footer_parts)
 
     logo_url = _resolve_business_logo_url(business)
     if logo_url:
-        logo_html = (
-            f'<div style="background-color:{header_color};padding:20px;border-radius:8px 8px 0 0;'
-            f'text-align:center;"><img src="{logo_url}" alt="{business.name}" style="max-height:60px;'
-            f'max-width:200px;display:block;margin:0 auto;"></div>'
+        brand_html = (
+            f'<img src="{logo_url}" alt="{business.name}" style="max-height:48px;max-width:180px;'
+            f'display:block;border:0;">'
         )
     else:
-        logo_html = (
-            f'<div style="padding:20px;background:linear-gradient(135deg,{header_color} 0%,'
-            f'{button_color} 100%);border-radius:8px 8px 0 0;text-align:center;">'
-            f'<h2 style="margin:0;color:{button_text_color};font-family:Arial,sans-serif;'
-            f'font-size:24px;">{business.name if business else ""}</h2></div>'
+        brand_html = (
+            '<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>'
+            f'<td style="padding-right:10px;"><span style="display:block;width:10px;height:10px;'
+            f'border-radius:10px;background-color:{button_color};font-size:0;line-height:0;">&nbsp;</span></td>'
+            f'<td style="font-family:{font_header};font-size:20px;line-height:26px;font-weight:700;'
+            f'letter-spacing:-0.2px;color:{text_color};">{business.name if business else ""}</td>'
+            '</tr></table>'
         )
 
     return (
-        '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;'
-        'background-color:#ffffff;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">'
-        f"{logo_html}"
-        f'<div style="padding:30px;color:{text_color};background-color:{background_color};">{html_content}</div>'
-        f"{footer_html}</div>"
+        '<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" '
+        'content="width=device-width, initial-scale=1.0">'
+        '<style type="text/css">'
+        'body{margin:0!important;padding:0!important;width:100%!important;-webkit-text-size-adjust:100%;}'
+        'table{border-collapse:collapse;mso-table-lspace:0;mso-table-rspace:0;}'
+        'img{border:0;height:auto;line-height:100%;outline:none;text-decoration:none;}'
+        f'.email-content{{color:{text_color};font-family:{font_body};font-size:16px;line-height:1.6;}}'
+        f'.email-content h1,.email-content h2,.email-content h3{{color:{text_color};font-family:{font_header};'
+        'letter-spacing:-0.02em;margin:0 0 14px;}}'
+        '.email-content h1{font-size:30px;line-height:1.2}.email-content h2{font-size:21px;line-height:1.3}'
+        '.email-content h3{font-size:16px;line-height:1.4}.email-content p{margin:0 0 18px}'
+        f'.email-content a{{color:{button_color};}}'
+        '.email-eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;line-height:1.4;margin:0 0 12px;text-transform:uppercase;}'
+        '.email-lead{font-size:17px;line-height:1.65}.email-section{margin-top:30px}'
+        '.email-panel{background:#F7F8FA;border:1px solid #E7EAF0;border-radius:10px;padding:20px 22px;}'
+        '.email-detail-table,.email-summary-table,.email-products{width:100%;}.email-detail-table td,.email-summary-table td{padding:9px 0;vertical-align:top;}'
+        f'.email-products td{{color:{text_color};font-size:15px;padding:7px 0;vertical-align:top;}}'
+        '.email-products td:last-child{text-align:right}.email-products .email-product-name{text-align:left!important;}'
+        '.email-products tr:last-child td{padding-bottom:14px}'
+        '.email-detail-table tr+tr td,.email-summary-table tr+tr td{border-top:1px solid #E3E7EC;}'
+        '.email-label{color:#667085;font-size:14px;padding-right:18px!important;width:42%;}'
+        f'.email-value{{color:{text_color};font-weight:600;text-align:right;}}'
+        '.email-detail-table .email-value{padding-left:24px!important;text-align:left;word-break:break-word;}'
+        '.email-summary-table .email-value{padding-left:24px!important;white-space:nowrap;}'
+        '.email-total td{border-top:2px solid #CDD3DC!important;font-size:17px;padding-top:14px!important;}'
+        f'.email-button{{background:{button_color};border-radius:7px;color:{button_text_color}!important;display:inline-block;'
+        'font-size:15px;font-weight:700;line-height:20px;padding:13px 20px;text-align:center;text-decoration:none;}}'
+        f'.email-button-secondary{{border:1px solid #CDD3DC;border-radius:7px;color:{text_color}!important;display:inline-block;'
+        'font-size:15px;font-weight:600;line-height:20px;padding:12px 19px;text-align:center;text-decoration:none;}}'
+        '.email-item{border-top:1px solid #E7EAF0;padding:20px 0}.email-item:first-child{border-top:0;padding-top:0}'
+        '.email-item:last-child{padding-bottom:0}.email-meta{color:#667085;font-size:14px;line-height:1.55}'
+        '.email-note{border-left:3px solid #CDD3DC;color:#667085;font-size:13px;line-height:1.55;padding-left:14px;}'
+        '@media only screen and (max-width:640px){.email-shell-pad{padding:12px!important}.email-card{border-radius:12px!important}'
+        '.email-masthead{padding:20px 22px!important}.email-content{padding:28px 22px!important}.email-footer{padding:20px 22px!important}'
+        '.email-content h1{font-size:26px!important}.email-button,.email-button-secondary{box-sizing:border-box;display:block!important;width:100%!important}}'
+        '</style></head>'
+        '<body style="margin:0;padding:0;background-color:#F3F5F7;">'
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" '
+        'style="width:100%;background-color:#F3F5F7;"><tr><td class="email-shell-pad" align="center" style="padding:32px 16px;">'
+        '<table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" class="email-card" '
+        'style="width:100%;max-width:640px;background-color:#FFFFFF;border:1px solid #E1E5EA;border-radius:16px;overflow:hidden;">'
+        f'<tr><td height="5" style="height:5px;background-color:{header_color};font-size:0;line-height:0;">&nbsp;</td></tr>'
+        '<tr><td class="email-masthead" style="padding:24px 40px;border-bottom:1px solid #E7EAF0;">'
+        f'{brand_html}</td></tr>'
+        f'<tr><td class="email-content" style="padding:38px 40px 42px;background-color:{background_color};'
+        f'color:{text_color};font-family:{font_body};font-size:16px;line-height:1.6;">{html_content}</td></tr>'
+        '<tr><td class="email-footer" style="padding:22px 40px;border-top:1px solid #E7EAF0;background-color:#FAFBFC;'
+        f'color:#667085;font-family:{font_body};font-size:12px;line-height:1.6;text-align:center;">{footer_html}</td></tr>'
+        '</table></td></tr></table></body></html>'
     )
 
 
@@ -240,6 +292,8 @@ def automated_email_send(
     if business:
         ruoom_security = RuoomSecurity()
         from_email = business.email_address or ""
+        if from_email and business.name:
+            from_email = formataddr((business.name, from_email))
         backend = _configured_backend_for_business(business, ruoom_security)
         if backend == "missing_resend_backend":
             return JsonResponse({"message": "Resend backend is not installed"})
@@ -260,7 +314,18 @@ def automated_email_send(
         return JsonResponse({"message": "No email configured"})
 
     if business and business.name:
-        subject = f"{business.name}: {subject}"
+        business_name = str(business.name).strip()
+        subject_text = str(subject).strip()
+        subject_lower = subject_text.casefold()
+        business_name_lower = business_name.casefold()
+        already_branded = (
+            subject_lower == business_name_lower
+            or subject_lower.startswith(f"{business_name_lower}:")
+            or subject_lower.startswith(f"{business_name_lower} ")
+        )
+        if not already_branded:
+            subject_text = f"{business_name}: {subject_text}"
+        subject = subject_text
 
     if html_content and _is_full_html_document(html_content):
         wrapped_html = _inject_business_header_into_full_html(html_content, business)
@@ -268,6 +333,8 @@ def automated_email_send(
         wrapped_html = _wrap_email_with_footer(html_content, business)
     elif _is_full_html_document(text_content):
         wrapped_html = _inject_business_header_into_full_html(text_content, business)
+    elif _contains_html_markup(text_content):
+        wrapped_html = _wrap_email_with_footer(text_content, business)
     else:
         wrapped_html = _wrap_email_with_footer(f'<p style="font-size:16px;">{text_content}</p>', business)
 

@@ -156,7 +156,13 @@ class Business(models.Model):
     business_registration_number = models.CharField(_("Business Registration Number"), max_length=100, null=True, blank=True)
     business_owner = models.CharField(_("Business Representative"), max_length=100, null=True, blank=True)
     show_contact = models.BooleanField(_("Show Contact Information to Customers"),default=False)
-    time_zone_string = models.CharField(_("Time Zone"),max_length=400, null=True, blank=True)
+    time_zone_string = models.CharField(
+        _("Time Zone"),
+        max_length=400,
+        default="UTC",
+        null=True,
+        blank=True,
+    )
     booking_calendar_enabled = models.BooleanField(_("Booking Calendar Enabled"), default=True)
     booking_event_cards_enabled = models.BooleanField(_("Booking Event Cards Enabled"), default=True)
     event_registration_confirmation_email_enabled = models.BooleanField(_("Send RSVP Confirmation Email"), default=True)

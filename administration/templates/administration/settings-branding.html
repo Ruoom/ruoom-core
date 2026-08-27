@@ -110,7 +110,7 @@
                                                     <input type="file" id="studio_image" name="studio_image" accept="image/*" class="d-none">
                                                     <input type="hidden" id="studio_image_base64" name="studio_image_base64">
                                                     {% if obj and obj.studio_image %}
-                                                        <div class="custom-control custom-checkbox mt-3">
+                                                        <div class="custom-control custom-checkbox table-checkbox mt-3">
                                                             <input type="checkbox" class="custom-control-input" name="remove_logo" id="remove_logo">
                                                             <label class="custom-control-label small" for="remove_logo">{% trans "Remove current logo" %}</label>
                                                         </div>
@@ -160,7 +160,7 @@
 
                                         <section class="mb-4">
                                             <h4>{% trans "Color Palette" %}</h4>
-                                            <p class="text-muted small">{% trans "Global color tokens applied across customer-facing pages." %}</p>
+                                            <p class="text-muted small">{% trans "These colors are shared by customer-facing pages and email. The email preview shows exactly where the primary tokens appear." %}</p>
                                             <div class="row">
                                                 <div class="col-lg-4 col-sm-6">
                                                     <div class="form-group">
@@ -169,6 +169,7 @@
                                                             <input type="text" id="headerValue" name="headerValue" value="{{ header_color }}" class="form-control js-brand-color" data-preview-var="--preview-header-color">
                                                             <input type="color" value="{{ header_color }}" aria-label="{% trans 'Header color picker' %}">
                                                         </div>
+                                                        <small class="form-text text-muted">{% trans "Email top accent and customer-page headers. It is always a solid color." %}</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-sm-6">
@@ -178,6 +179,7 @@
                                                             <input type="text" id="backgroundValue" name="backgroundValue" value="{{ background_color }}" class="form-control js-brand-color" data-preview-var="--preview-bg-color">
                                                             <input type="color" value="{{ background_color }}" aria-label="{% trans 'Background color picker' %}">
                                                         </div>
+                                                        <small class="form-text text-muted">{% trans "Main email card and customer-page background." %}</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-sm-6">
@@ -187,6 +189,7 @@
                                                             <input type="text" id="textValue" name="textValue" value="{{ text_color }}" class="form-control js-brand-color" data-preview-var="--preview-text-color">
                                                             <input type="color" value="{{ text_color }}" aria-label="{% trans 'Text color picker' %}">
                                                         </div>
+                                                        <small class="form-text text-muted">{% trans "Email headings, body copy, and primary page text." %}</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-sm-6">
@@ -205,6 +208,7 @@
                                                             <input type="text" id="buttonValue" name="buttonValue" value="{{ button_color }}" class="form-control js-brand-color" data-preview-var="--preview-button-color">
                                                             <input type="color" value="{{ button_color }}" aria-label="{% trans 'Button color picker' %}">
                                                         </div>
+                                                        <small class="form-text text-muted">{% trans "Primary email actions, links, and customer-page buttons." %}</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-sm-6">
@@ -240,6 +244,7 @@
                                             <button type="button" class="btn btn-sm btn-outline-secondary active" data-target="preview-account">{% trans "Account" %}</button>
                                             <button type="button" class="btn btn-sm btn-outline-secondary" data-target="preview-calendar">{% trans "Calendar" %}</button>
                                             <button type="button" class="btn btn-sm btn-outline-secondary" data-target="preview-card">{% trans "Event Card" %}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-target="preview-email">{% trans "Email" %}</button>
                                         </div>
 
                                         <div class="branding-preview-frame" id="brandingPreview" style="--preview-header-color: {{ header_color }}; --preview-bg-color: {{ background_color }}; --preview-text-color: {{ text_color }}; --preview-button-color: {{ button_color }}; --preview-button-text-color: {{ button_text_color }}; --preview-secondary-accent: {{ secondary_accent_color }}; --preview-highlight-color: {{ highlight_color }}; --preview-font-header: {{ font_header }}; --preview-font-body: {{ font_body }};">
@@ -278,6 +283,23 @@
                                                         <p class="small mb-2">{% trans "Clara Gibson" %}</p>
                                                         <p class="small font-weight-bold mb-3" style="color: var(--preview-highlight-color);">{% trans "RSVP by Jun 10" %}</p>
                                                         <span class="btn btn-sm" style="background-color: var(--preview-button-color); color: var(--preview-button-text-color);">{% trans "RSVP" %}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="preview-email" class="js-branding-preview-panel d-none">
+                                                <div style="background:#f3f5f7;padding:14px;">
+                                                    <div style="overflow:hidden;border:1px solid #e1e5ea;border-radius:12px;background:var(--preview-bg-color);color:var(--preview-text-color);font-family:var(--preview-font-body);">
+                                                        <div style="height:4px;background:var(--preview-header-color);"></div>
+                                                        <div style="padding:16px 18px;border-bottom:1px solid #e7eaf0;font-family:var(--preview-font-header);font-weight:700;">
+                                                            <span style="display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:var(--preview-button-color);"></span>{{ business_name|default:"Ruoom" }}
+                                                        </div>
+                                                        <div style="padding:22px 18px;">
+                                                            <div class="small font-weight-bold mb-2" style="letter-spacing:.06em;text-transform:uppercase;opacity:.65;">{% trans "Purchase confirmed" %}</div>
+                                                            <h4 style="font-family:var(--preview-font-header);color:var(--preview-text-color);">{% trans "Thanks, Clara." %}</h4>
+                                                            <p class="small">{% trans "Your payment was successful. Your receipt is ready." %}</p>
+                                                            <span class="btn btn-sm" style="background:var(--preview-button-color);color:var(--preview-button-text-color);">{% trans "View receipt" %}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
