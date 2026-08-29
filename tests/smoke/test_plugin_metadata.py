@@ -1,10 +1,12 @@
 from ruoom.plugin_metadata import (
     PluginMetadata,
+    PluginSignInOption,
     PluginSettingsTab,
     get_enabled_plugin_metadata,
     get_enabled_plugin_names,
     get_plugin_navigation_items,
     get_plugin_public_url_patterns,
+    get_plugin_sign_in_options,
     get_plugin_settings_tabs,
     get_plugin_staff_only_url_patterns,
     get_plugin_middleware_paths,
@@ -103,6 +105,27 @@ def test_plugin_navigation_items_collect_from_enabled_plugin_metadata():
         and item.permission_group == "staff"
         for item in navigation_items
     )
+
+
+def test_plugin_sign_in_options_collect_from_enabled_plugin_metadata(monkeypatch):
+    option = PluginSignInOption(
+        label="Email me a sign-in code",
+        url_name="email_otp:request",
+        icon_class="fe fe-mail",
+    )
+    metadata = PluginMetadata(
+        name="example",
+        app_config="plugins.example.apps.ExampleConfig",
+        url_namespace="example",
+        url_prefix="example/",
+        sign_in_options=(option,),
+    )
+    monkeypatch.setattr(
+        "ruoom.plugin_metadata.get_enabled_plugin_metadata",
+        lambda: [metadata],
+    )
+
+    assert get_plugin_sign_in_options() == [option]
 
 
 def test_plugin_url_contract_helpers_collect_enabled_plugin_patterns():

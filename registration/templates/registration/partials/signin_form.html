@@ -93,3 +93,19 @@
   </button>
   </div>
 </form>
+
+{% if plugin_sign_in_options %}
+  <div class="or-container" aria-hidden="true">
+    <span class="line-separator"></span>
+    <span class="or-label">{% trans "or" %}</span>
+    <span class="line-separator"></span>
+  </div>
+
+  {% for option in plugin_sign_in_options %}
+    <a href="{% url option.url_name %}{% if redirect_url %}?next={{ redirect_url|urlencode }}{% endif %}"
+       class="btn btn-lg btn-block btn-social social-button">
+      {% if option.icon_class %}<i class="{{ option.icon_class }} mr-2" aria-hidden="true"></i>{% endif %}
+      {{ option.label }}
+    </a>
+  {% endfor %}
+{% endif %}

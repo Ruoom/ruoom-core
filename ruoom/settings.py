@@ -170,6 +170,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'registration.context_processors.signin_context',
                 'administration.context_processors.studio_image',
                 'administration.context_processors.language_list',
                 'ruoom.ui_customization.context_processor',

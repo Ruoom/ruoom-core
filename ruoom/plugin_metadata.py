@@ -24,6 +24,13 @@ class PluginSettingsTab:
 
 
 @dataclass(frozen=True)
+class PluginSignInOption:
+    label: str
+    url_name: str
+    icon_class: str = ""
+
+
+@dataclass(frozen=True)
 class PluginMetadata:
     name: str
     app_config: str
@@ -32,6 +39,7 @@ class PluginMetadata:
     permission_groups: Tuple[str, ...] = field(default_factory=tuple)
     navigation_items: Tuple[PluginNavigationItem, ...] = field(default_factory=tuple)
     settings_tabs: Tuple[PluginSettingsTab, ...] = field(default_factory=tuple)
+    sign_in_options: Tuple[PluginSignInOption, ...] = field(default_factory=tuple)
     public_url_patterns: Tuple[str, ...] = field(default_factory=tuple)
     staff_only_url_patterns: Tuple[str, ...] = field(default_factory=tuple)
     middleware: Tuple[str, ...] = field(default_factory=tuple)
@@ -102,6 +110,13 @@ def get_plugin_settings_tabs() -> List[PluginSettingsTab]:
     for metadata in get_enabled_plugin_metadata():
         settings_tabs.extend(metadata.settings_tabs)
     return settings_tabs
+
+
+def get_plugin_sign_in_options() -> List[PluginSignInOption]:
+    sign_in_options = []
+    for metadata in get_enabled_plugin_metadata():
+        sign_in_options.extend(metadata.sign_in_options)
+    return sign_in_options
 
 
 def get_plugin_navigation_items() -> List[PluginNavigationItem]:
