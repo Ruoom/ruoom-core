@@ -1,41 +1,4 @@
 {% load i18n %}
-{% load static %}
-
-<style>
-
-.btn-social {
-    color: #545454;
-    background-color: #ffffff;
-    box-shadow: 0 1px 2px 1px #ddd;
-}
-
-.btn-kakao img {
-  width: 50px;
-}
-
-.or-container {
-    align-items: center;
-    color: #ccc;
-    display: flex;
-    margin: 25px 0;
-}
-
-.social-button {
-  margin-bottom: 15px
-}
-
-.line-separator {
-    background-color: #ccc;
-    flex-grow: 5;
-    height: 1px;
-}
-
-.or-label {
-    flex-grow: 1;
-    margin: 0 15px;
-    text-align: center;
-}
-</style>
 <form action="{{ signin_url }}" class="mb-0" method="POST">
     {% csrf_token %}
     
@@ -91,21 +54,15 @@
   <button type="submit" class="btn btn-lg btn-block btn-primary mb-3" id="signinButton">
     {% trans "Sign in" %}
   </button>
-  </div>
+
+  {% if plugin_sign_in_options %}
+    <p class="text-center mb-0 mt-4">
+      {% for option in plugin_sign_in_options %}
+        <a href="{% url option.url_name %}{% if redirect_url %}?next={{ redirect_url|urlencode }}{% endif %}"
+           class="d-inline-block{% if not forloop.last %} mr-3{% endif %}">
+          {{ option.label }}
+        </a>
+      {% endfor %}
+    </p>
+  {% endif %}
 </form>
-
-{% if plugin_sign_in_options %}
-  <div class="or-container" aria-hidden="true">
-    <span class="line-separator"></span>
-    <span class="or-label">{% trans "or" %}</span>
-    <span class="line-separator"></span>
-  </div>
-
-  {% for option in plugin_sign_in_options %}
-    <a href="{% url option.url_name %}{% if redirect_url %}?next={{ redirect_url|urlencode }}{% endif %}"
-       class="btn btn-lg btn-block btn-social social-button">
-      {% if option.icon_class %}<i class="{{ option.icon_class }} mr-2" aria-hidden="true"></i>{% endif %}
-      {{ option.label }}
-    </a>
-  {% endfor %}
-{% endif %}
