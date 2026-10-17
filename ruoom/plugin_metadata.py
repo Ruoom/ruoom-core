@@ -28,6 +28,7 @@ class PluginSignInOption:
     label: str
     url_name: str
     icon_class: str = ""
+    embedded: bool = False
 
 
 @dataclass(frozen=True)

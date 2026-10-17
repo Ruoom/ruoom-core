@@ -1,5 +1,9 @@
-{% load i18n %}
-<form action="{{ signin_url }}" class="mb-0" method="POST">
+{% load i18n static %}
+{% if embedded_signin %}
+<div data-embedded-signin data-error-message="{% trans 'Unable to sign in right now. Please try again.' %}">
+<script src="{% static 'registration/embedded-signin.js' %}" defer></script>
+{% endif %}
+<form action="{{ signin_url }}" class="mb-0" method="POST" data-embedded-signin-form>
     {% csrf_token %}
     
     <!-- Email address -->
@@ -43,7 +47,7 @@
     <p class="text-center mb-0 mt-4">
       <a class="text-muted">
         {% trans "Don't have an account yet?" %}
-          {% if embedded_signin %}<a href="#" onclick="$('#sign-in-modal').modal('hide');$('#sign-up-modal').modal('show')">
+          {% if embedded_signin and not suppress_embedded_signup %}<a href="#" onclick="$('#sign-in-modal').modal('hide');$('#sign-up-modal').modal('show')">
           {% else %}<a href="{% url 'registration:signup' %}" class="d-inline-block">
           {% endif %} {% trans "Sign up" %}</a>
       </a>
@@ -58,7 +62,7 @@
   {% if plugin_sign_in_options %}
     <p class="text-center mb-0 mt-4">
       {% for option in plugin_sign_in_options %}
-        <a href="{% url option.url_name %}{% if redirect_url %}?next={{ redirect_url|urlencode }}{% endif %}"
+        <a {% if option.embedded %}data-embedded-signin-link{% endif %} href="{% url option.url_name %}{% if redirect_url %}?next={{ redirect_url|urlencode }}{% endif %}"
            class="d-inline-block{% if not forloop.last %} mr-3{% endif %}">
           {{ option.label }}
         </a>
@@ -66,3 +70,4 @@
     </p>
   {% endif %}
 </form>
+{% if embedded_signin %}</div>{% endif %}

@@ -15,6 +15,7 @@ from .controller import return_business_id_for_domain
 from ruoom.settings import COUNTRY_LANGUAGES
 from administration.models import Business
 from registration.models import Profile
+from registration.embedded_signin import is_embedded_signin, safe_signin_redirect, signin_success
 
 
 def success(request):
@@ -50,8 +51,15 @@ def create_account(request):
 class UserSignin(TemplateView):
     template_name = 'registration/sign-in.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if is_embedded_signin(request):
+            self.template_name = 'registration/partials/signin_form.html'
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         if request.user.is_authenticated:
+            if is_embedded_signin(request):
+                return signin_success(request, safe_signin_redirect(request, request.GET.get("next")) or settings.LOGIN_REDIRECT_URL)
             return redirect(settings.LOGIN_REDIRECT_URL)
         form = SigninForm(request=request)
         self.context = {'signin_form': form}
@@ -74,7 +82,7 @@ class UserSignin(TemplateView):
 
     def post(self, request):
         form = SigninForm(request.POST, request=request)
-        self.context = {'signin_form': form}
+        self.context = {'signin_form': form, 'redirect_url': safe_signin_redirect(request, request.POST.get('redirect_url'))}
                         
         business_id = return_business_id_for_domain(request.META.get('HTTP_HOST', ''))
         country_code = Business.objects.filter(business_id=business_id).first().default_country_code
@@ -87,13 +95,11 @@ class UserSignin(TemplateView):
                 form.errors['password'] = [_('User is not activated.')]
                 return render(request, self.template_name, self.context, status=402)
             login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])
-            if (request.POST.get("redirect_url",None)):
-                response = HttpResponseRedirect(request.POST.get("redirect_url"))
-                return response
-            elif user.is_customeruser():
-                return HttpResponseRedirect(settings.CUSTOMER_LOGIN_REDIRECT_URL)
-            else:
-                return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+            redirect_url = safe_signin_redirect(request, request.POST.get("redirect_url"))
+            redirect_url = redirect_url or (settings.CUSTOMER_LOGIN_REDIRECT_URL if user.is_customeruser() else settings.LOGIN_REDIRECT_URL)
+            if is_embedded_signin(request):
+                return signin_success(request, redirect_url)
+            return HttpResponseRedirect(redirect_url)
         return render(request, self.template_name, self.context, status=404)
 
 class UserSignup(TemplateView):
